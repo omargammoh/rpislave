@@ -1,47 +1,41 @@
-"""
-WSGI config for pylog485 project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/
-"""
-
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 
+#>>>> autostart processes with the django server
+try:
+    import multiprocessing
+    print '-'*20
+    print 'initializing processes'
+    ac = [m.name for m in multiprocessing.active_children()]
+    print 'processes before: %s' %ac
 
-#>>>> this part tells the sotware the start the record and send processes when the django server starts
-import common
-import record.views
-import send.views
-import multiprocessing
-print '-'*20
-print 'initializing processes'
-ac = [m.name for m in multiprocessing.active_children()]
-print 'processes before: %s' %ac
+    import common
+    conf = common._get_conf()
+    print "autostart %s" %conf["autostart"]
 
-if False:
-    try:
-        if not ("record" in ac):
-            print 'initoalizing record'
-            p_rec = common.MP(name='record', target=record.views.record, request=None, cmd="start")
-            p_rec.process_command()
-    except:
-        print "!!unable to initialize the record process"
+    import record.process
+    import send.process
 
-    try:
-        if not ("send" in ac):
-            print 'initializing send'
-            p_rec = common.MP(name='send', target=send.views.send, request=None, cmd="start")
-            p_rec.process_command()
-    except:
-        print "!!unable to initialize the send process"
+
+    for ps_name in conf["autostart"]:
+        try:
+            if ps_name == "record": target = record.process.main
+            elif ps_name == "send": target = send.process.main
+            else: raise BaseException('dont know how to autostart this process %s' %ps_name)
+            if not (ps_name in ac):
+                print 'initializing %s' %ps_name
+                p_rec = common.MP(name=ps_name, target=target, request=None, cmd="start")
+                p_rec.process_command()
+        except:
+            print "!!unable to initialize the %s process " %ps_name
+
 
     ac = [m.name for m in multiprocessing.active_children()]
     print 'processes after: %s' %ac
     print '-'*20
-    #<<<<<
+except:
+    print "!!an error has occurred while performing the autostart operations"
+
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()

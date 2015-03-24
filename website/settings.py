@@ -102,4 +102,4 @@ import os
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), '..', 'templates').replace('\\','/'),)
 
 #oga
-CONF_LABEL = 'test' #make sure this conf is in the database in the table mng_conf
+CONF_LABEL = 'example' #make sure this conf is in the database in the table mng_conf

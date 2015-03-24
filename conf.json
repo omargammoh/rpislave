@@ -1,6 +1,7 @@
 {
     "label": "test",
     "desc": "bla bla bla",
+    "autostart": ["record", "send"],
     "network": {
         "wifi_name": "name of your wifi network",
         "wifi_pass": "password of your wifi network",

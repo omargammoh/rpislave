@@ -1,8 +1,8 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-import record.views
-import send.views
+import datalog_app.views
+import datasend_app.views
 import mng.views
 
 urlpatterns = patterns('',
@@ -13,7 +13,7 @@ urlpatterns = patterns('',
     url(r'^status/$', mng.views.status),
     url(r'^admin/', include(admin.site.urls)),
 
-    url(r'^record/$', record.views.manage),
-    url(r'^record/home$', record.views.home),
-    url(r'^send/$', send.views.manage),
+    url(r'^datalog_app/$', datalog_app.views.manage),
+    url(r'^datalog_app/home$', datalog_app.views.home),
+    url(r'^datasend_app/$', datasend_app.views.manage),
 )

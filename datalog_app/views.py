@@ -1,5 +1,5 @@
 from mng.processing import MP
-import record.process
+import datalog_app.process
 import traceback
 import json
 
@@ -8,12 +8,12 @@ from django.template import RequestContext
 from django.http import HttpResponse
 
 
-def home(request, template_name='record/home.html'):
+def home(request, template_name='datalog_app/home.html'):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
 
 def manage(request):
     try:
-        mp = MP(name='record', target=record.process.main, request=request)
+        mp = MP(name='datalog_app', target=datalog_app.process.main, request=request)
         mp.process_command()
         dic = json.dumps(mp.dic)
     except:

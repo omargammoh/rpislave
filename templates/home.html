@@ -12,11 +12,11 @@
     <hr>
     <div>
         <h2>RECORD <i>process</i></h2>
-        <button type="button" id="btn_record_start">Start</button>
-        <button type="button" id="btn_record_stop">Stop</button>
-        <button type="button" id="btn_record_status">Status</button>
-        <a href="{% url "record.views.home" %}" class="button btn-flat">
-             go to record's home
+        <button type="button" id="btn_datalog_app_start">Start</button>
+        <button type="button" id="btn_datalog_app_stop">Stop</button>
+        <button type="button" id="btn_datalog_app_status">Status</button>
+        <a href="{% url "datalog_app.views.home" %}" class="button btn-flat">
+             go to datalog_app's home
         </a>
 
     </div>
@@ -24,9 +24,9 @@
     <hr>
     <div>
         <h2>SEND <i>process</i></h2>
-        <button type="button" id="btn_send_start">Start</button>
-        <button type="button" id="btn_send_stop">Stop</button>
-        <button type="button" id="btn_send_status">Status</button>
+        <button type="button" id="btn_datasend_app_start">Start</button>
+        <button type="button" id="btn_datasend_app_stop">Stop</button>
+        <button type="button" id="btn_datasend_app_status">Status</button>
         <a href="" class="button btn-flat">
              go to send's home
         </a>
@@ -111,13 +111,13 @@ $("#btn_status_overview").click(make_cmd_function("{% url "mng.views.status" %}"
 $("#btn_status_conf").click(make_cmd_function("{% url "mng.views.status" %}", {"cmd":"conf"}))
 $("#btn_status_recentdata").click(make_cmd_function("{% url "mng.views.status" %}", {"cmd":"recentdata"}))
 
-$("#btn_record_start").click(make_cmd_function("{% url "record.views.manage" %}", {"cmd":"start"}))
-$("#btn_record_stop").click(make_cmd_function("{% url "record.views.manage" %}", {"cmd":"stop"}))
-$("#btn_record_status").click(make_cmd_function("{% url "record.views.manage" %}", {"cmd":"status"}))
+$("#btn_datalog_app_start").click(make_cmd_function("{% url "datalog_app.views.manage" %}", {"cmd":"start"}))
+$("#btn_datalog_app_stop").click(make_cmd_function("{% url "datalog_app.views.manage" %}", {"cmd":"stop"}))
+$("#btn_datalog_app_status").click(make_cmd_function("{% url "datalog_app.views.manage" %}", {"cmd":"status"}))
 
-$("#btn_send_start").click(make_cmd_function("{% url "send.views.manage" %}", {"cmd":"start"}))
-$("#btn_send_stop").click(make_cmd_function("{% url "send.views.manage" %}", {"cmd":"stop"}))
-$("#btn_send_status").click(make_cmd_function("{% url "send.views.manage" %}", {"cmd":"status"}))
+$("#btn_datasend_app_start").click(make_cmd_function("{% url "datasend_app.views.manage" %}", {"cmd":"start"}))
+$("#btn_datasend_app_stop").click(make_cmd_function("{% url "datasend_app.views.manage" %}", {"cmd":"stop"}))
+$("#btn_datasend_app_status").click(make_cmd_function("{% url "datasend_app.views.manage" %}", {"cmd":"status"}))
 
 
 </script>

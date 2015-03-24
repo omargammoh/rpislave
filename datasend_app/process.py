@@ -21,14 +21,14 @@ def main(send_period, keep_period, mongo_address):
     take data from db and send it to mongodb, if successfull, mark data as successfull and delete after a while
     '''
     _prepare_django()
-    import record.models
+    import datalog_app.models
 
     connected = False
     sleep(10)
     i = 0
     while (True):
         print '-'*30
-        print "\n>>>> send loop, i=%s" %i
+        print "\n>>>> datasend_app loop, i=%s" %i
         #waiting to have a connection
         t1 = time()
         j = 0
@@ -59,7 +59,7 @@ def main(send_period, keep_period, mongo_address):
         cnt = {'del': 0, 'send': 0}
         if connected:
             print '    processing data...'
-            for ob in record.models.Reading.objects.all():
+            for ob in datalog_app.models.Reading.objects.all():
                 meta = json_util.loads(ob.meta)
 
                 #handle the unsent data

@@ -37,8 +37,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mng',
-    'record',
-    'send',
+    'datalog_app',
+    'datasend_app',
 )
 
 MIDDLEWARE_CLASSES = (

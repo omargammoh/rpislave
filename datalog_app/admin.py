@@ -1,5 +1,5 @@
 from django.contrib import admin
-from record.models import Reading
+from datalog_app.models import Reading
 
 class ReadingAdmin(admin.ModelAdmin):
     list_display = ('data', 'meta')

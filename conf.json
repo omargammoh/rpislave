@@ -1,7 +1,7 @@
 {
     "label": "example",
     "desc": "bla bla bla",
-    "autostart": ["record", "send"],
+    "autostart": ["datalog_app", "datasend_app"],
     "network": {
         "wifi_name": "name of your wifi network",
         "wifi_pass": "password of your wifi network",
@@ -14,7 +14,7 @@
         "installed": false  
     },
     "apps": {
-        "record": {
+        "datalog_app": {
             "rs485_conf": {
                 "port": "/dev/ttyUSB0",
                 "method": "rtu",
@@ -76,7 +76,7 @@
                 }
             }
         },
-        "send": {
+        "datasend_app": {
             "keep_period": 300,
             "send_period": 240,
             "mongo_address": "mongodb://pylog485:pylog485@ds031627.mongolab.com:31627/public"

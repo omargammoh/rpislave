@@ -1,12 +1,12 @@
 from mng.processing import MP
-import send.process
+import datasend_app.process
 import traceback
 import json
 from django.http import HttpResponse
 
 def manage(request):
     try:
-        mp = MP(name='send', target=send.process.main, request=request)
+        mp = MP(name='datasend_app', target=datasend_app.process.main, request=request)
         mp.process_command()
         dic = json.dumps(mp.dic)
     except:

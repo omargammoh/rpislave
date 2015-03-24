@@ -5,7 +5,7 @@ import json
 from bson import json_util
 import multiprocessing
 from mng.models import Conf
-from record.models import Reading
+from datalog_app.models import Reading
 from datetime import datetime
 from django.conf import settings
 import traceback
@@ -28,7 +28,7 @@ def status(request):
             dic['configuration label'] = settings.CONF_LABEL
 
         if cmd == "recentdata":
-            #dic["the last 5 recorded stamps in local DB"] = [{'data':json_util.loads(ob.data), 'meta':json_util.loads(ob.meta)} for ob in Reading.objects.all().order_by('-id')[:5]]
+            #dic["the last 5 datalog_apped stamps in local DB"] = [{'data':json_util.loads(ob.data), 'meta':json_util.loads(ob.meta)} for ob in Reading.objects.all().order_by('-id')[:5]]
             dic["the last 20 recorded stamps in local DB"] = [str({'data':json_util.loads(ob.data), 'meta':json_util.loads(ob.meta)}) for ob in Reading.objects.all().order_by('-id')[:20]]
             #dic["the last 5 recorded stamps in local DB"] = [('data=' + ob.data + "    meta=" + ob.meta) for ob in Reading.objects.all().order_by('-id')[:5]]
         jdic= json_util.dumps(dic)

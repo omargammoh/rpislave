@@ -14,14 +14,14 @@ try:
     conf = mng.processing._get_conf()
     print "autostart %s" %conf["autostart"]
 
-    import record.process
-    import send.process
+    import datalog_app.process
+    import datasend_app.process
 
 
     for ps_name in conf["autostart"]:
         try:
-            if ps_name == "record": target = record.process.main
-            elif ps_name == "send": target = send.process.main
+            if ps_name == "datalog_app": target = datalog_app.process.main
+            elif ps_name == "datasend_app": target = datasend_app.process.main
             else: raise BaseException('dont know how to autostart this process %s' %ps_name)
             if not (ps_name in ac):
                 print 'initializing %s' %ps_name

@@ -153,7 +153,7 @@ def _process_data(data, sensors_conf):
 
 def main(sample_period, data_period, rs485_conf, sensors_conf):
     _prepare_django()
-    import record.models
+    import datalog_app.models
 
     def stamp_quality(dic_samples):
         return None #return float(len([v for v in dic_samples.values() if v is not None]))/len(dic_samples)
@@ -188,11 +188,11 @@ def main(sample_period, data_period, rs485_conf, sensors_conf):
     starton = _decide_start(data_period, now)
 
     i = 0
-    print "record: starton %s" %starton
+    print "datalog_app: starton %s" %starton
 
     #loop forever
     while (True) :
-        print '\n>>>> record loop, i= %s, t= %s ' %(i, _pretty_time_delta(i * data_period))
+        print '\n>>>> datalog_app loop, i= %s, t= %s ' %(i, _pretty_time_delta(i * data_period))
         j = 0
 
         #initialize with not ok
@@ -271,7 +271,7 @@ def main(sample_period, data_period, rs485_conf, sensors_conf):
         if processed:
             try:
                 processed['timestamp']=stamp
-                record.models.Reading(data=json_util.dumps(processed)
+                datalog_app.models.Reading(data=json_util.dumps(processed)
                         ,meta=json_util.dumps({'sent':'false', 'quality':'?'})).save()
                 print "    data saved in db"
 

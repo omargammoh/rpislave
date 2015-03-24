@@ -15,6 +15,10 @@
         <button type="button" id="btn_record_start">Start</button>
         <button type="button" id="btn_record_stop">Stop</button>
         <button type="button" id="btn_record_status">Status</button>
+        <a href="{% url "record.views.home" %}" class="button btn-flat">
+             go to record's home
+        </a>
+
     </div>
     <br>
     <hr>
@@ -23,6 +27,9 @@
         <button type="button" id="btn_send_start">Start</button>
         <button type="button" id="btn_send_stop">Stop</button>
         <button type="button" id="btn_send_status">Status</button>
+        <a href="" class="button btn-flat">
+             go to send's home
+        </a>
     </div>
     <br>
     <hr>
@@ -32,11 +39,7 @@
 {% endblock %}
 
 {% block sidebar %}
-<div id="content-related">
-    <div class="module" id="recent-actions-module">
-        <h2>some sidebar things</h2>
-    </div>
-</div>
+{%comment%}scripts put in the side bar block, but this is just a workaround to get the scripts working{%endcomment%}
 
 <script>
 

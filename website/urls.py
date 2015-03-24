@@ -14,5 +14,6 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^record/$', record.views.manage),
+    url(r'^record/home$', record.views.home),
     url(r'^send/$', send.views.manage),
 )

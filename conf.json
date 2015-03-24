@@ -1,0 +1,83 @@
+{
+    "label": "test",
+    "desc": "bla bla bla",
+    "network": {
+        "wifi_name": "name of your wifi network",
+        "wifi_pass": "password of your wifi network",
+        "address": "192.168.1.201",
+        "netmask": "255.255.255.0",
+        "network": "192.168.1.0",
+        "gateway": "192.168.1.1"
+    },
+    "rtc": {
+        "installed": false  
+    },
+    "apps": {
+        "record": {
+            "rs485_conf": {
+                "port": "/dev/ttyUSB0",
+                "method": "rtu",
+                "baudrate": 9600,
+                "stopbits": 1,
+                "bytesize": 8,
+                "parity": "N",
+                "retries": 1000,
+                "rtscts": true,
+                "timeout": 0.05
+             },
+            "sample_period": 5,
+            "data_period": 60,
+            "sensors_conf": {
+                "Tamb": {
+                    "active": true,
+                    "type": "rs485",
+                    "address": 10,
+                    "register": 2,
+                    "pp": ["avg", "max"],
+                    "m": 0.1,
+                    "c": -25.0
+                },
+                "Tmod": {
+                    "active": true,
+                    "type": "rs485",
+                    "address": 11,
+                    "register": 1,
+                    "pp": ["avg"],
+                    "m": 0.1,
+                    "c": -25.0
+                },
+                "G": {
+                    "active": true,
+                    "type": "rs485",
+                    "address": 12,
+                    "register": 0,
+                    "pp": ["avg", "std"],
+                    "m": 1.0,
+                    "c": 0.0
+                },
+                "Tcell": {
+                    "active": true,
+                    "type": "rs485",
+                    "address": 12,
+                    "register": 1,
+                    "pp": ["avg"],
+                    "m": 0.1,
+                    "c": -25.0
+                },
+                "Vbat": {
+                    "active": true,
+                    "type": "mcp3008",
+                    "channel": 0,
+                    "pp": ["avg"],
+                    "m": 0.1,
+                    "c": -25.0
+                }
+            }
+        },
+        "send": {
+            "keep_period": 300,
+            "send_period": 240,
+            "mongo_address": "mongodb://pylog485:pylog485@ds031627.mongolab.com:31627/public"
+        }
+    }
+}

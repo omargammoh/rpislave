@@ -1,5 +1,5 @@
 {
-    "label": "test",
+    "label": "example",
     "desc": "bla bla bla",
     "autostart": ["record", "send"],
     "network": {
@@ -70,8 +70,9 @@
                     "type": "mcp3008",
                     "channel": 0,
                     "pp": ["avg"],
-                    "m": 0.1,
-                    "c": -25.0
+                    "Vref": 3.3,
+                    "m": 0.2,
+                    "c": 0.0
                 }
             }
         },

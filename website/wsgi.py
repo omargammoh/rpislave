@@ -1,6 +1,7 @@
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 
+import traceback
 #>>>> autostart processes with the django server
 try:
     import multiprocessing
@@ -29,11 +30,11 @@ try:
         except:
             print "!!unable to initialize the %s process " %ps_name
 
-
     ac = [m.name for m in multiprocessing.active_children()]
     print 'processes after: %s' %ac
     print '-'*20
 except:
+    print traceback.format_exc()
     print "!!an error has occurred while performing the autostart operations"
 
 

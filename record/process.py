@@ -5,9 +5,23 @@ import itertools
 
 import os, django
 from bson import json_util
-from pymodbus.client.sync import ModbusSerialClient as MSC
-from pymodbus.transaction import ModbusRtuFramer
 import traceback
+
+try:
+    from pymodbus.client.sync import ModbusSerialClient as MSC
+    from pymodbus.transaction import ModbusRtuFramer
+except:
+    print "!!could not load pymodbus module"
+
+try:
+    import spidev
+except:
+    print "!!could not load spidev module"
+
+def _read_spi(spi, channel):
+    adc = spi.xfer2([1,(8+channel)<<4,0])
+    data = ((adc[1]&3) << 8) + adc[2]
+    return data
 
 def _pretty_time_delta(seconds):
     seconds = int(seconds)
@@ -52,37 +66,38 @@ def _decide_start(data_period, dt):
     return starton
 
 def _get_mb_client(rs485_conf):
-    #port = "COM3"
     rs485_conf["framer"]=ModbusRtuFramer
-    client = MSC(**rs485_conf)
-
-#    client = MSC(port=port ,method='rtu', baudrate=9600, stopbits=1
-#                ,bytesize=8, parity='N'
-#                 ,retries=1000, rtscts=True,framer=ModbusRtuFramer, timeout = 0.05)
+    client = MSC(**rs485_conf) ##  port = "COM3",  client = MSC(port=port ,method='rtu', baudrate=9600, stopbits=1 ,bytesize=8, parity='N' ,retries=1000, rtscts=True,framer=ModbusRtuFramer, timeout = 0.05)
     return client
 
-def _get_point(mb_client, sensors_conf):
+def _get_point(mb_client, spi_client, sensors_conf):
     dic = {}
-    #TODO: handle the fact that some sensors might fail while others not
     for label,conf in sensors_conf.iteritems():
         try:
             if conf['active']:
-                #read
-                reg = mb_client.read_input_registers(conf['register'],unit=conf['address'])
-                #process number
-                value = reg.registers[0] * conf['m'] + conf['c']
-                dic[label] = value
+                if conf['type'] == "rs485":
+                    #read
+                    reg = mb_client.read_input_registers(conf['register'],unit=conf['address'])
+                    #process number
+                    value = reg.registers[0] * conf['m'] + conf['c']
+                    dic[label] = value
+                elif conf['type'] == "mcp3008":
+                    raw = _read_spi(spi=spi_client, channel=conf['channel']) #this number is between 0 and 1023
+                    voltageatpin = float(raw)/1023.0 * conf['Vref']
+                    value = voltageatpin * conf['m'] + conf['c']
+                else:
+                    raise BaseException("unknown sensor type %s" %conf['type'])
+
             else:
                 pass
         except:
             print '!!_get_point: sensor %s failed' %label
             pass
 
-    #print "_get_point %s %s" %(datetime.utcnow(),dic)
+    #return a dic which looks like {'Tamb':21.0, 'Tmod'=30.0, 'G':946.5}
+    return dic
 
-    return dic #{'Tamb':21.0, 'Tmod'=30.0, 'G':946.5}
-
-def _get_stamp(sample_period, data_period, mb_client, sensors_conf):
+def _get_stamp(sample_period, data_period, mb_client, spi_client, sensors_conf):
     count = int(float(data_period)/sample_period)
     starton = datetime.utcnow()
     i = 0
@@ -101,7 +116,7 @@ def _get_stamp(sample_period, data_period, mb_client, sensors_conf):
             i += 1
             continue
 
-        vals = _get_point(mb_client, sensors_conf)
+        vals = _get_point(mb_client, spi_client, sensors_conf)
 
         i += 1
         res[midstamp] = vals
@@ -143,40 +158,89 @@ def main(sample_period, data_period, rs485_conf, sensors_conf):
     def stamp_quality(dic_samples):
         return None #return float(len([v for v in dic_samples.values() if v is not None]))/len(dic_samples)
 
-    mb_client = _get_mb_client(rs485_conf)
 
+
+    #check if a modbus client is needed and create it
+    rs485_present = any([(sensor['active'] and sensor['type'] == "rs485") for (_,sensor) in sensors_conf.iteritems()])
+    if rs485_present:
+        try:
+            mb_client = _get_mb_client(rs485_conf)
+        except:
+            print traceback.format_exc()
+            mb_client = None
+    else:
+        mb_client = None
+
+    #check if a spi client is needed and create it
+    mcp3008_present = any([(sensor['active'] and sensor['type'] == "mcp3008") for (_,sensor) in sensors_conf.iteritems()])
+    if mcp3008_present:
+        try:
+            spi_client = spidev.SpiDev()
+        except:
+            print traceback.format_exc()
+            spi_client = None
+    else:
+        spi_client = None
+
+
+    #decide on start
     now = datetime.utcnow()
     starton = _decide_start(data_period, now)
 
     i = 0
     print "record: starton %s" %starton
+
+    #loop forever
     while (True) :
         print '\n>>>> record loop, i= %s, t= %s ' %(i, _pretty_time_delta(i * data_period))
-        #make sure that the mb_client is connected
         j = 0
 
-        mb_client.close()#this is important to restablish the connection in another loop
-        connected = False
-        while (not connected) :
-            try :
-                t1 = time()
-                connected = mb_client.connect()
-                t2 = time()
-            except:
-                connected = False
-            if not connected:
-                #keep trying
+        #initialize with not ok
+        mb_client_ok = False
+        spi_ok = False
+
+        #if none is ok, stay in this loop, till at least one is ok
+        while ((not mb_client_ok) and (not spi_ok)):
+
+            t1 = time()
+
+            #connect if mb_client
+            if rs485_present:
+                try:
+                    mb_client.close()#this is important to restablish the connection in another loop
+                    mb_client_ok = mb_client.connect()
+                except:
+                    mb_client_ok = False
+            else:
+                mb_client_ok  = True
+
+            #connect if spi_client is ok
+            if mcp3008_present:
+                try:
+                    spi_client.open(0, 0)
+                    spi_ok = True
+                except:
+                    spi_ok = False
+            else:
+                spi_ok = True
+
+            t2 = time()
+
+            #try connect spi
+            if ((not mb_client_ok) and (not spi_ok)):
+                #sleep before trying again
                 retryin = 10
                 print "    !!mb_client: couldnt connect at j=%s, retrying in %s seconds" % (j,retryin)
                 sleep(retryin)
             j += 1
 
-        print "    mb_client connected at j=%s, took %s sec" %(j,round(t2-t1,4))
+        print "    mb_client_ok %s, spi_ok %s, at j=%s, took %s sec" %(mb_client_ok,spi_ok,j,round(t2-t1,4))
+
 
         #calculate the time for stamp and waiting period, and skip if this stamp is already passed
         stamp = starton + timedelta(seconds = i * data_period)#beginning ts
         wait = (stamp - datetime.utcnow()).total_seconds()
-        if wait >= 0 :
+        if wait >= 0:
             print '    wait %s sec before getting samples' %wait
             sleep(wait)
         else:
@@ -190,7 +254,7 @@ def main(sample_period, data_period, rs485_conf, sensors_conf):
         try:
             #raise exception if there is no data at all, if there is just one sensor not working, dont fail
             print '    getting samples now...'
-            dic_samples = _get_stamp(sample_period, data_period, mb_client, sensors_conf)
+            dic_samples = _get_stamp(sample_period, data_period, mb_client, spi_client, sensors_conf)
             processed = _process_data(dic_samples, sensors_conf)
             print '    [%s] now = %s' %(stamp, datetime.utcnow())
             print '    %s' %(processed)

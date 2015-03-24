@@ -9,7 +9,7 @@ from record.models import Reading
 from datetime import datetime
 from django.conf import settings
 import traceback
-import common
+import mng.processing
 
 def home(request, template_name='home.html'):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
@@ -20,7 +20,7 @@ def status(request):
         cmd = request.GET.get("cmd",None)
         dic = {}
         if cmd == "conf":
-            dic['conf'] = common._get_conf()
+            dic['conf'] = mng.processing._get_conf()
         if cmd == "overview":
             dic['this process'] = multiprocessing.current_process().name
             dic['active child processes'] = [m.name for m in  multiprocessing.active_children()]

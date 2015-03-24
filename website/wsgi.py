@@ -9,8 +9,8 @@ try:
     ac = [m.name for m in multiprocessing.active_children()]
     print 'processes before: %s' %ac
 
-    import common
-    conf = common._get_conf()
+    import mng.processing
+    conf = mng.processing._get_conf()
     print "autostart %s" %conf["autostart"]
 
     import record.process
@@ -24,7 +24,7 @@ try:
             else: raise BaseException('dont know how to autostart this process %s' %ps_name)
             if not (ps_name in ac):
                 print 'initializing %s' %ps_name
-                p_rec = common.MP(name=ps_name, target=target, request=None, cmd="start")
+                p_rec = mng.processing.MP(name=ps_name, target=target, request=None, cmd="start")
                 p_rec.process_command()
         except:
             print "!!unable to initialize the %s process " %ps_name

@@ -70,7 +70,7 @@ class MP():
                 lis.append('process was not running')
 
         elif self.cmd == 'status':
-            self.dic["%s process configuration" %self.name] = _get_conf()
+            self.dic["%s process configuration" %self.name] = _get_conf()['apps'][self.name]
         else:
             lis.append("we didnt understand your cmd")
 

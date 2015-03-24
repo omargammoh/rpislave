@@ -1,4 +1,4 @@
-from common import MP
+from mng.processing import MP
 import send.process
 import traceback
 import json

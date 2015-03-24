@@ -1,5 +1,5 @@
 """
-Django settings for pylog485 project.
+Django settings for rpislave project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.7/topics/settings/

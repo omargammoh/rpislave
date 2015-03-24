@@ -3,7 +3,7 @@ import os
 import json
 
 try:
-    jsonfile = os.path.join(__file__,'conf.json')
+    jsonfile = os.path.join(os.path.dirname(__file__), 'conf.json')
 
     if not os.path.isfile(jsonfile):
         raise BaseException('the json config file was not found %s' %jsonfile)
@@ -53,7 +53,7 @@ def setup_autologin():
 def setup_autostart():
     #apends a line to a file
     filepath = "/home/pi/.bashrc"
-    linetoappend = r". /home/pi/pylog485/start.sh"
+    linetoappend = r". /home/pi/rpislave/start.sh"
 
     f = file(filepath,"r")
     s = f.readlines()
@@ -87,7 +87,7 @@ network={{
     print "setup_internetsettings: wpa_supplicant.conf successful"
 
     #write file2
-    f = file("sudo nano /etc/network/interfaces", "r+")
+    f = file("/etc/network/interfaces", "r+")
     contents="""
 auto lo
 iface lo inet loopback
@@ -147,4 +147,4 @@ if __name__ == "__main__":
     setup_autostart()
     setup_internetsettings()
     if "rtc" in js:
-        setup_realtimeclock(js['type'])
+        setup_realtimeclock(js['rtc']['type'])

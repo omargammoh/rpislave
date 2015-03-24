@@ -8,7 +8,7 @@ This is a way to setup a server on raspberry pi using django, where every differ
 
 ### how to easily install ###
 * `sudo apt-get install git`
-* `sudo git clone -b master https://omargammoh@github.com/omargammoh/spislave.git`
+* `sudo git clone https://github.com/omargammoh/rpislave.git`
 * edit `sudo nano ~/rpislave/conf.json`
 * `sudo python ~/rpislave/setup.py`
 * `sudo reboot`

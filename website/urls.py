@@ -13,6 +13,6 @@ urlpatterns = patterns('',
     url(r'^status/$', mng.views.status),
     url(r'^admin/', include(admin.site.urls)),
 
-    url(r'^mng/$', mng.views.manage),
+    url(r'^mng/$', mng.views.appmanage),
     url(r'^mng/apphome/$', mng.views.apphome),
 )

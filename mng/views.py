@@ -4,18 +4,20 @@ from django.http import HttpResponse
 import json
 from bson import json_util
 import multiprocessing
-from mng.models import Conf
 from datalog_app.models import Reading
 from datetime import datetime
 from django.conf import settings
 import traceback
 import mng.processing
-from mng.processing import MP
+from mng.processing import MP, _get_conf
 import importlib
 
 
 def home(request, template_name='home.html'):
-    return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    app_list = [k for (k,v) in _get_conf()['apps'].iteritems()]
+    print app_list
+    return render_to_response(template_name, {"app_list": app_list}, context_instance=RequestContext(request))
+
 
 def status(request):
     try:
@@ -38,28 +40,36 @@ def status(request):
 
     return HttpResponse(jdic, content_type='application/json')
 
+
 def apphome(request):
     try:
         m = importlib.import_module("%s.views" %request.GET['app'])
-        res = m.home(request)
-        print "yyyyyyyyyyyessss"
-        return res
+        home_view = m.home
     except:
-        print 'noooooo'
         template_name = 'nohome.html'
         return render_to_response(template_name, {}, context_instance=RequestContext(request))
+
+    res = home_view(request)
+    return res
+
 
 def appmanage(request):
     try:
         m = importlib.import_module("%s.process" %request.GET['app'])
         target = m.main
 
+    except:
+        dic = json.dumps({"error": "no process.main seams to be found for this app"})
+        return HttpResponse(dic, content_type='application/json')
+
+    try:
         mp = MP(name=request.GET['app'], target=target, request=request)
         mp.process_command()
         dic = json.dumps(mp.dic)
+        return HttpResponse(dic, content_type='application/json')
     except:
         err = traceback.format_exc()
         dic = json.dumps({"error": err})
-    return HttpResponse(dic, content_type='application/json')
+        return HttpResponse(dic, content_type='application/json')
 
 

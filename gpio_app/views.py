@@ -40,3 +40,4 @@ if False:
     GPIO.setup(gpio_pin, GPIO.IN)
     t0 = time()
     (GPIO.input(gpio_pin) == GPIO.LOW)
+

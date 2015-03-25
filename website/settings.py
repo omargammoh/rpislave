@@ -39,6 +39,8 @@ INSTALLED_APPS = (
     'mng',
     'datalog_app',
     'datasend_app',
+    'gpio_app',
+    'camstream_app',
 )
 
 MIDDLEWARE_CLASSES = (

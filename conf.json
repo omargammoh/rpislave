@@ -80,6 +80,10 @@
             "keep_period": 300,
             "send_period": 240,
             "mongo_address": "mongodb://pylog485:pylog485@ds031627.mongolab.com:31627/public"
+        },
+        "gpio_app": {
+        },
+        "camstream_app": {
         }
     }
 }

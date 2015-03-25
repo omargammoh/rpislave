@@ -1,44 +1,48 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+
 <div>
-    <div>
-        <h2>STATUS</h2>
-        <button type="button" id="btn_status_overview">Overview</button>
-        <button type="button" id="btn_status_conf">Config</button>
-        <button type="button" id="btn_status_recentdata">Recent data</button>
+    <div style="width: 50%; float:left; ">
+        <hr>
+        <div>
+            <h2>STATUS</h2>
+            <button type="button" id="btn_status_overview">Overview</button>
+            <button type="button" id="btn_status_conf">Config</button>
+            <button type="button" id="btn_status_recentdata">Recent data</button>
+        </div>
+        <br>
+        <br>
+        <hr>
+
+        <h2>APPS</h2>
+        <br>
+        <table style="width:100%">
+            {% for app in app_list %}
+                <tr>
+                    <td><h2>{{ app }}</h2></td>
+                    <td><button type="button" id="btn_{{app}}_start">Start</button></td>
+                    <td><button type="button" id="btn_{{app}}_stop">Stop</button></td>
+                    <td><button type="button" id="btn_{{app}}_status">Status</button></td>
+                    <td><a href="/mng/apphome?app={{app}}"><button>app's home</button></a></td>
+                </tr>
+            {% endfor %}
+        </table>
+        <hr>
     </div>
-    <br>
-    <hr>
-
-    {% with 'datalog_app datasend_app gpio_app camstream_app' as app_list %}
-        {% for app in app_list.split %}
-            <div>
-                <h2>{{app}}</h2>
-                <button type="button" id="btn_{{app}}_start">Start</button>
-                <button type="button" id="btn_{{app}}_stop">Stop</button>
-                <button type="button" id="btn_{{app}}_status">Status</button>
-                <a href="/mng/apphome?app={{app}}" class="button btn-flat">
-                     visit app's home
-                </a>
-
-            </div>
-            <br>
-            <hr>
-        {% endfor %}
-    {% endwith %}
-    <p id="p_jsresponse">...</p>
+    <div style="width: 50%; float:left; ">
+        <h2> >>  </h2>
+        <p id="p_jsresponse">...</p>
+        <h2> <<  </h2>
+    </div>
 </div>
 
 {% endblock %}
 
-{% comment %}scripts put in the side bar block, but this is just a workaround to get the scripts working{% endcomment %}
-
-{% block sidebar %}
+{% block sidebar %}{% comment %}scripts put in the side bar block, but this is just a workaround to get the scripts working{% endcomment %}
 
 <script>
-
-
 function syntaxHighlight(json) {
     if (typeof json != 'string') {
          json = JSON.stringify(json, undefined, 2);
@@ -80,13 +84,13 @@ function make_cmd_function(url, data){
                 btn.prop('disabled', false);
 
                 if (data['ison'] == true) {
-                    btn.parent().find('h2').css('color', 'lightgreen');
+                    btn.parent().parent().find('h2').css('color', 'lightgreen');
                 }
                 else if (data['ison'] == false) {
-                    btn.parent().find('h2').css('color', 'red');
+                    btn.parent().parent().find('h2').css('color', 'red');
                 }
                 else {
-                    btn.parent().find('h2').css('color', 'black')
+                    btn.parent().parent().find('h2').css('color', 'black')
                 }
 
             },
@@ -105,10 +109,10 @@ $("#btn_status_overview").click(make_cmd_function("{% url "mng.views.status" %}"
 $("#btn_status_conf").click(make_cmd_function("{% url "mng.views.status" %}", {"cmd":"conf"}))
 $("#btn_status_recentdata").click(make_cmd_function("{% url "mng.views.status" %}", {"cmd":"recentdata"}))
 
-{% with app_list='datalog_app datasend_app gpio_app camstream_app' cmd_list='start stop status' %}
-    {% for app in app_list.split %}
+{% with cmd_list='start stop status' %}
+    {% for app in app_list %}
         {% for cmd in cmd_list.split %}
-            $("#btn_{{app}}_{{cmd}}").click(make_cmd_function("{% url "mng.views.manage" %}", {"app":"{{app}}", "cmd":"{{cmd}}"}))
+            $("#btn_{{app}}_{{cmd}}").click(make_cmd_function("{% url "mng.views.appmanage" %}", {"app":"{{app}}", "cmd":"{{cmd}}"}))
         {% endfor %}
     {% endfor %}
 {% endwith %}
@@ -122,6 +126,15 @@ $("#btn_status_recentdata").click(make_cmd_function("{% url "mng.views.status" %
 .string{
     color:green;
 }
+
+hr {
+    border: none;
+    height: 2px;
+    /* Set the hr color */
+    color: #333; /* old IE */
+    background-color: #333; /* Modern Browsers */
+}
+
 </style>
 {% endblock %}
 

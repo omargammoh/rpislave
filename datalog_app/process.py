@@ -85,6 +85,7 @@ def _get_point(mb_client, spi_client, sensors_conf):
                     raw = _read_spi(spi=spi_client, channel=conf['channel']) #this number is between 0 and 1023
                     voltageatpin = float(raw)/1023.0 * conf['Vref']
                     value = voltageatpin * conf['m'] + conf['c']
+                    dic[label] = value
                 else:
                     raise BaseException("unknown sensor type %s" %conf['type'])
 
@@ -230,7 +231,7 @@ def main(sample_period, data_period, rs485_conf, sensors_conf):
             if ((not mb_client_ok) and (not spi_ok)):
                 #sleep before trying again
                 retryin = 10
-                print "    !!mb_client: couldnt connect at j=%s, retrying in %s seconds" % (j,retryin)
+                print "    !!couldnt connect spi_client or mb_client at j=%s, retrying in %s seconds" % (j,retryin)
                 sleep(retryin)
             j += 1
 

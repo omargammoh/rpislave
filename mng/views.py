@@ -10,6 +10,12 @@ from datetime import datetime
 from django.conf import settings
 import traceback
 import mng.processing
+from mng.processing import MP
+
+import datalog_app.process
+import datasend_app.process
+import gpio_app.process
+import camstream_app.process
 
 def home(request, template_name='home.html'):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
@@ -38,5 +44,23 @@ def status(request):
 
     return HttpResponse(jdic, content_type='application/json')
 
+
+def manage(request):
+    print request
+    try:
+        app = request.GET['app']
+        if app == "datalog_app": target = datalog_app.process.main
+        elif app == "datasend_app": target = datasend_app.process.main
+        elif app == "gpio_app": target = gpio_app.process.main
+        elif app == "camstream_app": target = camstream_app.process.main
+        else: raise BaseException('unknown app %s' %app)
+
+        mp = MP(name=app, target=target, request=request)
+        mp.process_command()
+        dic = json.dumps(mp.dic)
+    except:
+        err = traceback.format_exc()
+        dic = json.dumps({"error": err})
+    return HttpResponse(dic, content_type='application/json')
 
 

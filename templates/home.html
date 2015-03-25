@@ -10,38 +10,34 @@
     </div>
     <br>
     <hr>
-    <div>
-        <h2>RECORD <i>process</i></h2>
-        <button type="button" id="btn_datalog_app_start">Start</button>
-        <button type="button" id="btn_datalog_app_stop">Stop</button>
-        <button type="button" id="btn_datalog_app_status">Status</button>
-        <a href="{% url "datalog_app.views.home" %}" class="button btn-flat">
-             go to datalog_app's home
-        </a>
 
-    </div>
-    <br>
-    <hr>
-    <div>
-        <h2>SEND <i>process</i></h2>
-        <button type="button" id="btn_datasend_app_start">Start</button>
-        <button type="button" id="btn_datasend_app_stop">Stop</button>
-        <button type="button" id="btn_datasend_app_status">Status</button>
-        <a href="" class="button btn-flat">
-             go to send's home
-        </a>
-    </div>
-    <br>
-    <hr>
+    {% with 'datalog_app datasend_app gpio_app camstream_app' as app_list %}
+        {% for app in app_list.split %}
+            <div>
+                <h2>{{app}}</h2>
+                <button type="button" id="btn_{{app}}_start">Start</button>
+                <button type="button" id="btn_{{app}}_stop">Stop</button>
+                <button type="button" id="btn_{{app}}_status">Status</button>
+                <a href="/{{app}}/home" class="button btn-flat">
+                     visit app's home
+                </a>
+
+            </div>
+            <br>
+            <hr>
+        {% endfor %}
+    {% endwith %}
     <p id="p_jsresponse">...</p>
 </div>
 
 {% endblock %}
 
+{% comment %}scripts put in the side bar block, but this is just a workaround to get the scripts working{% endcomment %}
+
 {% block sidebar %}
-{%comment%}scripts put in the side bar block, but this is just a workaround to get the scripts working{%endcomment%}
 
 <script>
+
 
 function syntaxHighlight(json) {
     if (typeof json != 'string') {
@@ -103,24 +99,22 @@ function make_cmd_function(url, data){
         });
     }
     return func
-
 }
-
 
 $("#btn_status_overview").click(make_cmd_function("{% url "mng.views.status" %}", {"cmd":"overview"}))
 $("#btn_status_conf").click(make_cmd_function("{% url "mng.views.status" %}", {"cmd":"conf"}))
 $("#btn_status_recentdata").click(make_cmd_function("{% url "mng.views.status" %}", {"cmd":"recentdata"}))
 
-$("#btn_datalog_app_start").click(make_cmd_function("{% url "datalog_app.views.manage" %}", {"cmd":"start"}))
-$("#btn_datalog_app_stop").click(make_cmd_function("{% url "datalog_app.views.manage" %}", {"cmd":"stop"}))
-$("#btn_datalog_app_status").click(make_cmd_function("{% url "datalog_app.views.manage" %}", {"cmd":"status"}))
-
-$("#btn_datasend_app_start").click(make_cmd_function("{% url "datasend_app.views.manage" %}", {"cmd":"start"}))
-$("#btn_datasend_app_stop").click(make_cmd_function("{% url "datasend_app.views.manage" %}", {"cmd":"stop"}))
-$("#btn_datasend_app_status").click(make_cmd_function("{% url "datasend_app.views.manage" %}", {"cmd":"status"}))
-
+{% with app_list='datalog_app datasend_app gpio_app camstream_app' cmd_list='start stop status' %}
+    {% for app in app_list.split %}
+        {% for cmd in cmd_list.split %}
+            $("#btn_{{app}}_{{cmd}}").click(make_cmd_function("{% url "mng.views.manage" %}", {"app":"{{app}}", "cmd":"{{cmd}}"}))
+        {% endfor %}
+    {% endfor %}
+{% endwith %}
 
 </script>
+
 <style>
 .key{
     color:blue

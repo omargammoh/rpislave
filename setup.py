@@ -29,7 +29,7 @@ def setup_autologin():
     # replaces a line in a file
 
     filepath=r"/etc/inittab"
-    linetocomment = "1:2345:respawn:/sbin/getty "
+    linetocomment = "1:2345:respawn:/sbin/getty --noclear 38400 tty1"
     linetoappend = "1:2345:respawn:/bin/login -f pi tty1 </dev/tty1 >/dev/tty1 2>&1"
 
     f = file(filepath, "r")

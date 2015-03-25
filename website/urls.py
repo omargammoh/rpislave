@@ -13,6 +13,8 @@ urlpatterns = patterns('',
     url(r'^status/$', mng.views.status),
     url(r'^admin/', include(admin.site.urls)),
 
+    url(r'^mng/$', mng.views.manage),
+
     url(r'^datalog_app/$', datalog_app.views.manage),
     url(r'^datalog_app/home$', datalog_app.views.home),
     url(r'^datasend_app/$', datasend_app.views.manage),

@@ -9,7 +9,18 @@
     </div>
     <br>
     <hr>
-    <p id="p_jsresponse">...</p>
+    <table style="width:100%">
+        {% for gpio in gpio_list %}
+            <tr>
+                <td>{{ gpio.pin }}</td>
+                <td>{{ gpio.io }}</td>
+                <td>{{ gpio.status }}</td>
+                <td><button id="btn_gpio_app_{{ gpio.pin }}_toggle">toggle</button></td>
+                <td><button id="btn_gpio_app_{{ gpio.pin }}_refresh">refresh</button></td>
+            </tr>
+        {% endfor %}
+    </table>
+
 </div>
 
 {% endblock %}
@@ -20,14 +31,6 @@
 <script>
 
 </script>
-<style>
-.key{
-    color:blue
-}
-.string{
-    color:green;
-}
-</style>
 {% endblock %}
 
 

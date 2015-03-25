@@ -7,7 +7,8 @@ from django.template import RequestContext
 from django.http import HttpResponse
 
 def home(request, template_name='gpio_app/home.html'):
-    return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    gpio_list = [{"pin":i, "io":"input", "status":"HIGH"} for i in range(5)]
+    return render_to_response(template_name, {"gpio_list":gpio_list }, context_instance=RequestContext(request))
 
 
 import numpy as np

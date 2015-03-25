@@ -9,16 +9,6 @@ from django.http import HttpResponse
 def home(request, template_name='gpio_app/home.html'):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
 
-def manage(request):
-    try:
-        mp = MP(name='gpio_app', target=gpio_app.process.main, request=request)
-        mp.process_command()
-        dic = json.dumps(mp.dic)
-    except:
-        err = traceback.format_exc()
-        dic = json.dumps({"error": err})
-    return HttpResponse(dic, content_type='application/json')
-
 
 import numpy as np
 import os, django
@@ -39,14 +29,14 @@ except:
     print "!!!no RPI.GPIO module"
 
 
-
-# Discharge capacitor
-GPIO.setup(gpio_pin, GPIO.OUT)
-GPIO.output(gpio_pin, GPIO.LOW)
-sleep(2.)
-# Count loops until voltage across
-# capacitor reads high on GPIO
-i = 0
-GPIO.setup(gpio_pin, GPIO.IN)
-t0 = time()
-while (GPIO.input(gpio_pin) == GPIO.LOW):
+if False:
+    # Discharge capacitor
+    GPIO.setup(gpio_pin, GPIO.OUT)
+    GPIO.output(gpio_pin, GPIO.LOW)
+    sleep(2.)
+    # Count loops until voltage across
+    # capacitor reads high on GPIO
+    i = 0
+    GPIO.setup(gpio_pin, GPIO.IN)
+    t0 = time()
+    (GPIO.input(gpio_pin) == GPIO.LOW)

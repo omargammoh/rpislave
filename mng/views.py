@@ -11,17 +11,13 @@ from django.conf import settings
 import traceback
 import mng.processing
 from mng.processing import MP
+import importlib
 
-import datalog_app.process
-import datasend_app.process
-import gpio_app.process
-import camstream_app.process
 
 def home(request, template_name='home.html'):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
 
 def status(request):
-
     try:
         cmd = request.GET.get("cmd",None)
         dic = {}
@@ -34,9 +30,7 @@ def status(request):
             dic['configuration label'] = settings.CONF_LABEL
 
         if cmd == "recentdata":
-            #dic["the last 5 datalog_apped stamps in local DB"] = [{'data':json_util.loads(ob.data), 'meta':json_util.loads(ob.meta)} for ob in Reading.objects.all().order_by('-id')[:5]]
             dic["the last 20 recorded stamps in local DB"] = [str({'data':json_util.loads(ob.data), 'meta':json_util.loads(ob.meta)}) for ob in Reading.objects.all().order_by('-id')[:20]]
-            #dic["the last 5 recorded stamps in local DB"] = [('data=' + ob.data + "    meta=" + ob.meta) for ob in Reading.objects.all().order_by('-id')[:5]]
         jdic= json_util.dumps(dic)
     except:
         err = traceback.format_exc()
@@ -44,18 +38,23 @@ def status(request):
 
     return HttpResponse(jdic, content_type='application/json')
 
-
-def manage(request):
-    print request
+def apphome(request):
     try:
-        app = request.GET['app']
-        if app == "datalog_app": target = datalog_app.process.main
-        elif app == "datasend_app": target = datasend_app.process.main
-        elif app == "gpio_app": target = gpio_app.process.main
-        elif app == "camstream_app": target = camstream_app.process.main
-        else: raise BaseException('unknown app %s' %app)
+        m = importlib.import_module("%s.views" %request.GET['app'])
+        res = m.home(request)
+        print "yyyyyyyyyyyessss"
+        return res
+    except:
+        print 'noooooo'
+        template_name = 'nohome.html'
+        return render_to_response(template_name, {}, context_instance=RequestContext(request))
 
-        mp = MP(name=app, target=target, request=request)
+def appmanage(request):
+    try:
+        m = importlib.import_module("%s.process" %request.GET['app'])
+        target = m.main
+
+        mp = MP(name=request.GET['app'], target=target, request=request)
         mp.process_command()
         dic = json.dumps(mp.dic)
     except:

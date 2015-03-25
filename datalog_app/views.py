@@ -1,22 +1,5 @@
-from mng.processing import MP
-import datalog_app.process
-import traceback
-import json
-
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.http import HttpResponse
-
 
 def home(request, template_name='datalog_app/home.html'):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
-
-def manage(request):
-    try:
-        mp = MP(name='datalog_app', target=datalog_app.process.main, request=request)
-        mp.process_command()
-        dic = json.dumps(mp.dic)
-    except:
-        err = traceback.format_exc()
-        dic = json.dumps({"error": err})
-    return HttpResponse(dic, content_type='application/json')

@@ -3,7 +3,7 @@ from django.contrib import admin
 import website.settings
 
 import website.views
-
+import traceback
 
 patterns_tup = ('',
     #website's urls
@@ -25,7 +25,7 @@ for app in website.settings.RPI_APPS:
         patterns_tup = patterns_tup + (toadd,)
         print "added %s" % app
     except:
-        toadd = url(r'^%s/' %app, website.views.nourls)
+        toadd = url(r'^%s/' %app, website.views.nourls(traceback.format_exc()))
         patterns_tup = patterns_tup + (toadd,)
         print '!!could not include urls from the app %s' % (app)
 

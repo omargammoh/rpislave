@@ -4,4 +4,5 @@ from datalog_app import views
 
 urlpatterns = patterns('',
     url(r'^home/$', views.home),
+    url(r'^recentdata/$', views.recentdata),
     )

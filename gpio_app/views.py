@@ -1,5 +1,4 @@
 from website.processing import _get_conf
-import gpio_app.process
 import json
 
 from django.shortcuts import render_to_response
@@ -7,15 +6,32 @@ from django.template import RequestContext
 from django.http import HttpResponse
 from datetime import datetime
 
-gpio_pins = sorted(set([4,16,27,23,22,24,25,5,6,12,13,19,4,26,20,21]))
+try:
+    import RPi.GPIO as GPIO
+    GPIO.setmode(GPIO.BOARD)
+except:
+    print "!!could not import RPi.GPIO"
 
-pins_conf = _get_conf()['apps']['gpio_app']['pins_conf']
+def detect_iou(pin):
+    try:
+        v = GPIO.input(pin)
+        try:
+            GPIO.output(pin, v)
+            return "output"
+        except:
+            return "input"
+    except:
+        return "unset"
+
 
 def home(request, template_name='gpio_app/home.html'):
+    pins_conf = _get_conf()['apps']['gpio_app']['pins_conf']
     rev = {cf["pin"]: {"label": label, "desc": cf['desc']} for (label, cf) in pins_conf.iteritems()}
+    gpio_pins = sorted(set([4,16,27,23,22,24,25,5,6,12,13,19,4,26,20,21]))
+
     gpio_list = []
     for pin in gpio_pins:
-        d = {}
+        d = {"pin": pin}
 
         try: d["label"] = rev[pin]['label']
         except: d["label"] = "-"
@@ -23,7 +39,11 @@ def home(request, template_name='gpio_app/home.html'):
         try: d["desc"] = rev[pin]['desc']
         except: d["desc"] = "-"
 
-        d.update({"pin": pin, "iou": ["input", 'output', 'unset'][pin % 3], "status": "HIGH"})
+        d['iou'] = detect_iou(pin)
+
+        if d['iou'] != "unset":
+            d['lowhigh'] = GPIO.input(gpio_pin)
+
         gpio_list.append(d)
     return render_to_response(template_name, {"gpio_list":gpio_list }, context_instance=RequestContext(request))
 
@@ -78,33 +98,24 @@ def pins(request):
 
 
 
-
-
-
-
-import numpy as np
-import os, django
-from datetime import datetime, timedelta
-from time import sleep, time
-import traceback
-from bson import json_util
-
-try:
-    import RPi.GPIO as GPIO
-    GPIO.setmode(GPIO.BCM)
-except:
-    print "!!!no RPI.GPIO module"
-
-
 if False:
-    # Discharge capacitor
+
+
+    import RPi.GPIO as GPIO
+    GPIO.setmode(GPIO.BOARD)
+
+    gpio_pin = 11
+    GPIO.input(gpio_pin) == GPIO.LOW
+
+    GPIO.setup(gpio_pin, GPIO.IN)
+
     GPIO.setup(gpio_pin, GPIO.OUT)
-    GPIO.output(gpio_pin, GPIO.LOW)
+    GPIO.output(gpio_pin, GPIO.input(gpio_pin))
+    # Discharge capacitor
     sleep(2.)
     # Count loops until voltage across
     # capacitor reads high on GPIO
     i = 0
-    GPIO.setup(gpio_pin, GPIO.IN)
     t0 = time()
     (GPIO.input(gpio_pin) == GPIO.LOW)
 

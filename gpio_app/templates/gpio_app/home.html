@@ -22,7 +22,7 @@
                     <td>{{ gpio.pin }}</td>
                     <td>{{ gpio.label }}</td>
                     <td>{{ gpio.iou }}</td>
-                    <td class="lowhigh">{{ gpio.status }}</td>
+                    <td class="lowhigh">{{ gpio.lowhigh }}</td>
                     <td><button id="btn_{{ gpio.pin }}_unset">unset</button></td>
                     <td><button id="btn_{{ gpio.pin }}_refresh">refresh</button></td>
                     <td class="msg">...</td>
@@ -49,7 +49,7 @@
                     <td>{{ gpio.pin }}</td>
                     <td>{{ gpio.label }}</td>
                     <td>{{ gpio.iou }}</td>
-                    <td class="lowhigh">{{ gpio.status }}</td>
+                    <td class="lowhigh">{{ gpio.lowhigh }}</td>
                     <td><button id="btn_{{ gpio.pin }}_unset">unset</button></td>
                     <td><button id="btn_{{ gpio.pin }}_refresh">refresh</button></td>
                     <td><button id="btn_{{ gpio.pin }}_setlow">set low</button></td>

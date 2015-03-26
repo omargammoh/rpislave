@@ -4,8 +4,7 @@
 <div>
     <div>
         <h2>welcome to RECORD home</h2>
-        <button type="button" id="">see recent data</button>
-        <button type="button" id="">do somthing else</button>
+        <button type="button" id="btn_recentdata">see recent data</button>
     </div>
     <br>
     <hr>
@@ -15,19 +14,41 @@
 {% endblock %}
 
 {% block sidebar %}
-{%comment%}scripts put in the side bar block, but this is just a workaround to get the scripts working{%endcomment%}
 
 <script>
 
+
+function func(){
+    var btn =  $(this)
+    btn.prop('disabled', true);
+    var url = "{% url "datalog_app.views.recentdata" %}"
+    $.ajax({
+        url: url,
+        success: function (data, textStatus, jqXHR) {
+            if ('error' in data) {
+                alert("server error for " + url + data['error'])
+            }
+            d = data
+            var p_update = $('#p_jsresponse')
+            var s = JSON.stringify(data, undefined, 4).replace(/(?: )/g, '&nbsp;').replace(/(?:\r\n|\r|\n)/g, '<br />');
+            p_update.html("<pre><code>" + s + "</code></pre>")
+            btn.prop('disabled', false);
+
+        },
+        error: function (err) {
+            e = err
+            alert("ajax error for " + url + " error = " + err)
+            btn.prop('disabled', false);
+        }
+
+    });
+}
+
+
+
+$("#btn_recentdata").click(func)
 </script>
-<style>
-.key{
-    color:blue
-}
-.string{
-    color:green;
-}
-</style>
+{%comment%}scripts put in the side bar block, but this is just a workaround to get the scripts working{%endcomment%}
 {% endblock %}
 
 

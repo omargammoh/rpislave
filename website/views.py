@@ -18,8 +18,10 @@ def home(request, template_name='home.html'):
     print app_list
     return render_to_response(template_name, {"app_list": app_list}, context_instance=RequestContext(request))
 
-def nourls(request, template_name='nourls.html'):
-    return render_to_response(template_name, context_instance=RequestContext(request))
+def nourls(why):
+    def nourls(request, template_name='nourls.html'):
+        return render_to_response(template_name,{"why": why}, context_instance=RequestContext(request))
+    return nourls
 
 
 def status(request):

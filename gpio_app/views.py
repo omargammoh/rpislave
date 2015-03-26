@@ -6,31 +6,46 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse
 from datetime import datetime
-gpio_pins = sorted(set([4,16,27,23,22,24,25,5,6,12,13,19,4,26,20,21]))
-def home(request, template_name='gpio_app/home.html'):
-    gpio_list = [{"pin":i, "io":["input", 'output'][i%2], "status":"HIGH"} for i in gpio_pins]
-    return render_to_response(template_name, {"gpio_list":gpio_list }, context_instance=RequestContext(request))
 
+gpio_pins = sorted(set([4,16,27,23,22,24,25,5,6,12,13,19,4,26,20,21]))
+
+pins_conf = _get_conf()['apps']['gpio_app']['pins_conf']
+
+def home(request, template_name='gpio_app/home.html'):
+    rev = {cf["pin"]: {"label": label, "desc": cf['desc']} for (label, cf) in pins_conf.iteritems()}
+    gpio_list = []
+    for pin in gpio_pins:
+        d = {}
+
+        try: d["label"] = rev[pin]['label']
+        except: d["label"] = "-"
+
+        try: d["desc"] = rev[pin]['desc']
+        except: d["desc"] = "-"
+
+        d.update({"pin": pin, "iou": ["input", 'output', 'unset'][pin % 3], "status": "HIGH"})
+        gpio_list.append(d)
+    return render_to_response(template_name, {"gpio_list":gpio_list }, context_instance=RequestContext(request))
 
 
 def pins(request):
     try:
-        inout = request.GET["inout"]
+        iou = request.GET["iou"]
         cmd = request.GET["cmd"]
         pin = request.GET["pin"]
         lowhigh = request.GET.get("lowhigh", None)
         dic = {"msg":"x"}
 
-        if inout == "in":
-            if cmd == "setasoutput":
+        if iou == "in":
+            if cmd == "unset":
                 pass
             elif cmd == "refresh":
                 pass
             else:
-                raise BaseException('unknown cmd %s for %s' %(cmd,inout))
+                raise BaseException('unknown cmd %s for %s' %(cmd,iou))
 
-        elif inout == "out":
-            if cmd == "setasinput":
+        elif iou == "out":
+            if cmd == "unset":
                 pass
             elif cmd == "refresh":
                 pass
@@ -39,12 +54,20 @@ def pins(request):
             elif cmd == "setlow":
                 pass
             else:
-                raise BaseException('unknown cmd %s for %s' %(cmd,inout))
+                raise BaseException('unknown cmd %s for %s' %(cmd, iou))
+
+        elif iou == "unset":
+            if cmd == "setasinput":
+                pass
+            elif cmd == "setasoutput":
+                pass
+            else:
+                raise BaseException('unknown cmd %s for %s' %(cmd, iou))
 
         else:
             raise BaseException('inout should be either in or out')
 
-        dic['msg'] = "done, inout %s pin %s cmd %s" %(inout, pin, cmd)
+        dic['msg'] = "done, inout %s pin %s cmd %s" %(iou, pin, cmd)
         dic['lowhigh'] = ["high", "low"][datetime.now().minute%2]
         jdic= json_util.dumps(dic)
     except:
@@ -65,11 +88,6 @@ from datetime import datetime, timedelta
 from time import sleep, time
 import traceback
 from bson import json_util
-
-
-def _Vs(Vth, t, RC, Rratio):
-    ret = Vth / (1 + (Rratio - 1.) * np.exp( -1. * t / RC))
-    return ret
 
 try:
     import RPi.GPIO as GPIO

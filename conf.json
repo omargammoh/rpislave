@@ -1,6 +1,6 @@
 {
     "label": "example",
-    "desc": "bla bla bla",
+    "desc": "this is an example configuration which demonstrates how different apps can be configured",
     "autostart": ["datalog_app", "datasend_app"],
     "network": {
         "wifi_name": "name of your wifi network",
@@ -82,6 +82,30 @@
             "mongo_address": "mongodb://pylog485:pylog485@ds031627.mongolab.com:31627/public"
         },
         "gpio_app": {
+            "pins_conf": {
+               "tv": {
+                   "pin": 4,
+                   "iou": "out",
+                   "desc": "television control",
+                   "start": "high"
+               },
+               "aircondition": {
+                   "pin": 6,
+                   "iou": "out",
+                   "desc": "aircondition control",
+                   "start": "low"
+               },
+               "light": {
+                   "pin": 16,
+                   "iou": "in",
+                   "desc": "high if light is more than 200W/m2"
+               },
+               "temperature": {
+                   "pin": 22,
+                   "iou": "in",
+                   "desc": "high if temperature is more than 20 degrees C"
+               }
+            }
         },
         "camstream_app": {
         }

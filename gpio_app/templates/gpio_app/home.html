@@ -11,18 +11,20 @@
     <h2>INPUT PINS</h2>
     <table style="width:100%">
         <col width="5%">
+        <col width="10%">
         <col width="5%">
         <col width="5%">
         <col width="10%">
         <col width="10%">
         <col>
         {% for gpio in gpio_list %}
-            {% if gpio.io == 'input' %}
+            {% if gpio.iou == 'input' %}
                 <tr>
                     <td>{{ gpio.pin }}</td>
-                    <td>{{ gpio.io }}</td>
+                    <td>{{ gpio.label }}</td>
+                    <td>{{ gpio.iou }}</td>
                     <td class="lowhigh">{{ gpio.status }}</td>
-                    <td><button id="btn_{{ gpio.pin }}_setasoutput">set as output</button></td>
+                    <td><button id="btn_{{ gpio.pin }}_unset">unset</button></td>
                     <td><button id="btn_{{ gpio.pin }}_refresh">refresh</button></td>
                     <td class="msg">...</td>
                 </tr>
@@ -34,6 +36,7 @@
     <h2>OUTPUT PINS</h2>
     <table style="width:100%">
         <col width="5%">
+        <col width="10%">
         <col width="5%">
         <col width="5%">
         <col width="10%">
@@ -42,15 +45,39 @@
         <col width="10%">
         <col>
         {% for gpio in gpio_list %}
-            {% if gpio.io == 'output' %}
+            {% if gpio.iou == 'output' %}
                 <tr>
                     <td>{{ gpio.pin }}</td>
-                    <td>{{ gpio.io }}</td>
+                    <td>{{ gpio.label }}</td>
+                    <td>{{ gpio.iou }}</td>
                     <td class="lowhigh">{{ gpio.status }}</td>
-                    <td><button id="btn_{{ gpio.pin }}_setasinput">set as input</button></td>
+                    <td><button id="btn_{{ gpio.pin }}_unset">unset</button></td>
                     <td><button id="btn_{{ gpio.pin }}_refresh">refresh</button></td>
                     <td><button id="btn_{{ gpio.pin }}_setlow">set low</button></td>
                     <td><button id="btn_{{ gpio.pin }}_sethigh">set high</button></td>
+                    <td class="msg">...</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+    <br>
+    <br>
+    <h2>UNSET PINS</h2>
+    <table style="width:100%">
+        <col width="5%">
+        <col width="10%">
+        <col width="5%">
+        <col width="10%">
+        <col width="10%">
+        <col>
+        {% for gpio in gpio_list %}
+            {% if gpio.iou == 'unset' %}
+                <tr>
+                    <td>{{ gpio.pin }}</td>
+                    <td>{{ gpio.label }}</td>
+                    <td>{{ gpio.iou }}</td>
+                    <td><button id="btn_{{ gpio.pin }}_setasinput">set as input</button></td>
+                    <td><button id="btn_{{ gpio.pin }}_setasoutput">set as output</button></td>
                     <td class="msg">...</td>
                 </tr>
             {% endif %}
@@ -104,17 +131,24 @@ function make_click_func(url, data){
 
 
 {% for gpio in gpio_list %}
-    {% if gpio.io == 'input' %}
-        {% with "refresh setasoutput" as list_cmd %}
+    {% if gpio.iou == 'input' %}
+        {% with "refresh unset" as list_cmd %}
             {% for cmd in list_cmd.split %}
-                $("#btn_{{ gpio.pin }}_{{ cmd }}").click(make_click_func("{% url "gpio_app.views.pins" %}", {"pin":{{ gpio.pin }}, "inout":"in", "cmd":"{{ cmd }}"}))
+                $("#btn_{{ gpio.pin }}_{{ cmd }}").click(make_click_func("{% url "gpio_app.views.pins" %}", {"pin":{{ gpio.pin }}, "iou":"in", "cmd":"{{ cmd }}"}))
             {% endfor %}
         {% endwith %}
     {% endif %}
-    {% if gpio.io == 'output' %}
-        {% with "setasinput refresh setlow sethigh" as list_cmd %}
+    {% if gpio.iou == 'output' %}
+        {% with "unset refresh setlow sethigh" as list_cmd %}
             {% for cmd in list_cmd.split %}
-                $("#btn_{{ gpio.pin }}_{{ cmd }}").click(make_click_func("{% url "gpio_app.views.pins" %}", {"pin":{{ gpio.pin }}, "inout":"out", "cmd":"{{ cmd }}"}))
+                $("#btn_{{ gpio.pin }}_{{ cmd }}").click(make_click_func("{% url "gpio_app.views.pins" %}", {"pin":{{ gpio.pin }}, "iou":"out", "cmd":"{{ cmd }}"}))
+            {% endfor %}
+        {% endwith %}
+    {% endif %}
+    {% if gpio.iou == 'unset' %}
+        {% with "setasinput setasoutput" as list_cmd %}
+            {% for cmd in list_cmd.split %}
+                $("#btn_{{ gpio.pin }}_{{ cmd }}").click(make_click_func("{% url "gpio_app.views.pins" %}", {"pin":{{ gpio.pin }}, "iou":"unset", "cmd":"{{ cmd }}"}))
             {% endfor %}
         {% endwith %}
     {% endif %}

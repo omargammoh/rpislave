@@ -15,8 +15,8 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
 
-    url(r'^mng/$', mng.views.appmanage),
-    url(r'^mng/apphome/$', mng.views.apphome),
+    url(r'^process/$', mng.views.appmanage),
+    url(r'^app-home/$', mng.views.apphome),
 
     url(r'^gpio_app/pins/$', gpio_app.views.pins),
 

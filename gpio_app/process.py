@@ -1,4 +1,5 @@
 from website.processing import _get_conf
+import traceback
 try:
     import RPi.GPIO as GPIO
     GPIO.setmode(GPIO.BOARD)
@@ -24,8 +25,10 @@ def main(pins_conf):
                 #TODO: find a way to unset a pin
                 pass
             else:
-                raise BaseException('')
+
+                raise BaseException('iou is not known %s' %conf["iou"] )
         except:
+            print traceback.format_exc()
             print "!!failed setting up pin %s" %label
 
     return None

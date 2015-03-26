@@ -85,24 +85,24 @@
             "pins_conf": {
                "tv": {
                    "pin": 4,
-                   "iou": "out",
+                   "iou": "output",
                    "desc": "television control",
                    "start": "high"
                },
                "aircondition": {
                    "pin": 6,
-                   "iou": "out",
+                   "iou": "output",
                    "desc": "aircondition control",
                    "start": "low"
                },
                "light": {
                    "pin": 16,
-                   "iou": "in",
+                   "iou": "input",
                    "desc": "high if light is more than 200W/m2"
                },
                "temperature": {
                    "pin": 22,
-                   "iou": "in",
+                   "iou": "input",
                    "desc": "high if temperature is more than 20 degrees C"
                }
             }

@@ -84,24 +84,24 @@
         "gpio_app": {
             "pins_conf": {
                "tv": {
-                   "pin": 4,
+                   "pin": 7,
                    "iou": "output",
                    "desc": "television control",
                    "start": "high"
                },
                "aircondition": {
-                   "pin": 6,
+                   "pin": 11,
                    "iou": "output",
                    "desc": "aircondition control",
                    "start": "low"
                },
                "light": {
-                   "pin": 16,
+                   "pin": 13,
                    "iou": "input",
                    "desc": "high if light is more than 200W/m2"
                },
                "temperature": {
-                   "pin": 22,
+                   "pin": 15,
                    "iou": "input",
                    "desc": "high if temperature is more than 20 degrees C"
                }

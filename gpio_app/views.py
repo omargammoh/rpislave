@@ -27,7 +27,7 @@ def detect_iou(pin):
 def home(request, template_name='gpio_app/home.html'):
     pins_conf = _get_conf()['apps']['gpio_app']['pins_conf']
     rev = {cf["pin"]: {"label": label, "desc": cf['desc']} for (label, cf) in pins_conf.iteritems()}
-    gpio_pins = sorted(set([4,16,27,23,22,24,25,5,6,12,13,19,4,26,20,21]))
+    gpio_pins = sorted(set([7,11,12,13,15,16,18,22,29,31,32,33,35,36,37,38,40]))
 
     gpio_list = []
     for pin in gpio_pins:
@@ -45,6 +45,7 @@ def home(request, template_name='gpio_app/home.html'):
             d['lowhigh'] = GPIO.input(gpio_pin)
 
         gpio_list.append(d)
+    print gpio_list
     return render_to_response(template_name, {"gpio_list":gpio_list }, context_instance=RequestContext(request))
 
 

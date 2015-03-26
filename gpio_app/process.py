@@ -8,6 +8,7 @@ except:
 
 
 def main(pins_conf):
+    print ""
     pins_conf = _get_conf()['apps']['gpio_app']['pins_conf']
     #gpio_pins = sorted(set([4,16,27,23,22,24,25,5,6,12,13,19,4,26,20,21]))
 
@@ -25,10 +26,10 @@ def main(pins_conf):
                 #TODO: find a way to unset a pin
                 pass
             else:
-
                 raise BaseException('iou is not known %s' %conf["iou"] )
+            print "succesfuly done %s" %conf
         except:
-            print traceback.format_exc()
             print "!!failed setting up pin %s" %label
+            print traceback.format_exc()
 
     return None

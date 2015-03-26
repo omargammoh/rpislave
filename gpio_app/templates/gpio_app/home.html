@@ -4,23 +4,62 @@
 <div>
     <div>
         <h2>welcome to GPIO_APP home</h2>
-        <button type="button" id="">view configuration</button>
-        <button type="button" id="">do somthing else</button>
+        <button type="button" id="">refresh all</button>
     </div>
     <br>
-    <hr>
+    <br>
+    <h2>INPUT PINS</h2>
     <table style="width:100%">
+        <col width="5%">
+        <col width="5%">
+        <col width="5%">
+        <col width="10%">
+        <col width="10%">
+        <col>
         {% for gpio in gpio_list %}
-            <tr>
-                <td>{{ gpio.pin }}</td>
-                <td>{{ gpio.io }}</td>
-                <td>{{ gpio.status }}</td>
-                <td><button id="btn_gpio_app_{{ gpio.pin }}_toggle">toggle</button></td>
-                <td><button id="btn_gpio_app_{{ gpio.pin }}_refresh">refresh</button></td>
-            </tr>
+            {% if gpio.io == 'input' %}
+                <tr>
+                    <td>{{ gpio.pin }}</td>
+                    <td>{{ gpio.io }}</td>
+                    <td class="lowhigh">{{ gpio.status }}</td>
+                    <td><button id="btn_{{ gpio.pin }}_setasoutput">set as output</button></td>
+                    <td><button id="btn_{{ gpio.pin }}_refresh">refresh</button></td>
+                    <td class="msg">...</td>
+                </tr>
+            {% endif %}
         {% endfor %}
     </table>
-
+    <br>
+    <br>
+    <h2>OUTPUT PINS</h2>
+    <table style="width:100%">
+        <col width="5%">
+        <col width="5%">
+        <col width="5%">
+        <col width="10%">
+        <col width="10%">
+        <col width="10%">
+        <col width="10%">
+        <col>
+        {% for gpio in gpio_list %}
+            {% if gpio.io == 'output' %}
+                <tr>
+                    <td>{{ gpio.pin }}</td>
+                    <td>{{ gpio.io }}</td>
+                    <td class="lowhigh">{{ gpio.status }}</td>
+                    <td><button id="btn_{{ gpio.pin }}_setasinput">set as input</button></td>
+                    <td><button id="btn_{{ gpio.pin }}_refresh">refresh</button></td>
+                    <td><button id="btn_{{ gpio.pin }}_setlow">set low</button></td>
+                    <td><button id="btn_{{ gpio.pin }}_sethigh">set high</button></td>
+                    <td class="msg">...</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+    <br>
+    <br>
+    <div id="p_log">
+    </div>
 </div>
 
 {% endblock %}
@@ -29,6 +68,57 @@
 {%comment%}scripts put in the side bar block, but this is just a workaround to get the scripts working{%endcomment%}
 
 <script>
+
+function make_click_func(url, data){
+    function func(){
+        var btn =  $(this)
+        btn.prop('disabled', true);
+
+        $.ajax({
+            url: url,
+            data: data,
+            success: function (data, textStatus, jqXHR) {
+                if ('error' in data) {
+                    alert("server error for " + url + data['error'])
+                }
+                d=data
+                btn.prop('disabled', false);
+                btn.parent().parent().find('.msg').html(d["msg"]);
+                btn.parent().parent().find('.lowhigh').html(d["lowhigh"]);
+
+                var log = document.createElement('p');
+                log.innerHTML = d["msg"];
+                $("#p_log")[0].appendChild( log )
+
+            },
+            error: function (err) {
+                e = err
+                alert("ajax error for " + url + " error = " + err)
+                btn.prop('disabled', false);
+            }
+
+        });
+    }
+    return func
+}
+
+
+{% for gpio in gpio_list %}
+    {% if gpio.io == 'input' %}
+        {% with "refresh setasoutput" as list_cmd %}
+            {% for cmd in list_cmd.split %}
+                $("#btn_{{ gpio.pin }}_{{ cmd }}").click(make_click_func("{% url "gpio_app.views.pins" %}", {"pin":{{ gpio.pin }}, "inout":"in", "cmd":"{{ cmd }}"}))
+            {% endfor %}
+        {% endwith %}
+    {% endif %}
+    {% if gpio.io == 'output' %}
+        {% with "setasinput refresh setlow sethigh" as list_cmd %}
+            {% for cmd in list_cmd.split %}
+                $("#btn_{{ gpio.pin }}_{{ cmd }}").click(make_click_func("{% url "gpio_app.views.pins" %}", {"pin":{{ gpio.pin }}, "inout":"out", "cmd":"{{ cmd }}"}))
+            {% endfor %}
+        {% endwith %}
+    {% endif %}
+{% endfor %}
 
 </script>
 {% endblock %}

@@ -1,4 +1,4 @@
-from mng.processing import MP, _get_conf
+from website.processing import _get_conf
 import gpio_app.process
 import json
 

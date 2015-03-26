@@ -1,5 +1,5 @@
 from django.contrib import admin
-from mng.models import Conf
+from website.models import Conf
 
 class ConfAdmin(admin.ModelAdmin):
     list_display = ('data', 'meta')

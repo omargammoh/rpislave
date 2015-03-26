@@ -8,8 +8,8 @@ from datalog_app.models import Reading
 from datetime import datetime
 from django.conf import settings
 import traceback
-import mng.processing
-from mng.processing import MP, _get_conf
+import website.processing
+from website.processing import MP, _get_conf
 import importlib
 
 
@@ -18,13 +18,16 @@ def home(request, template_name='home.html'):
     print app_list
     return render_to_response(template_name, {"app_list": app_list}, context_instance=RequestContext(request))
 
+def nourls(request, template_name='nourls.html'):
+    return render_to_response(template_name, context_instance=RequestContext(request))
+
 
 def status(request):
     try:
         cmd = request.GET.get("cmd",None)
         dic = {}
         if cmd == "conf":
-            dic['conf'] = mng.processing._get_conf()
+            dic['conf'] = website.processing._get_conf()
         if cmd == "overview":
             dic['this process'] = multiprocessing.current_process().name
             dic['active child processes'] = [m.name for m in  multiprocessing.active_children()]

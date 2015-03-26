@@ -36,7 +36,6 @@
         <p id="p_jsresponse">...</p>
         <h2> <<  </h2>
     </div>
-    <a href="/gpio_app/home"><button>app's home</button></a>
 
 </div>
 
@@ -107,14 +106,14 @@ function make_cmd_function(url, data){
     return func
 }
 
-$("#btn_status_overview").click(make_cmd_function("{% url "mng.views.status" %}", {"cmd":"overview"}))
-$("#btn_status_conf").click(make_cmd_function("{% url "mng.views.status" %}", {"cmd":"conf"}))
-$("#btn_status_recentdata").click(make_cmd_function("{% url "mng.views.status" %}", {"cmd":"recentdata"}))
+$("#btn_status_overview").click(make_cmd_function("{% url "website.views.status" %}", {"cmd":"overview"}))
+$("#btn_status_conf").click(make_cmd_function("{% url "website.views.status" %}", {"cmd":"conf"}))
+$("#btn_status_recentdata").click(make_cmd_function("{% url "website.views.status" %}", {"cmd":"recentdata"}))
 
 {% with cmd_list='start stop status' %}
     {% for app in app_list %}
         {% for cmd in cmd_list.split %}
-            $("#btn_{{app}}_{{cmd}}").click(make_cmd_function("{% url "mng.views.appmanage" %}", {"app":"{{app}}", "cmd":"{{cmd}}"}))
+            $("#btn_{{app}}_{{cmd}}").click(make_cmd_function("{% url "website.views.appmanage" %}", {"app":"{{app}}", "cmd":"{{cmd}}"}))
         {% endfor %}
     {% endfor %}
 {% endwith %}

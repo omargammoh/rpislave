@@ -1,6 +1,6 @@
 from bson import json_util
 import multiprocessing
-from mng.models import Conf
+from website.models import Conf
 from django.conf import settings
 from time import time, sleep
 
@@ -50,7 +50,7 @@ class MP():
 
     def process_command(self):
         lis = []
-        lis.append('provided GET parameters are %s' %json_util.dumps(self.request.GET if self.request else None))
+
         print "%s conf = %s" %(self.name, self.conf_label)
         ison_at_start = self.ison()
 
@@ -70,7 +70,8 @@ class MP():
                 lis.append('process was not running')
 
         elif self.cmd == 'status':
-            self.dic["%s process configuration" %self.name] = _get_conf()['apps'][self.name]
+            self.dic["%s" %self.name] = _get_conf()['apps'][self.name]
+
         else:
             lis.append("we didnt understand your cmd")
 

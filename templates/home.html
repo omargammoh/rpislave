@@ -25,7 +25,7 @@
                     <td><button type="button" id="btn_{{app}}_start">Start</button></td>
                     <td><button type="button" id="btn_{{app}}_stop">Stop</button></td>
                     <td><button type="button" id="btn_{{app}}_status">Status</button></td>
-                    <td><a href="/app-home?app={{app}}"><button>app's home</button></a></td>
+                    <td><a href="/{{app}}/home"><button>app's home</button></a></td>
                 </tr>
             {% endfor %}
         </table>
@@ -36,6 +36,8 @@
         <p id="p_jsresponse">...</p>
         <h2> <<  </h2>
     </div>
+    <a href="/gpio_app/home"><button>app's home</button></a>
+
 </div>
 
 {% endblock %}

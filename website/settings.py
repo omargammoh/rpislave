@@ -29,6 +29,13 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+RPI_APPS = (
+    'datalog_app',
+    'datasend_app',
+    'gpio_app',
+    'camstream_app',
+)
+
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,11 +44,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mng',
-    'datalog_app',
-    'datasend_app',
-    'gpio_app',
-    'camstream_app',
-)
+) + RPI_APPS
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

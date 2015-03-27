@@ -23,11 +23,11 @@ def home(request, template_name='gpio_app/home.html'):
         try: d["desc"] = rev[pin]['desc']
         except: d["desc"] = "-"
 
-        d['iou'] = get_para(pin_bcm=pin_bcm, para="direction")
+        try: d['iou'] = get_para(pin_bcm=pin_bcm, para="direction")
+        except: d['iou'] = "unset"
 
-        if d['iou'] != "unset":
-            d['lowhigh'] = get_para(pin_bcm=pin_bcm, para="value")
-
+        if d['iou'] != "unset": d['lowhigh'] = get_para(pin_bcm=pin_bcm, para="value")
+        else: d['lowhigh'] = "x"
         gpio_list.append(d)
     print gpio_list
     return render_to_response(template_name, {"gpio_list":gpio_list }, context_instance=RequestContext(request))
@@ -68,7 +68,7 @@ def pins(request):
             elif cmd == "refresh":
                 pass #the variables are updates later on anyway
             elif cmd == "sethigh":
-                set_para(pin_bcm=pin_bcm, para="value", value="0")
+                set_para(pin_bcm=pin_bcm, para="value", value="1")
             elif cmd == "setlow":
                 set_para(pin_bcm=pin_bcm, para="value", value="0")
             else:

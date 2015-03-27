@@ -4,8 +4,7 @@
 
 
 <div>
-    <div style="width: 50%; float:left; ">
-        <hr>
+    <div style="width: 60%; float:left; ">
         <div>
             <h2>STATUS</h2>
             <button type="button" id="btn_status_overview">Overview</button>
@@ -14,14 +13,11 @@
         </div>
         <br>
         <br>
-        <hr>
-
         <h2>APPS</h2>
-        <br>
         <table style="width:100%">
             {% for app in app_list %}
                 <tr>
-                    <td><h2>{{ app }}</h2></td>
+                    <td><h3>{{ app }}</h3></td>
                     <td><button type="button" id="btn_{{app}}_start">Start</button></td>
                     <td><button type="button" id="btn_{{app}}_stop">Stop</button></td>
                     <td><button type="button" id="btn_{{app}}_status">Status</button></td>
@@ -29,9 +25,8 @@
                 </tr>
             {% endfor %}
         </table>
-        <hr>
     </div>
-    <div style="width: 50%; float:left; ">
+    <div style="width: 40%; float:left; ">
         <h2> >>  </h2>
         <p id="p_jsresponse">...</p>
         <h2> <<  </h2>
@@ -121,12 +116,6 @@ $("#btn_status_recentdata").click(make_cmd_function("{% url "website.views.statu
 </script>
 
 <style>
-.key{
-    color:blue
-}
-.string{
-    color:green;
-}
 
 hr {
     border: none;

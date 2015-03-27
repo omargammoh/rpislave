@@ -105,9 +105,10 @@ function make_click_func(url, data){
             data: data,
             success: function (data, textStatus, jqXHR) {
                 if ('error' in data) {
+                    btn.parent().parent().find('.msg').html("server error: " + d["error"]);
                     alert("server error for " + url + data['error'])
                 }
-                d=data
+                var d = data
                 btn.prop('disabled', false);
                 btn.parent().parent().find('.msg').html(d["msg"]);
                 btn.parent().parent().find('.lowhigh').html(d["lowhigh"]);
@@ -119,6 +120,7 @@ function make_click_func(url, data){
             },
             error: function (err) {
                 e = err
+                btn.parent().parent().find('.msg').html("ajax error");
                 alert("ajax error for " + url + " error = " + err)
                 btn.prop('disabled', false);
             }

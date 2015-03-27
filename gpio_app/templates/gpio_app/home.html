@@ -7,31 +7,6 @@
     </div>
     <br>
     <br>
-    <h2>INPUT PINS</h2>
-    <table style="width:100%">
-        <col width="5%">
-        <col width="10%">
-        <col width="5%">
-        <col width="5%">
-        <col width="10%">
-        <col width="10%">
-        <col>
-        {% for gpio in gpio_list %}
-            {% if gpio.iou == 'in' %}
-                <tr>
-                    <td>{{ gpio.pin }}</td>
-                    <td>{{ gpio.label }}</td>
-                    <td>{{ gpio.iou }}</td>
-                    <td class="lowhigh">{{ gpio.lowhigh }}</td>
-                    <td><button id="btn_{{ gpio.pin }}_unset">unset</button></td>
-                    <td><button id="btn_{{ gpio.pin }}_refresh">refresh</button></td>
-                    <td class="msg">...</td>
-                </tr>
-            {% endif %}
-        {% endfor %}
-    </table>
-    <br>
-    <br>
     <h2>OUTPUT PINS</h2>
     <table style="width:100%">
         <col width="5%">
@@ -54,6 +29,31 @@
                     <td><button id="btn_{{ gpio.pin }}_refresh">refresh</button></td>
                     <td><button id="btn_{{ gpio.pin }}_setlow">set low</button></td>
                     <td><button id="btn_{{ gpio.pin }}_sethigh">set high</button></td>
+                    <td class="msg">...</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+    <br>
+    <br>
+    <h2>INPUT PINS</h2>
+    <table style="width:100%">
+        <col width="5%">
+        <col width="10%">
+        <col width="5%">
+        <col width="5%">
+        <col width="10%">
+        <col width="10%">
+        <col>
+        {% for gpio in gpio_list %}
+            {% if gpio.iou == 'in' %}
+                <tr>
+                    <td>{{ gpio.pin }}</td>
+                    <td>{{ gpio.label }}</td>
+                    <td>{{ gpio.iou }}</td>
+                    <td class="lowhigh">{{ gpio.lowhigh }}</td>
+                    <td><button id="btn_{{ gpio.pin }}_unset">unset</button></td>
+                    <td><button id="btn_{{ gpio.pin }}_refresh">refresh</button></td>
                     <td class="msg">...</td>
                 </tr>
             {% endif %}
@@ -130,14 +130,14 @@ function make_click_func(url, data){
 
 
 {% for gpio in gpio_list %}
-    {% if gpio.iou == 'input' %}
+    {% if gpio.iou == 'in' %}
         {% with "refresh unset" as list_cmd %}
             {% for cmd in list_cmd.split %}
                 $("#btn_{{ gpio.pin }}_{{ cmd }}").click(make_click_func("{% url "gpio_app.views.pins" %}", {"pin":{{ gpio.pin }}, "iou":"in", "cmd":"{{ cmd }}"}))
             {% endfor %}
         {% endwith %}
     {% endif %}
-    {% if gpio.iou == 'output' %}
+    {% if gpio.iou == 'out' %}
         {% with "unset refresh setlow sethigh" as list_cmd %}
             {% for cmd in list_cmd.split %}
                 $("#btn_{{ gpio.pin }}_{{ cmd }}").click(make_click_func("{% url "gpio_app.views.pins" %}", {"pin":{{ gpio.pin }}, "iou":"out", "cmd":"{{ cmd }}"}))

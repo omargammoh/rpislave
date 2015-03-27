@@ -22,14 +22,21 @@ def set_para(pin_bcm, para, value):
     except:
         raise BaseException("Error setting parameter %s to %s" %(para,pin_bcm))
 
+def export(pin_bcm):
+    cmd = "echo %s > /sys/class/gpio/export" %pin_bcm
+    subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
+    print cmd
+
+def unexport(pin_bcm):
+    cmd = "echo %s > /sys/class/gpio/unexport" %pin_bcm
+    subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
+    print cmd
 
 def main(pins_conf):
 
     print ""
     for bcmpin in board_bmc.values():
-        cmd = "echo %s > /sys/class/gpio/export" %bcmpin
-        subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
-        print cmd
+        export(bcmpin)
 
     pins_conf = _get_conf()['apps']['gpio_app']['pins_conf']
 

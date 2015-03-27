@@ -34,6 +34,7 @@ RPI_APPS = (
     'datasend_app',
     'gpio_app',
     'camstream_app',
+    'camshoot_app',
 )
 
 INSTALLED_APPS = (

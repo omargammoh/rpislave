@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+    <div>
+        <h2>welcome to CAMSHOOT home</h2><i>take snap shots with the camera</i>
+    </div>
+
+    <button type="button" id="btn_snapshot">get snap shot</button>
+
+    <div>
+        <img class="chart1" src="#" style="width:100%">
+    </div>
+
+    <br>
+    <hr>
+    <p id="p_jsresponse">...</p>
+</div>
+
+{% endblock %}
+
+{% block sidebar %}
+
+<script>
+function func(){
+    var btn =  $(this)
+    btn.prop('disabled', true);
+    var url = "{% url "camshoot_app.views.snapshot" %}"
+    $.ajax({
+        url: url,
+        success: function (data, textStatus, jqXHR) {
+            if ('error' in data) {
+                p_update.html(data["error"])
+                alert("server error %s" %data)
+            }
+
+
+            $(".chart1").attr("src", data['image']);
+
+            btn.prop('disabled', false);
+
+        },
+        error: function (err) {
+            e = err
+            alert("ajax error for " + url + " error = " + err)
+            btn.prop('disabled', false);
+        }
+
+    });
+}
+
+
+
+$("#btn_snapshot").click(func)
+</script>
+{%comment%}scripts put in the side bar block, but this is just a workaround to get the scripts working{%endcomment%}
+{% endblock %}
+
+
+
+

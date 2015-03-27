@@ -1,4 +1,6 @@
 import os
+import importlib
+from website.processing import _get_conf, MP
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 
 import traceback
@@ -10,23 +12,17 @@ try:
     ac = [m.name for m in multiprocessing.active_children()]
     print 'processes before: %s' %ac
 
-    import website.processing
-    conf = website.processing._get_conf()
-    print "autostart %s" %conf["autostart"]
+    conf = _get_conf()
 
-    import datalog_app.process
-    import datasend_app.process
-
-
-    for ps_name in conf["autostart"]:
+    for (ps_name,conf) in conf["apps"].iteritems():
         try:
-            if ps_name == "datalog_app": target = datalog_app.process.main
-            elif ps_name == "datasend_app": target = datasend_app.process.main
-            else: raise BaseException('dont know how to autostart this process %s' %ps_name)
-            if not (ps_name in ac):
-                print 'initializing %s' %ps_name
-                p_rec = website.processing.MP(name=ps_name, target=target, request=None, cmd="start")
-                p_rec.process_command()
+            if conf.get('autostart', False) == True:
+                m = importlib.import_module("%s.process" %ps_name)
+                target = m.main
+                if not (ps_name in ac):
+                    print 'initializing %s' %ps_name
+                    p_rec = MP(name=ps_name, target=target, request=None, cmd="start")
+                    p_rec.process_command()
         except:
             print "!!unable to initialize the %s process " %ps_name
 

@@ -10,7 +10,7 @@ try: import picamera
 except: print "!!could not import picamera"
 
 
-def home(request, template_name='camstream_app/home.html'):
+def home(request, template_name='camshoot_app/home.html'):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
 
 def snapshot(request):

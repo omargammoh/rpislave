@@ -1,7 +1,6 @@
 {
     "label": "example",
     "desc": "this is an example configuration which demonstrates how different apps can be configured",
-    "autostart": ["datalog_app", "datasend_app"],
     "network": {
         "wifi_name": "name of your wifi network",
         "wifi_pass": "password of your wifi network",
@@ -15,6 +14,7 @@
     },
     "apps": {
         "datalog_app": {
+            "autostart": false,
             "rs485_conf": {
                 "port": "/dev/ttyUSB0",
                 "method": "rtu",
@@ -77,11 +77,13 @@
             }
         },
         "datasend_app": {
+            "autostart": true,
             "keep_period": 300,
             "send_period": 240,
             "mongo_address": "mongodb://pylog485:pylog485@ds031627.mongolab.com:31627/public"
         },
         "gpio_app": {
+            "autostart": true,
             "pins_conf": {
                "tv": {
                    "pin": 7,
@@ -108,6 +110,8 @@
             }
         },
         "camstream_app": {
+        },
+        "camshoot_app": {
         }
     }
 }

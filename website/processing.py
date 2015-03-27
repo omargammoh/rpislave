@@ -3,6 +3,7 @@ import multiprocessing
 from website.models import Conf
 from django.conf import settings
 from time import time, sleep
+import inspect
 
 def _get_conf():
     for ob in Conf.objects.all():
@@ -15,6 +16,7 @@ def _get_conf():
             pass
     raise BaseException('could not find the configuration %s' %settings.CONF_LABEL)
 
+
 class MP():
     def __init__(self, name, target, request, cmd=None):
         self.t1 = time()
@@ -25,10 +27,17 @@ class MP():
         self.dic = {}
         self.conf_label = settings.CONF_LABEL
 
-
     def start(self):
         conf = _get_conf()['apps'][self.name]
-        p = multiprocessing.Process(name=self.name, target=self.target, kwargs=conf)
+
+        #not all the parameters in the conf are needed in the target, trim to our needs
+        argnames,_,_,defaults = inspect.getargspec(self.target)
+        if defaults is None: defaults=[]
+        required_args=set(argnames[:len(argnames)-len(defaults)])
+        optional_args=set(argnames[len(argnames)-len(defaults):])
+        trimmed_conf = {k:v for (k,v) in conf.iteritems() if k in required_args.union(optional_args) }
+
+        p = multiprocessing.Process(name=self.name, target=self.target, kwargs=trimmed_conf)
         p.start()
 
 

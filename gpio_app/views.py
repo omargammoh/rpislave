@@ -38,7 +38,7 @@ def pins(request):
         pins_conf = _get_conf()['apps']['gpio_app']['pins_conf']
         rev = {cf["pin"]: {"label": label, "desc": cf['desc']} for (label, cf) in pins_conf.iteritems()}
 
-        pin = request.GET["pin"]
+        pin = int(request.GET["pin"])
         iou = request.GET["iou"]
         cmd = request.GET["cmd"]
         lowhigh = request.GET.get("lowhigh", None)

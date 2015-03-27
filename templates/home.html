@@ -9,7 +9,6 @@
             <h2>STATUS</h2>
             <button type="button" id="btn_status_overview">Overview</button>
             <button type="button" id="btn_status_conf">Config</button>
-            <button type="button" id="btn_status_recentdata">Recent data</button>
         </div>
         <br>
         <br>
@@ -80,13 +79,13 @@ function make_cmd_function(url, data){
                 btn.prop('disabled', false);
 
                 if (data['ison'] == true) {
-                    btn.parent().parent().find('h2').css('color', 'lightgreen');
+                    btn.parent().parent().find('h3').css('color', 'lightgreen');
                 }
                 else if (data['ison'] == false) {
-                    btn.parent().parent().find('h2').css('color', 'red');
+                    btn.parent().parent().find('h3').css('color', 'red');
                 }
                 else {
-                    btn.parent().parent().find('h2').css('color', 'black')
+                    btn.parent().parent().find('h3').css('color', 'black')
                 }
 
             },
@@ -103,7 +102,6 @@ function make_cmd_function(url, data){
 
 $("#btn_status_overview").click(make_cmd_function("{% url "website.views.status" %}", {"cmd":"overview"}))
 $("#btn_status_conf").click(make_cmd_function("{% url "website.views.status" %}", {"cmd":"conf"}))
-$("#btn_status_recentdata").click(make_cmd_function("{% url "website.views.status" %}", {"cmd":"recentdata"}))
 
 {% with cmd_list='start stop status' %}
     {% for app in app_list %}

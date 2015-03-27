@@ -1,4 +1,5 @@
 from website.processing import _get_conf
+from gpio_app.process import set_para, get_para, board_bmc
 import json
 
 from django.shortcuts import render_to_response
@@ -6,52 +7,12 @@ from django.template import RequestContext
 from django.http import HttpResponse
 from datetime import datetime
 
-try:
-    import RPi.GPIO as GPIO
-    GPIO.setmode(GPIO.BOARD)
-except:
-    print "!!could not import RPi.GPIO"
-
-def detect_iou(pin):
-    try:
-        v = GPIO.input(pin)
-        try:
-            GPIO.output(pin, v)
-            return "output"
-        except:
-            return "input"
-    except:
-        return "unset"
-
-
-def check_lowhigh(pin_bcm):
-    try:
-        with open("/sys/class/gpio/gpio%s/value" %pin_bcm) as pin:
-            status = pin.read(1)
-    except:
-        status = "Unknown"
-    if status == '0':
-        return "low"
-    elif status == '1':
-        return "high"
-    else:
-        raise BaseException('dont know whaat was read %s' %status)
-
-def check_inout(pin_bcm):
-    try:
-        with open("/sys/class/gpio/gpio%s/direction" %pin_bcm) as pin:
-            status = pin.read().strip()
-    except:
-        status = "Unknown"
-    return status
-
 def home(request, template_name='gpio_app/home.html'):
     pins_conf = _get_conf()['apps']['gpio_app']['pins_conf']
     rev = {cf["pin"]: {"label": label, "desc": cf['desc']} for (label, cf) in pins_conf.iteritems()}
-    gpio_pins = sorted(set([7,11,12,13,15,16,18,22,29,31,32,33,35,36,37,38,40]))
 
     gpio_list = []
-    for pin in gpio_pins:
+    for pin, pin_bcm in board_bmc.iteritems():
         d = {"pin": pin}
 
         try: d["label"] = rev[pin]['label']
@@ -60,10 +21,10 @@ def home(request, template_name='gpio_app/home.html'):
         try: d["desc"] = rev[pin]['desc']
         except: d["desc"] = "-"
 
-        d['iou'] = detect_iou(pin)
+        d['iou'] = get_para(pin_bcm=pin_bcm, para="direction")
 
         if d['iou'] != "unset":
-            d['lowhigh'] = GPIO.input(gpio_pin)
+            d['lowhigh'] = get_para(pin_bcm=pin_bcm, para="value")
 
         gpio_list.append(d)
     print gpio_list

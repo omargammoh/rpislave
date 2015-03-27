@@ -17,7 +17,7 @@
         <col width="10%">
         <col>
         {% for gpio in gpio_list %}
-            {% if gpio.iou == 'input' %}
+            {% if gpio.iou == 'in' %}
                 <tr>
                     <td>{{ gpio.pin }}</td>
                     <td>{{ gpio.label }}</td>
@@ -44,7 +44,7 @@
         <col width="10%">
         <col>
         {% for gpio in gpio_list %}
-            {% if gpio.iou == 'output' %}
+            {% if gpio.iou == 'out' %}
                 <tr>
                     <td>{{ gpio.pin }}</td>
                     <td>{{ gpio.label }}</td>

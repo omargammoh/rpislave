@@ -24,6 +24,27 @@ def detect_iou(pin):
         return "unset"
 
 
+def check_lowhigh(pin_bcm):
+    try:
+        with open("/sys/class/gpio/gpio%s/value" %pin_bcm) as pin:
+            status = pin.read(1)
+    except:
+        status = "Unknown"
+    if status == '0':
+        return "low"
+    elif status == '1':
+        return "high"
+    else:
+        raise BaseException('dont know whaat was read %s' %status)
+
+def check_inout(pin_bcm):
+    try:
+        with open("/sys/class/gpio/gpio%s/direction" %pin_bcm) as pin:
+            status = pin.read().strip()
+    except:
+        status = "Unknown"
+    return status
+
 def home(request, template_name='gpio_app/home.html'):
     pins_conf = _get_conf()['apps']['gpio_app']['pins_conf']
     rev = {cf["pin"]: {"label": label, "desc": cf['desc']} for (label, cf) in pins_conf.iteritems()}
@@ -96,27 +117,4 @@ def pins(request):
         jdic = json.dumps({"error": err})
 
     return HttpResponse(jdic, content_type='application/json')
-
-
-
-if False:
-
-
-    import RPi.GPIO as GPIO
-    GPIO.setmode(GPIO.BOARD)
-
-    gpio_pin = 11
-    GPIO.input(gpio_pin) == GPIO.LOW
-
-    GPIO.setup(gpio_pin, GPIO.IN)
-
-    GPIO.setup(gpio_pin, GPIO.OUT)
-    GPIO.output(gpio_pin, GPIO.input(gpio_pin))
-    # Discharge capacitor
-    sleep(2.)
-    # Count loops until voltage across
-    # capacitor reads high on GPIO
-    i = 0
-    t0 = time()
-    (GPIO.input(gpio_pin) == GPIO.LOW)
 

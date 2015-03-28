@@ -1,7 +1,7 @@
 import subprocess
 import os
 import json
-
+from time import time
 try:
     conffile = os.path.join(os.path.dirname(__file__), 'conf.json')
 
@@ -136,19 +136,21 @@ def setup_realtimeclock():
 
 
 if __name__ == "__main__":
-
+    t1 = time()
     execute([
-         "sudo apt-get update" #update is needed for motion
+         "sudo apt-get -y update" #update is needed for motion
         #,"sudo apt-get -y upgrade"
         #,"sudo apt-get install rpi-update"
         #,"sudo rpi-update"
     ])
+    t2 = time()
     execute([
          'sudo apt-get install -y python-dev'
         ,'sudo apt-get install -y python-pip'
         ,'sudo apt-get install tmux'
         ,'sudo pip install django==1.7'
         ])
+    t3 = time()
 
     setup_autologin()
 
@@ -175,3 +177,10 @@ if __name__ == "__main__":
 
         if "rtc" in conf:
             setup_realtimeclock()
+    t4 = time()
+    print "took %0.2f sec=" %(t4-t1)
+    print "    %0.2f sec" %(t2-t1)
+    print "    %0.2f sec" %(t3-t2)
+    print "    %0.2f sec" %(t4-t3)
+
+

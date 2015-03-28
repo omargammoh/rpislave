@@ -3,6 +3,7 @@ from gpio_app.process import set_para, get_para, board_bmc, export, unexport
 import json
 from bson import json_util
 import traceback
+from time import time
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -34,6 +35,7 @@ def home(request, template_name='gpio_app/home.html'):
 
 
 def pins(request):
+    t1 = time()
     try:
         pins_conf = _get_conf()['apps']['gpio_app']['pins_conf']
         rev = {cf["pin"]: {"label": label, "desc": cf['desc']} for (label, cf) in pins_conf.iteritems()}
@@ -95,7 +97,11 @@ def pins(request):
         try: d['lowhigh'] = get_para(pin_bcm=pin_bcm, para="value")
         except:d['lowhigh'] = "x"
 
-        d['msg'] = "done, inout %s pin %s cmd %s" %(iou, pin, cmd)
+        t2 = time()
+
+        d['msg'] = "done at %s, took %0.2f sec" %(datetime.now().strftime('%Y-%m-%d %H:%M %S'), (t2 - t1))
+
+        datetime.utcnow()
 
         jdic= json_util.dumps(d)
     except:

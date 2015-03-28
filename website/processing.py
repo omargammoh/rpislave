@@ -4,7 +4,7 @@ from website.models import Conf
 from django.conf import settings
 from time import time, sleep
 import inspect
-
+import subprocess
 def _get_conf():
     for ob in Conf.objects.all():
         try:
@@ -49,9 +49,13 @@ class MP():
             return ac[0].is_alive()
 
     def stop(self):
-        ac = [m for m in  multiprocessing.active_children() if self.name == m.name]
+        ac = [m for m in  multiprocessing.active_children() if self.name == m.name][0]
         if ac:
-            ac[0].terminate()
+            if ac.pid:
+                s = subprocess.Popen("sudo -INT kill %s" %ac.pid, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
+            else:
+                print "stopping process in in the hard way"
+                ac.terminate()
             sleep(0.5)
             return True
         else:

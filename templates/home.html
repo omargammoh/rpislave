@@ -20,7 +20,7 @@
                     <td><button type="button" id="btn_{{app}}_start">Start</button></td>
                     <td><button type="button" id="btn_{{app}}_stop">Stop</button></td>
                     <td><button type="button" id="btn_{{app}}_status">Status</button></td>
-                    <td><a href="/{{app}}/home"><button>app's home</button></a></td>
+                    <td><a href="/{{app}}/"><button>app's home</button></a></td>
                 </tr>
             {% endfor %}
         </table>
@@ -60,14 +60,14 @@ function syntaxHighlight(json) {
     });
 }
 
-function make_cmd_function(url, data){
+function make_cmd_function(url, sdata){
     function func(){
         var btn =  $(this)
         btn.prop('disabled', true);
 
         $.ajax({
             url: url,
-            data: data,
+            data: sdata,
             success: function (data, textStatus, jqXHR) {
                 if ('error' in data) {
                     alert("server error for " + url + data['error'])
@@ -78,7 +78,9 @@ function make_cmd_function(url, data){
                 p_update.html("<pre><code>" + s + "</code></pre>")
                 btn.prop('disabled', false);
 
-                if (data['ison'] == true) {
+                if ("conf" == sdata["cmd"]){}
+                else if ("overview" == sdata["cmd"]){}
+                else if (data['ison'] == true) {
                     btn.parent().parent().find('h3').css('color', 'lightgreen');
                 }
                 else if (data['ison'] == false) {
@@ -107,9 +109,14 @@ $("#btn_status_conf").click(make_cmd_function("{% url "website.views.status" %}"
     {% for app in app_list %}
         {% for cmd in cmd_list.split %}
             $("#btn_{{app}}_{{cmd}}").click(make_cmd_function("{% url "website.views.appmanage" %}", {"app":"{{app}}", "cmd":"{{cmd}}"}))
+            {% if cmd == "status" %}
+                $("#btn_{{app}}_{{cmd}}").click()
+            {% endif %}
         {% endfor %}
     {% endfor %}
 {% endwith %}
+
+$("#btn_status_conf").click()
 
 </script>
 

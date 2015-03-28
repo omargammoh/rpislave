@@ -3,13 +3,13 @@ import os
 import json
 
 try:
-    jsonfile = os.path.join(os.path.dirname(__file__), 'conf.json')
+    conffile = os.path.join(os.path.dirname(__file__), 'conf.json')
 
-    if not os.path.isfile(jsonfile):
-        raise BaseException('the json config file was not found %s' %jsonfile)
+    if not os.path.isfile(conffile):
+        raise BaseException('the json config file was not found %s' %conffile)
 
-    fl = file(jsonfile,"r")
-    js = json.load(fl)
+    fl = file(conffile,"r")
+    conf = json.load(fl)
     fl.close()
 except:
     print 'error while getting the json configuration file'
@@ -81,7 +81,7 @@ network={{
     pairwise=CCMP TKIP
     group=CCMP TKIP
     psk="{0[network][wifi_pass]}"
-}}""".format(js)
+}}""".format(conf)
     f.write(contents)
     f.close()
     print "setup_internetsettings: wpa_supplicant.conf successful"
@@ -108,12 +108,14 @@ iface default inet static
     #from netstat -nr, Gateway 192.168.1.1
     gateway {0[network][gateway]}
 
-""".format(js)
+""".format(conf)
     print "setup_internetsettings: interfaces successful"
 
-def setup_realtimeclock(typ):
+def setup_realtimeclock():
     print "not ready for this yet"
     return None
+
+    typ = conf['rtc'].get('type','rasclock')
     if typ == "rasclock":
         execute("wget http://afterthoughtsoftware.com/files/linux-image-3.6.11-atsw-rtc_1.0_armhf.deb&&sudo dpkg -i linux-image-3.6.11-atsw-rtc_1.0_armhf.deb&&sudo cp /boot/vmlinuz-3.6.11-atsw-rtc+ /boot/kernel.img")
 
@@ -134,17 +136,42 @@ def setup_realtimeclock(typ):
 
 
 if __name__ == "__main__":
+
+    execute([
+         "sudo apt-get update" #update is needed for motion
+        #,"sudo apt-get -y upgrade"
+        #,"sudo apt-get install rpi-update"
+        #,"sudo rpi-update"
+    ])
     execute([
          'sudo apt-get install -y python-dev'
         ,'sudo apt-get install -y python-pip'
         ,'sudo apt-get install tmux'
         ,'sudo pip install django==1.7'
-        ,'sudo pip install pymodbus==1.2.0'
-        ,'sudo pip install pymongo==2.8'
         ])
 
     setup_autologin()
+
     setup_autostart()
-    setup_internetsettings()
-    if "rtc" in js:
-        setup_realtimeclock(js['rtc']['type'])
+
+    if 'network' in conf:
+        setup_internetsettings()
+
+    if 'apps' in conf:
+        if 'datalog_app' in conf['apps']:
+            execute([
+                'sudo pip install pymodbus==1.2.0'
+                ])
+
+        if 'datasend_app' in conf['apps']:
+            execute([
+                'sudo pip install pymongo==2.8'
+                ])
+
+        if 'motion_app' in conf['apps']:
+            execute([
+                'sudo apt-get install -y motion'
+                ])
+
+        if "rtc" in conf:
+            setup_realtimeclock()

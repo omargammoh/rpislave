@@ -29,11 +29,12 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+# List here all available apps, the apps
 RPI_APPS = (
     'datalog_app',
     'datasend_app',
     'gpio_app',
-    'camstream_app',
+    'motion_app',
     'camshoot_app',
 )
 

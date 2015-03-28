@@ -8,8 +8,12 @@ This project is django server which can be easily installed on an rpi, where dif
 
 # How to easily install #
 * Install the raspberian image on the raspberry pi
+* sudo raspi-config
+  * expand filesystem
+  * enable camera
+  * enable SPI
 * Connect the rpi to the internet and execute:
-  * `sudo git clone https://github.com/omargammoh/rpislave.git`
+  * `sudo git clone -b master https://github.com/omargammoh/rpislave.git ~/rpislave`
   * Configure your rpi slave with the file `sudo nano ~/rpislave/conf.json`
   * `sudo python ~/rpislave/setup.py`
   * `sudo reboot` the server will start automatically after the reboot

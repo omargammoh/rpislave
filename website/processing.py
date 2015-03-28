@@ -52,6 +52,7 @@ class MP():
         ac = [m for m in  multiprocessing.active_children() if self.name == m.name][0]
         if ac:
             if ac.pid:
+                print "stopping process in in the good way"
                 s = subprocess.Popen("sudo -INT kill %s" %ac.pid, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
             else:
                 print "stopping process in in the hard way"

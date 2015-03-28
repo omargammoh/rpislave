@@ -1,6 +1,7 @@
 import subprocess
 from time import sleep
 from website.processing import _get_conf
+import traceback
 
 def write_motion_conf(motion_conf):
     fp = '/etc/motion/motion.conf'
@@ -49,7 +50,10 @@ def main():
     except KeyboardInterrupt:
         print 'KKKEEEYYBOOARDDDDD !!!!!'
         interrupt_process()
-
+    except:
+        print traceback.format_exc()
+        raise
+    
 
 lines = [
      "daemon on"

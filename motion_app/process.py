@@ -10,7 +10,7 @@ def write_motion_conf(motion_conf):
     newlines = []
     for line in lines:
         newlines.append(line.format(**motion_conf))
-    f.writelines(newlines)
+    f.write("\n".join(newlines))
     print "successfully written %s" %fp
 
 def interrupt_process():
@@ -53,7 +53,7 @@ def main():
     except:
         print traceback.format_exc()
         raise
-    
+
 
 lines = [
      "daemon on"

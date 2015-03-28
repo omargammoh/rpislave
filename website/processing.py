@@ -53,7 +53,7 @@ class MP():
         if ac:
             if ac.pid:
                 print "stopping process in in the good way"
-                s = subprocess.Popen("sudo -INT kill %s" %ac.pid, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
+                s = subprocess.Popen("sudo kill -INT %s" %ac.pid, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
             else:
                 print "stopping process in in the hard way"
                 ac.terminate()

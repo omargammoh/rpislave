@@ -20,7 +20,7 @@ def interrupt_process():
         print 'could not stop process len(lis) = %s' %len(lis)
         return None
     pid = lis[0].split()[1]
-    s = subprocess.Popen("sudo -INT kill %s" %pid, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
+    s = subprocess.Popen("sudo kill -INT %s" %pid, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
 
 def start_process():
     import subprocess

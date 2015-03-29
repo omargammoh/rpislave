@@ -30,7 +30,6 @@ def home(request, template_name='gpio_app/home.html'):
         if d['iou'] != "unset": d['lowhigh'] = get_para(pin_bcm=pin_bcm, para="value")
         else: d['lowhigh'] = "x"
         gpio_list.append(d)
-    print gpio_list
     return render_to_response(template_name, {"gpio_list":gpio_list }, context_instance=RequestContext(request))
 
 

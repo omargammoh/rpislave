@@ -61,7 +61,18 @@ def get_files(request):
 
         fun = lambda x: x.split('.')[-1]
         for key, group in groupby(sorted(files, key=fun),fun ):
-            d[key]=list(group)
+            fl = list(group)
+
+            d2 = {"count": len(fl)}
+            if fl:
+                d2.update({'first': sorted(fl[0]), 'last': sorted(fl[-1])})
+            else:
+                d2.update({'first': '-', 'last': "-"})
+
+            if key != 'jpg':
+                d2.update({"files": fl})
+
+            d[key] = d2
 
         return HttpResponse(json.dumps(d), content_type='application/json')
     except:

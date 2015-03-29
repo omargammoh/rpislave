@@ -9,6 +9,8 @@
             <h2>STATUS</h2>
             <button type="button" id="btn_status_overview">Overview</button>
             <button type="button" id="btn_status_conf">Config</button>
+            <button type="button" id="btn_status_temp">temp</button>
+            <button type="button" id="btn_status_df">df</button>
         </div>
         <br>
         <br>
@@ -104,6 +106,8 @@ function make_cmd_function(url, sdata){
 
 $("#btn_status_overview").click(make_cmd_function("{% url "website.views.status" %}", {"cmd":"overview"}))
 $("#btn_status_conf").click(make_cmd_function("{% url "website.views.status" %}", {"cmd":"conf"}))
+$("#btn_status_temp").click(make_cmd_function("{% url "website.views.get_temp" %}", {"cmd":"conf"}))
+$("#btn_status_df").click(make_cmd_function("{% url "website.views.get_df" %}", {"cmd":"conf"}))
 
 {% with cmd_list='start stop status' %}
     {% for app in app_list %}

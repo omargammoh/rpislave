@@ -10,6 +10,7 @@ from django.conf import settings
 import traceback
 from website.processing import MP, _get_conf
 import importlib
+import subprocess
 
 
 def home(request, template_name='home.html'):
@@ -44,6 +45,22 @@ def status(request):
         jdic = json.dumps({"error": err})
 
     return HttpResponse(jdic, content_type='application/json')
+
+def get_temp(request):
+    d={}
+    try:
+        d['data'] = subprocess.Popen("/opt/vc/bin/vcgencmd measure_temp", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
+    except:
+        d['error']=traceback.format_exc()
+    return HttpResponse(d, content_type='application/json')
+
+def get_df(request):
+    d={}
+    try:
+        d['data'] = subprocess.Popen("df -h", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
+    except:
+        d['error']=traceback.format_exc()
+    return HttpResponse(d, content_type='application/json')
 
 
 def appmanage(request):

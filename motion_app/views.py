@@ -1,15 +1,12 @@
-import io
 import json
-import base64
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 import traceback
 import subprocess
-
-try: import picamera
-except: print "!!could not import picamera"
-
+import os
+from itertools import groupby
+from motion_app.process import get_motion_config
 
 def home(request, template_name='motion_app/home.html'):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
@@ -46,16 +43,28 @@ def _send_signal(signal):
 
 def send_sighup(request):
     #SIGHUP The config file will be reread.	This is a very useful signal when you experiment with settings in the config file.
-    return _send_signal(request=request, signal="SIGHUP")
+    return _send_signal(signal="SIGHUP")
 
 def send_sigterm(request):
     #SIGTERM If needed motion will create an mpeg file of the last event and exit
-    return _send_signal(request=request, signal="SIGTERM")
+    return _send_signal(signal="SIGTERM")
 
 def send_usr1(request):
     #SIGUSR1 Motion will create an mpeg file of the current event.
-    return _send_signal(request=request, signal="SIGUSR1")
+    return _send_signal(signal="SIGUSR1")
 
+def get_files(request):
+    d = {}
+    try:
+        folder = get_motion_config()["target_dir"]
+        files = os.listdir(folder)
 
+        fun = lambda x: x.split('.')[-1]
+        for key, group in groupby(sorted(files, key=fun),fun ):
+            d[key]=list(group)
 
-
+        return HttpResponse(json.dumps(d), content_type='application/json')
+    except:
+        d["error"] = traceback.format_exc()
+        print d["error"]
+        return HttpResponse(json.dumps(d), content_type='application/json')

@@ -3,7 +3,8 @@ from time import sleep
 from website.processing import _get_conf
 import traceback
 
-def write_motion_conf(motion_conf):
+
+def get_motion_config():
     default_conf = {
         "control_localhost": "off",
         "webcam_localhost": "off",
@@ -11,18 +12,26 @@ def write_motion_conf(motion_conf):
         "webcam_maxrate": 3,# limiting speed 0..100
         "webcam_motion": "off",# if set to 'on' Motion sends slows down the webcam stream to 1 picture per second when no motion is detected. When motion is detected the stream runs as defined by webcam_maxrate. When 'off' the webcam stream always runs as defined by webcam_maxrate.
     }
+    conf = _get_conf()
+    motion_conf = conf['apps']['motion_app']
+
     for k in motion_conf.keys():
         if not(k in default_conf.keys()):
             print "!!the inputed configuration parameter %s has no purpose" %k
 
     #update the default conf with the user conf
     default_conf.update(motion_conf)
-    fp = '/etc/motion/motion.conf'
-    f = file(fp,"w+")
 
+    return default_conf
+
+def write_motion_conf(motion_conf):
     newlines = []
     for line in lines:
         newlines.append(line.format(**motion_conf))
+
+    fp = '/etc/motion/motion.conf'
+    f = file(fp,"w+")
+
     f.write("\n".join(newlines))
     print "successfully written %s" %fp
 
@@ -45,8 +54,7 @@ def start_process():
 
 def main():
     try:
-        conf = _get_conf()
-        motion_conf = conf['apps']['motion_app']
+        motion_conf = get_motion_config()
         write_motion_conf(motion_conf)
 
         #set the rasppi camera will be set as the /tty/video0 ?

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <div>
     <div>
         <h2>welcome to MOTION home</h2>
@@ -8,13 +9,93 @@
         <p>This app runs another software called motion, motion streams video on port 8081 by default and can be controlled via port 8080 of the raspberry pi</p>
         <p>http://www.lavrsen.dk/foswiki/bin/view/Motion/ConfigFileOptions</p>
     </div>
+    <div style="width: 30%; float:left; ">
+        <h2>Commands</h2>
+        <table style="width:100%">
+            {% with "get_files send_usr1 send_sigterm send_sighup" as lis %}
+                {% for fun in lis.split %}
+                    <tr>
+                        <td><button type="button" id="btn_{{ fun }}">{{ fun }}</button></td>
+                        <td><h3>some explanations</h3></td>
+                    </tr>
+                {% endfor %}
+            {% endwith %}
+        </table>
+    </div>
+    <div style="width: 70%; float:left; ">
+        <h2> >>  </h2>
+        <p id="p_jsresponse">...</p>
+        <h2> <<  </h2>
+    </div>
+
 </div>
 
 {% endblock %}
 
-{% block sidebar %}
-{% endblock %}
+{% block sidebar %}{% comment %}scripts put in the side bar block, but this is just a workaround to get the scripts working{% endcomment %}
 
+<script>
+function syntaxHighlight(json) {
+    if (typeof json != 'string') {
+         json = JSON.stringify(json, undefined, 2);
+    }
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}
+
+function make_cmd_function(url, sdata){
+    function func(){
+        var btn =  $(this)
+        btn.prop('disabled', true);
+
+        $.ajax({
+            url: url,
+            data: sdata,
+            success: function (data, textStatus, jqXHR) {
+                if ('error' in data) {
+                    alert("server error for " + url + data['error'])
+                }
+                d = data
+                var p_update = $('#p_jsresponse')
+                var s = JSON.stringify(data, undefined, 4).replace(/(?: )/g, '&nbsp;').replace(/(?:\r\n|\r|\n)/g, '<br />');
+                p_update.html("<pre><code>" + s + "</code></pre>")
+                btn.prop('disabled', false);
+
+
+            },
+            error: function (err) {
+                e = err
+                alert("ajax error for " + url + " error = " + err)
+                btn.prop('disabled', false);
+            }
+
+        });
+    }
+    return func
+}
+
+{% with "get_files send_usr1 send_sigterm send_sighup" as lis %}
+    {% for fun in lis.split %}
+        $("#btn_{{ fun }}").click(make_cmd_function("/motion_app/{{ fun }}"))
+    {% endfor %}
+{% endwith %}
+
+</script>
+{% endblock %}
 
 
 

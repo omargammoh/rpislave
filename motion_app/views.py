@@ -63,9 +63,10 @@ def get_files(request):
         for key, group in groupby(sorted(files, key=fun),fun ):
             fl = list(group)
 
+
             d2 = {"count": len(fl)}
             if fl:
-                d2.update({'first': sorted(fl[0]), 'last': sorted(fl[-1])})
+                d2.update({'first': sorted(fl)[0], 'last': sorted(fl)[-1]})
             else:
                 d2.update({'first': '-', 'last': "-"})
 

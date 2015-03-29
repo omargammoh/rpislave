@@ -5,15 +5,6 @@
 
 <div>
     <div style="width: 60%; float:left; ">
-        <div>
-            <h2>STATUS</h2>
-            <button type="button" id="btn_status_overview">Overview</button>
-            <button type="button" id="btn_status_conf">Config</button>
-            <button type="button" id="btn_status_temp">temp</button>
-            <button type="button" id="btn_status_df">df</button>
-        </div>
-        <br>
-        <br>
         <h2>APPS</h2>
         <table style="width:100%">
             {% for app in app_list %}
@@ -26,6 +17,15 @@
                 </tr>
             {% endfor %}
         </table>
+        <br>
+        <br>
+        <div>
+            <h2>STATUS</h2>
+            <button type="button" id="btn_status_overview">Overview</button>
+            <button type="button" id="btn_status_conf">Config</button>
+            <button type="button" id="btn_status_temp">temp</button>
+            <button type="button" id="btn_status_df">df</button>
+        </div>
     </div>
     <div style="width: 40%; float:left; ">
         <h2> >>  </h2>

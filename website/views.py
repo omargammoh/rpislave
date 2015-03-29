@@ -52,7 +52,7 @@ def get_temp(request):
         d['data'] = subprocess.Popen("/opt/vc/bin/vcgencmd measure_temp", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
     except:
         d['error']=traceback.format_exc()
-    return HttpResponse(d, content_type='application/json')
+    return HttpResponse(json.dumps(d), content_type='application/json')
 
 def get_df(request):
     d={}
@@ -60,7 +60,7 @@ def get_df(request):
         d['data'] = subprocess.Popen("df -h", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
     except:
         d['error']=traceback.format_exc()
-    return HttpResponse(d, content_type='application/json')
+    return HttpResponse(json.dumps(d), content_type='application/json')
 
 
 def appmanage(request):

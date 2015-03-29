@@ -4,6 +4,19 @@ from website.processing import _get_conf
 import traceback
 
 def write_motion_conf(motion_conf):
+    default_conf = {
+        "control_localhost": "off",
+        "webcam_localhost": "off",
+        "target_dir": "/tmp/motion", #where videos and pictures are stored
+        "webcam_maxrate": 3,# limiting speed 0..100
+        "webcam_motion": "off",# if set to 'on' Motion sends slows down the webcam stream to 1 picture per second when no motion is detected. When motion is detected the stream runs as defined by webcam_maxrate. When 'off' the webcam stream always runs as defined by webcam_maxrate.
+    }
+    for k in motion_conf.keys():
+        if not(k in default_conf.keys()):
+            print "!!the inputed configuration parameter %s has no purpose" %k
+
+    #update the default conf with the user conf
+    default_conf.update(motion_conf)
     fp = '/etc/motion/motion.conf'
     f = file(fp,"w+")
 
@@ -22,6 +35,7 @@ def interrupt_process():
             print l
         return None
     pid = lis[0].split()[1]
+    print 'sending INT signal to the motion process...'
     s = subprocess.Popen("sudo kill -INT %s" %pid, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
 
 def start_process():
@@ -50,12 +64,11 @@ def main():
             sleep(60)
 
     except KeyboardInterrupt:
-        print 'KKKEEEYYBOOARDDDDD !!!!!'
         interrupt_process()
+        print 'motion interrupted successfuly'
     except:
         print traceback.format_exc()
         raise
-
 
 lines = ['daemon off',
  'process_id_file /var/run/motion/motion.pid',
@@ -121,19 +134,19 @@ lines = ['daemon off',
  'text_changes off',
  'text_event %Y%m%d%H%M%S',
  'text_double off',
- 'target_dir /tmp/motion',
+ 'target_dir {target_dir}',
  'snapshot_filename %v-%Y%m%d%H%M%S-snapshot',
  'jpeg_filename %v-%Y%m%d%H%M%S-%q',
  'movie_filename %v-%Y%m%d%H%M%S',
  'timelapse_filename %Y%m%d-timelapse',
  'webcam_port 8081',
  'webcam_quality 50',
- 'webcam_motion off',
- 'webcam_maxrate 1',
- 'webcam_localhost off',
+ 'webcam_motion {webcam_motion}',
+ 'webcam_maxrate {webcam_maxrate}',
+ 'webcam_localhost {webcam_localhost}',
  'webcam_limit 0',
  'control_port 8080',
- 'control_localhost off',
+ 'control_localhost {control_localhost}',
  'control_html_output on',
  '; control_authentication username:password',
  'track_type 0',

@@ -6,12 +6,12 @@ import traceback
 
 def get_motion_config():
     def last_detection_cmd(s):
-        return "touch /tmp/{0}&&echo `date +%Y-%m-%d:%H:%M:%S` > /tmp/{0} &&echo {0}".format(s)
+        return "touch /home/pi/data/motion_app/{0}&&echo `date +%Y-%m-%d:%H:%M:%S` > /home/pi/data/motion_app/{0} &&echo {0}".format(s)
         #touch /home/pi/las_xxx && echo `date +%Y-%m-%d:%H:%M:%S` > /home/pi/las_xxx
     default_conf = {
         "control_localhost": "off",
         "webcam_localhost": "off",
-        "target_dir": "/tmp/motion", #where videos and pictures are stored
+        "target_dir": "/home/pi/data/motion_app/output", #where videos and pictures are stored
         "webcam_maxrate": 3,# limiting speed 0..100
         "webcam_motion": "off",# if set to 'on' Motion sends slows down the webcam stream to 1 picture per second when no motion is detected. When motion is detected the stream runs as defined by webcam_maxrate. When 'off' the webcam stream always runs as defined by webcam_maxrate.
         "threshold": 1500,
@@ -83,8 +83,8 @@ def main():
         motion_conf = get_motion_config()
         write_motion_conf(motion_conf)
 
-        #set the rasppi camera will be set as the /tty/video0 ?
-        cmd = "sudo modprobe bcm2835-v4l2"
+        #set the rasppi camera will be set as the /tty/video0 ?, a folder will be created for the data
+        cmd = "sudo modprobe bcm2835-v4l2&&sudo mkdir -p /home/pi/data/motion_app"
         print cmd
         subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
 

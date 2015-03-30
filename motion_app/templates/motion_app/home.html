@@ -62,7 +62,9 @@
                 </p></li>
 
                 <li><h4>livestream</h4>
-                   Live stream of the camera is also provided on port {{webcam_port}}, access to this could be restricted to localhost if {{webcam_localhost}} is on</li>
+                   Live stream of the camera is also provided on port {{webcam_port}}, access to this could be restricted to localhost if {{webcam_localhost}} is on.
+                   If {{ webcam_motion }} is on, then the output stream will be at 1 fps when there is no motion and when there is motion, it goes back up to {{ webcam_maxrate }}
+                </li>
 
                 <li><h4>control configuration</h4>
                    <p>on port {{control_port}} the configuration of the motion software can be accessed, this is also restricted to localhost if {{control_localhost}} is on

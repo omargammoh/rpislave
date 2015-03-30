@@ -12,8 +12,8 @@ def get_motion_config():
         "control_localhost": "off",
         "webcam_localhost": "off",
         "target_dir": "/home/pi/data/motion_app/output", #where videos and pictures are stored
-        "webcam_maxrate": 3,# limiting speed 0..100
-        "webcam_motion": "off",# if set to 'on' Motion sends slows down the webcam stream to 1 picture per second when no motion is detected. When motion is detected the stream runs as defined by webcam_maxrate. When 'off' the webcam stream always runs as defined by webcam_maxrate.
+        "webcam_maxrate": 30,# limiting speed 0..100
+        "webcam_motion": "on",# if set to 'on' Motion sends slows down the webcam stream to 1 picture per second when no motion is detected. When motion is detected the stream runs as defined by webcam_maxrate. When 'off' the webcam stream always runs as defined by webcam_maxrate.
         "threshold": 1500,
         "minimum_motion_frames": 1,
         "gap": 60,

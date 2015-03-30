@@ -6,7 +6,8 @@ import traceback
 
 def get_motion_config():
     def last_detection_cmd(s):
-        return "{0}=`date +%Y-%m-%d:%H:%M:%S`&&echo {0} ${0}".format(s)
+        return "touch /home/pi/{0}&&echo `date +%Y-%m-%d:%H:%M:%S` > {0} &&echo {0}".format(s)
+        #touch /home/pi/las_xxx && echo `date +%Y-%m-%d:%H:%M:%S` > /home/pi/las_xxx
     default_conf = {
         "control_localhost": "off",
         "webcam_localhost": "off",

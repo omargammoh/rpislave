@@ -103,13 +103,17 @@ def recent_events(request):
             name = request.GET["name"]
             if name == "all":
                 for name in lis:
-                    if name in os.environ:
-                        d[name] = os.environ[name]
+                    if os.path.isfile("/home/pi/%s" %name):
+                        f = file("/home/pi/%s" %name,"r")
+                        d[name] = f.read()
+                        f.close()
                     else:
                         d['msg'] = d.get('msg', "") + "%s not found, " %name
             elif name in lis:
-                if name in os.environ:
-                    d[name] = os.environ[name]
+                if os.path.isfile("/home/pi/%s" %name):
+                    f = file("/home/pi/%s" %name,"r")
+                    d[name] = f.read()
+                    f.close()
                 else:
                     raise BaseException('%s not found in environment variables' %name)
             else:

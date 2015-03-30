@@ -110,7 +110,7 @@ def recent_events(request):
                     else:
                         d['msg'] = d.get('msg', "") + "%s not found, " %name
             elif name in lis:
-                if os.path.isfile("/home/pi/%s" %name):
+                if os.path.isfile("/tmp/%s" %name):
                     f = file("/home/pi/%s" %name,"r")
                     d[name] = f.read()
                     f.close()

@@ -40,7 +40,8 @@
             </ul>
             <h3>Services</h3>
             <ul>
-                <li><h4>motion-triggered video file recording</h4>
+
+                <li><h4>motion-triggered video files</h4>
                     <p>The app records the motions from {{pre_capture}} frames before the motion, till {{post_capture}} frames after the motion.
                     </p>
                     <p>
@@ -50,13 +51,31 @@
                        The {{ffmpeg_video_codec}} codec is used to save the file
                        Files are saved in the with name {{movie_filename}} in the {{target_dir}} directoy
                     </p></li>
+
+                <li><h4>motion-triggered images</h4>
+                <p>If {{output_normal}} is on, the images where motion is detected are saved.
+                    If it's off, they are not saved, If it's first, then the first image of an event is saved,
+                    If it's best, then the picture of the most motion in an event is saved.
+                    If it's center, then the image with the motion close to the center is saved
+                </p>
+                <p>If {{output_motion}} is on, then only the pixels with the moving objects are saved (ghost images)
+                </p></li>
+
                 <li><h4>livestream</h4>
                    Live stream of the camera is also provided on port {{webcam_port}}, access to this could be restricted to localhost if {{webcam_localhost}} is on</li>
+
                 <li><h4>control configuration</h4>
                    <p>on port {{control_port}} the configuration of the motion software can be accessed, this is also restricted to localhost if {{control_localhost}} is on
                    </p></li>
+
                 <li><h4>timelapse</h4>
-                <p>if {{ffmpeg_timelapse}}is not 0, timelapse will be on and the period between eat shot is {{ffmpeg_timelapse}} seconds</p></li>
+                <p>if {{ffmpeg_timelapse}}is not 0, timelapse will be on and the period between the shots is {{ffmpeg_timelapse}} seconds</p></li>
+
+                <li><h4>snapshots</h4>
+                <p>if {{snapshot_interval}}is not 0, snapshots will be on and the period between the shots is {{snapshot_interval}} seconds.
+                The file ill be named {{ snapshot_filename }}
+                </p></li>
+
             </ul>
         </div>
         {% endautoescape %}

@@ -12,7 +12,7 @@
     <div style="width: 40%; float:left; ">
         <h2>Commands</h2>
         <table style="width:100%">
-            {% with "get_files send_usr1 send_sigterm send_sighup" as lis %}
+            {% with "get_files send_usr1 send_sigterm send_sighup recent_events" as lis %}
                 {% for fun in lis.split %}
                     <tr>
                         <td><button type="button" id="btn_{{ fun }}">{{ fun }}</button></td>
@@ -151,6 +151,7 @@ function make_cmd_function(url, sdata){
         $("#btn_{{ fun }}").click(make_cmd_function("/motion_app/{{ fun }}"))
     {% endfor %}
 {% endwith %}
+$("#btn_recent_events").click(make_cmd_function("/motion_app/recent_events", {"name":"all"}))
 
 </script>
 <style>

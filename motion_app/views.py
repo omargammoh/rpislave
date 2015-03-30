@@ -84,3 +84,39 @@ def get_files(request):
         d["error"] = traceback.format_exc()
         print d["error"]
         return HttpResponse(json.dumps(d), content_type='application/json')
+
+def recent_events(request):
+    lis = [
+        "last_motion_detected"
+        ,"last_event_start"
+        ,"last_event_end"
+        ,"last_picture_save"
+        ,"last_motion_detected"
+        ,"last_area_detected"
+        ,"last_movie_start"
+        ,"last_movie_end"
+        ,"last_camera_lost"
+    ]
+    d = {}
+    try:
+        if "name" in request.GET:
+            name = request.GET["name"]
+            if name == "all":
+                for name in lis:
+                    if name in os.environ:
+                        d[name] = os.environ[name]
+                    else:
+                        d['msg'] = d.get('msg', "") + "%s not found, " %name
+            elif name in lis:
+                if name in os.environ:
+                    d[name] = os.environ[name]
+                else:
+                    raise BaseException('%s not found in environment variables' %name)
+            else:
+                raise BaseException('%s is not a valid variable to ask for' %name)
+        else:
+            raise BaseException('name parameter is required')
+    except:
+        d["error"] = traceback.format_exc()
+
+    return HttpResponse(json.dumps(d), content_type='application/json')

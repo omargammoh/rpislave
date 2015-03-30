@@ -5,6 +5,8 @@ import traceback
 
 
 def get_motion_config():
+    def last_detection_cmd(s):
+        return "{0}=`date +%Y-%m-%d:%H:%M:%S`&&echo {0} ${0}".format(s)
     default_conf = {
         "control_localhost": "off",
         "webcam_localhost": "off",
@@ -25,8 +27,15 @@ def get_motion_config():
         "snapshot_filename": "%v-%Y%m%d%H%M%S-snapshot",
         "output_normal": "on",
         "output_motion": "off",
-        "on_motion_detected": "echo mmmmoootttiiiioooonnn"
-
+        "on_motion_detected": last_detection_cmd("last_motion_detected"),
+        "on_event_start": last_detection_cmd("last_event_start"),
+        "on_event_end": last_detection_cmd("last_event_end"),
+        "on_picture_save": last_detection_cmd("last_picture_save"),
+        "on_motion_detected": last_detection_cmd("last_motion_detected"),
+        "on_area_detected": last_detection_cmd("last_area_detected"),
+        "on_movie_start": last_detection_cmd("last_movie_start"),
+        "on_movie_end": last_detection_cmd("last_movie_end"),
+        "on_camera_lost": last_detection_cmd("last_camera_lost")
     }
     conf = _get_conf()
     motion_conf = conf['apps']['motion_app']
@@ -184,14 +193,14 @@ lines = ['daemon off',
  'track_speed 255',
  'track_stepsize 40',
  'quiet on',
- '; on_event_start value',
- '; on_event_end value',
- '; on_picture_save value',
+ 'on_event_start {on_event_start} ',
+ 'on_event_end {on_event_end}',
+ 'on_picture_save {on_picture_save}',
  'on_motion_detected {on_motion_detected}',
- '; on_area_detected value',
- '; on_movie_start value',
- '; on_movie_end value',
- '; on_camera_lost value',
+ 'on_area_detected {on_area_detected}',
+ 'on_movie_start {on_movie_start}',
+ 'on_movie_end {on_movie_end}',
+ 'on_camera_lost {on_camera_lost}',
  'sql_log_image on',
  'sql_log_snapshot on',
  'sql_log_mpeg off',

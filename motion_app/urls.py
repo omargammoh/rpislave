@@ -8,5 +8,6 @@ urlpatterns = patterns('',
     url(r'^send_usr1/$', views.send_usr1),
     url(r'^send_sigterm/$', views.send_sigterm),
     url(r'^send_sighup/$', views.send_sighup),
+    url(r'^recent_events/$', views.recent_events),
 
 )

@@ -58,7 +58,7 @@ def send_usr1(request):
 def get_files(request):
     d = {}
     try:
-        folder = "/home/pi/data/motion_app"
+        folder = get_motion_config()["target_dir"]
         if not os.path.isdir(folder):
             d["error"] = "the directory %s does not exist, please start the motion app first" %folder
         else:
@@ -98,20 +98,21 @@ def recent_events(request):
         ,"last_camera_lost"
     ]
     d = {}
+    folder = "/home/pi/data/motion_app"
     try:
         if "name" in request.GET:
             name = request.GET["name"]
             if name == "all":
                 for name in lis:
-                    if os.path.isfile("/home/pi/%s" %name):
-                        f = file("/home/pi/%s" %name,"r")
+                    if os.path.isfile(os.path.join(folder,name)):
+                        f = file(os.path.isfile(os.path.join(folder,name)),"r")
                         d[name] = f.read()
                         f.close()
                     else:
                         d['msg'] = d.get('msg', "") + "%s not found, " %name
             elif name in lis:
-                if os.path.isfile("/tmp/%s" %name):
-                    f = file("/home/pi/%s" %name,"r")
+                if os.path.isfile(os.path.join(folder,name)):
+                    f = file(os.path.isfile(os.path.join(folder,name)),"r")
                     d[name] = f.read()
                     f.close()
                 else:

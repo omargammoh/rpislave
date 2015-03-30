@@ -60,6 +60,6 @@ def main(pins_conf):
             print "succesfuly done %s" %conf
         except:
             print "!!failed setting up pin %s" %label
-            print traceback.format_exc()
+            #print traceback.format_exc()
 
     return None

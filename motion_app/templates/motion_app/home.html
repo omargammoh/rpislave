@@ -12,7 +12,7 @@
     <div style="width: 40%; float:left; ">
         <h2>Commands</h2>
         <table style="width:100%">
-            {% with "get_files send_usr1 send_sigterm send_sighup recent_events" as lis %}
+            {% with "get_files send_usr1 send_sigterm send_sighup recent_events start_stream" as lis %}
                 {% for fun in lis.split %}
                     <tr>
                         <td><button type="button" id="btn_{{ fun }}">{{ fun }}</button></td>
@@ -81,6 +81,9 @@
             </ul>
         </div>
         {% endautoescape %}
+    </div>
+    <div>
+        <img id="img_stream">
     </div>
     <div style="width: 60%; float:left; ">
         <h2> >>  </h2>
@@ -154,6 +157,14 @@ function make_cmd_function(url, sdata){
     {% endfor %}
 {% endwith %}
 $("#btn_recent_events").click(make_cmd_function("/motion_app/recent_events", {"name":"all"}))
+
+$("#btn_start_stream").click(function (){
+    var img = $('#img_stream');
+    img[0].setAttribute('src','http://192.168.1.201:8081');
+    var btn = $("#btn_start_stream")
+    btn.remove()
+        }
+)
 
 </script>
 <style>

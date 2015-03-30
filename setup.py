@@ -69,7 +69,6 @@ def setup_autostart():
 
 def setup_internetsettings():
     #write file1
-    f = file("/etc/wpa_supplicant/wpa_supplicant.conf", "w+")
     contents = """
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
@@ -82,12 +81,12 @@ network={{
     group=CCMP TKIP
     psk="{0[network][wifi_pass]}"
 }}""".format(conf)
+    f = file("/etc/wpa_supplicant/wpa_supplicant.conf", "w+")
     f.write(contents)
     f.close()
     print "setup_internetsettings: wpa_supplicant.conf successful"
 
     #write file2
-    f = file("/etc/network/interfaces", "r+")
     contents="""
 auto lo
 iface lo inet loopback
@@ -109,6 +108,10 @@ iface default inet static
     gateway {0[network][gateway]}
 
 """.format(conf)
+    f = file("/etc/network/interfaces", "r+")
+    f.write(contents)
+    f.close()
+
     print "setup_internetsettings: interfaces successful"
 
 def setup_realtimeclock():

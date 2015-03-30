@@ -104,15 +104,15 @@ def recent_events(request):
             name = request.GET["name"]
             if name == "all":
                 for name in lis:
-                    if os.path.isfile(os.path.join(folder,name)):
-                        f = file(os.path.isfile(os.path.join(folder,name)),"r")
+                    if os.path.isfile(os.path.join(folder, name)):
+                        f = file(os.path.join(folder, name), "r")
                         d[name] = f.read()
                         f.close()
                     else:
                         d['msg'] = d.get('msg', "") + "%s not found, " %name
             elif name in lis:
-                if os.path.isfile(os.path.join(folder,name)):
-                    f = file(os.path.isfile(os.path.join(folder,name)),"r")
+                if os.path.isfile(os.path.join(folder, name)):
+                    f = file(os.path.join(folder, name), "r")
                     d[name] = f.read()
                     f.close()
                 else:

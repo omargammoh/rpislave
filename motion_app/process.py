@@ -26,7 +26,7 @@ def get_motion_config():
         "ffmpeg_timelapse": 0,
         "snapshot_interval": 0,
         "snapshot_filename": "%v-%Y%m%d%H%M%S-snapshot",
-        "output_normal": "on",
+        "output_normal": "best",
         "output_motion": "off",
         "on_motion_detected": last_detection_cmd("last_motion_detected"),
         "on_event_start": last_detection_cmd("last_event_start"),

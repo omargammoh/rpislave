@@ -14,8 +14,11 @@ import subprocess
 
 
 def home(request, template_name='home.html'):
-    app_list = _get_conf()['apps'].keys()
-    print app_list
+    dic_label = {
+        "motion_app":"MOTION",
+        "gpio_app":"GPIO"
+    }
+    app_list = [{"name": k, "label": dic_label.get(k, k)} for k in _get_conf()['apps'].keys()]
     return render_to_response(template_name, {"app_list": app_list}, context_instance=RequestContext(request))
 
 

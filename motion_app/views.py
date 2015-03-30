@@ -60,7 +60,7 @@ def get_files(request):
     try:
         folder = get_motion_config()["target_dir"]
         if not os.path.isdir(folder):
-            d["error"] = "the directory %s does not exist, please start the motion app first"
+            d["error"] = "the directory %s does not exist, please start the motion app first" %folder
         else:
             files = os.listdir(folder)
             fun = lambda x: x.split('.')[-1]

@@ -9,11 +9,11 @@
         <table style="width:100%">
             {% for app in app_list %}
                 <tr>
-                    <td><h3>{{ app }}</h3></td>
-                    <td><button type="button" id="btn_{{app}}_start">Start</button></td>
-                    <td><button type="button" id="btn_{{app}}_stop">Stop</button></td>
-                    <td><button type="button" id="btn_{{app}}_status">Status</button></td>
-                    <td><a href="/{{app}}/"><button>app's home</button></a></td>
+                    <td><h3>{{ app.label }}</h3></td>
+                    <td><button type="button" id="btn_{{app.name}}_start">Start</button></td>
+                    <td><button type="button" id="btn_{{app.name}}_stop">Stop</button></td>
+                    <td><button type="button" id="btn_{{app.name}}_status">Status</button></td>
+                    <td><a href="/{{app.name}}/"><button>app's home</button></a></td>
                 </tr>
             {% endfor %}
         </table>
@@ -112,9 +112,9 @@ $("#btn_status_df").click(make_cmd_function("{% url "website.views.get_df" %}", 
 {% with cmd_list='start stop status' %}
     {% for app in app_list %}
         {% for cmd in cmd_list.split %}
-            $("#btn_{{app}}_{{cmd}}").click(make_cmd_function("{% url "website.views.appmanage" %}", {"app":"{{app}}", "cmd":"{{cmd}}"}))
+            $("#btn_{{app.name}}_{{cmd}}").click(make_cmd_function("{% url "website.views.appmanage" %}", {"app":"{{app.name}}", "cmd":"{{cmd}}"}))
             {% if cmd == "status" %}
-                $("#btn_{{app}}_{{cmd}}").click()
+                $("#btn_{{app.name}}_{{cmd}}").click()
             {% endif %}
         {% endfor %}
     {% endfor %}

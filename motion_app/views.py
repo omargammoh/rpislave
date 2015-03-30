@@ -58,7 +58,7 @@ def send_usr1(request):
 def get_files(request):
     d = {}
     try:
-        folder = get_motion_config()["target_dir"]
+        folder = "/home/pi/data/motion_app"
         if not os.path.isdir(folder):
             d["error"] = "the directory %s does not exist, please start the motion app first" %folder
         else:

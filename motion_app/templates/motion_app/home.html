@@ -4,12 +4,12 @@
 
 <div>
     <div>
-        <h2>welcome to MOTION home</h2>
+        <h1>MOTION_APP</h1>
         <i>stream video and record videos according to motion</i>
-        <p>This app runs another software called motion, motion streams video on port 8081 by default and can be controlled via port 8080 of the raspberry pi</p>
-        <p>http://www.lavrsen.dk/foswiki/bin/view/Motion/ConfigFileOptions</p>
     </div>
-    <div style="width: 30%; float:left; ">
+    <br>
+    <br>
+    <div style="width: 40%; float:left; ">
         <h2>Commands</h2>
         <table style="width:100%">
             {% with "get_files send_usr1 send_sigterm send_sighup" as lis %}
@@ -21,8 +21,47 @@
                 {% endfor %}
             {% endwith %}
         </table>
+        <br>
+        <br>
+        {% autoescape off %}
+        <div>
+
+            <h2>Documentation</h2>
+            <p>This app runs another software called <a href="http://www.lavrsen.dk/foswiki/bin/view/Motion/WebHome">motion</a></p>
+
+            <h3>Definitions</h3>
+            <ul>
+                <li><h4>Motion</h4>
+                    <p>The app processes the images of the camera, when there is a change in the images of more than {{threshold}} pixels, for {{minimum_motion_frames}} frames in a row, then a motion is detected.</p>
+                </li>
+                <li><h4>Event</h4>
+                <p>An event is a series of motions that occure within a small timeframe. The event ends when there is no motion for {{gap}} seconds</p>
+                </li>
+            </ul>
+            <h3>Services</h3>
+            <ul>
+                <li><h4>motion-triggered video file recording</h4>
+                    <p>The app records the motions from {{pre_capture}} frames before the motion, till {{post_capture}} frames after the motion.
+                    </p>
+                    <p>
+                       Motions that are close to each other (i.e. within the same event) are saved in one file
+                    </p>
+                    <p>
+                       The {{ffmpeg_video_codec}} codec is used to save the file
+                       Files are saved in the with name {{movie_filename}} in the {{target_dir}} directoy
+                    </p></li>
+                <li><h4>livestream</h4>
+                   Live stream of the camera is also provided on port {{webcam_port}}, access to this could be restricted to localhost if {{webcam_localhost}} is on</li>
+                <li><h4>control configuration</h4>
+                   <p>on port {{control_port}} the configuration of the motion software can be accessed, this is also restricted to localhost if {{control_localhost}} is on
+                   </p></li>
+                <li><h4>timelapse</h4>
+                <p>if {{ffmpeg_timelapse}}is not 0, timelapse will be on and the period between eat shot is {{ffmpeg_timelapse}} seconds</p></li>
+            </ul>
+        </div>
+        {% endautoescape %}
     </div>
-    <div style="width: 70%; float:left; ">
+    <div style="width: 60%; float:left; ">
         <h2> >>  </h2>
         <p id="p_jsresponse">...</p>
         <h2> <<  </h2>
@@ -95,6 +134,11 @@ function make_cmd_function(url, sdata){
 {% endwith %}
 
 </script>
+<style>
+code {
+    color: blue
+}
+</style>
 {% endblock %}
 
 

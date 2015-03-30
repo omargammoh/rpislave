@@ -9,7 +9,9 @@ from itertools import groupby
 from motion_app.process import get_motion_config
 
 def home(request, template_name='motion_app/home.html'):
-    return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    motion_conf = {k : "<code>%s</code> (currently %s)" %(k, v) for (k,v) in get_motion_config().iteritems()}
+
+    return render_to_response(template_name, motion_conf, context_instance=RequestContext(request))
 
 
 
@@ -57,23 +59,25 @@ def get_files(request):
     d = {}
     try:
         folder = get_motion_config()["target_dir"]
-        files = os.listdir(folder)
+        if not os.path.isdir(folder):
+            d["error"] = "the directory %s does not exist, please start the motion app first"
+        else:
+            files = os.listdir(folder)
+            fun = lambda x: x.split('.')[-1]
+            for key, group in groupby(sorted(files, key=fun),fun ):
+                fl = sorted(list(group))
 
-        fun = lambda x: x.split('.')[-1]
-        for key, group in groupby(sorted(files, key=fun),fun ):
-            fl = list(group)
 
+                d2 = {"count": len(fl)}
+                if fl:
+                    d2.update({'first': fl[0], 'last': fl[-1]})
+                else:
+                    d2.update({'first': '-', 'last': "-"})
 
-            d2 = {"count": len(fl)}
-            if fl:
-                d2.update({'first': sorted(fl)[0], 'last': sorted(fl)[-1]})
-            else:
-                d2.update({'first': '-', 'last': "-"})
+                if key != 'jpg':
+                    d2.update({"files": fl})
 
-            if key != 'jpg':
-                d2.update({"files": fl})
-
-            d[key] = d2
+                d[key] = d2
 
         return HttpResponse(json.dumps(d), content_type='application/json')
     except:

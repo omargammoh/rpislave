@@ -49,18 +49,12 @@ def status(request):
 
     return HttpResponse(jdic, content_type='application/json')
 
-def get_temp(request):
-    d={}
-    try:
-        d['data'] = subprocess.Popen("/opt/vc/bin/vcgencmd measure_temp", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
-    except:
-        d['error']=traceback.format_exc()
-    return HttpResponse(json.dumps(d), content_type='application/json')
 
-def get_df(request):
-    d={}
+def cmd(request):
+    d = {}
     try:
-        d['data'] = subprocess.Popen("df -h", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
+        cmd = request.GET['cmd']
+        d['data'] = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
     except:
         d['error']=traceback.format_exc()
     return HttpResponse(json.dumps(d), content_type='application/json')

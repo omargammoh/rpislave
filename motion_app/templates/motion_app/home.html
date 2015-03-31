@@ -5,19 +5,28 @@
 <div>
     <div>
         <h1>MOTION_APP</h1>
-        <i>stream video and record videos according to motion</i>
+        <i>record motion videos and stream videos</i>
     </div>
     <br>
     <br>
     <div style="width: 40%; float:left; ">
         <h2>Commands</h2>
+
         <table style="width:100%">
-            {% with "get_files send_usr1 send_sigterm send_sighup recent_events start_stream" as lis %}
-                {% for fun in lis.split %}
-                    <tr>
-                        <td><button type="button" id="btn_{{ fun }}">{{ fun }}</button></td>
-                        <td><h3>some explanations</h3></td>
-                    </tr>
+            <col width="25%">
+            <col width="75%">
+            {% for d in lis_signals %}
+                <tr>
+                    <td><button type="button" id="btn_{{ d.name }}" style="width: 100%">send {{ d.btn }}</button></td>
+                    <td>{{ d.desc }}</td>
+                </tr>
+            {% endfor %}
+            {% with "get_files recent_events start_stream" as lis %}
+                {% for s in lis.split %}
+                <tr>
+                    <td><button type="button" id="btn_{{ s }}" style="width: 100%">{{ s }}</button></td>
+                    <td>some explanations</td>
+                </tr>
                 {% endfor %}
             {% endwith %}
         </table>
@@ -32,50 +41,50 @@
             <h3>Definitions</h3>
             <ul>
                 <li><h4>Motion</h4>
-                    <p>The app processes the images of the camera, when there is a change in the images of more than {{threshold}} pixels, for {{minimum_motion_frames}} frames in a row, then a motion is detected.</p>
+                    <p>The app processes the images of the camera, when there is a change in the images of more than {{motion_conf.threshold}} pixels, for {{motion_conf.minimum_motion_frames}} frames in a row, then a motion is detected.</p>
                 </li>
                 <li><h4>Event</h4>
-                <p>An event is a series of motions that occure within a small timeframe. The event ends when there is no motion for {{gap}} seconds</p>
+                <p>An event is a series of motions that occure within a small timeframe. The event ends when there is no motion for {{motion_conf.gap}} seconds</p>
                 </li>
             </ul>
             <h3>Services</h3>
             <ul>
 
                 <li><h4>motion-triggered video files</h4>
-                    <p>The app records the motions from {{pre_capture}} frames before the motion, till {{post_capture}} frames after the motion.
+                    <p>The app records the motions from {{motion_conf.pre_capture}} frames before the motion, till {{motion_conf.post_capture}} frames after the motion.
                     </p>
                     <p>
                        Motions that are close to each other (i.e. within the same event) are saved in one file
                     </p>
                     <p>
-                       The {{ffmpeg_video_codec}} codec is used to save the file
-                       Files are saved in the with name {{movie_filename}} in the {{target_dir}} directoy
+                       The {{motion_conf.ffmpeg_video_codec}} codec is used to save the file
+                       Files are saved in the with name {{motion_conf.movie_filename}} in the {{motion_conf.target_dir}} directoy
                     </p></li>
 
                 <li><h4>motion-triggered images</h4>
-                <p>If {{output_normal}} is on, the images where motion is detected are saved.
+                <p>If {{motion_conf.output_normal}} is on, the images where motion is detected are saved.
                     If it's off, they are not saved, If it's first, then the first image of an event is saved,
                     If it's best, then the picture of the most motion in an event is saved.
                     If it's center, then the image with the motion close to the center is saved
                 </p>
-                <p>If {{output_motion}} is on, then only the pixels with the moving objects are saved (ghost images)
+                <p>If {{motion_conf.output_motion}} is on, then only the pixels with the moving objects are saved (ghost images)
                 </p></li>
 
                 <li><h4>livestream</h4>
-                   Live stream of the camera is also provided on port {{webcam_port}}, access to this could be restricted to localhost if {{webcam_localhost}} is on.
-                   If {{ webcam_motion }} is on, then the output stream will be at 1 fps when there is no motion and when there is motion, it goes back up to {{ webcam_maxrate }}
+                   Live stream of the camera is also provided on port {{motion_conf.webcam_port}}, access to this could be restricted to localhost if {{motion_conf.webcam_localhost}} is on.
+                   If {{motion_conf.webcam_motion }} is on, then the output stream will be at 1 fps when there is no motion and when there is motion, it goes back up to {{motion_conf.webcam_maxrate }}
                 </li>
 
                 <li><h4>control configuration</h4>
-                   <p>on port {{control_port}} the configuration of the motion software can be accessed, this is also restricted to localhost if {{control_localhost}} is on
+                   <p>on port {{motion_conf.control_port}} the configuration of the motion software can be accessed, this is also restricted to localhost if {{motion_conf.control_localhost}} is on
                    </p></li>
 
                 <li><h4>timelapse</h4>
-                <p>if {{ffmpeg_timelapse}}is not 0, timelapse will be on and the period between the shots is {{ffmpeg_timelapse}} seconds</p></li>
+                <p>if {{motion_conf.ffmpeg_timelapse}}is not 0, timelapse will be on and the period between the shots is {{motion_conf.ffmpeg_timelapse}} seconds</p></li>
 
                 <li><h4>snapshots</h4>
-                <p>if {{snapshot_interval}}is not 0, snapshots will be on and the period between the shots is {{snapshot_interval}} seconds.
-                The file ill be named {{ snapshot_filename }}
+                <p>if {{motion_conf.snapshot_interval}}is not 0, snapshots will be on and the period between the shots is {{motion_conf.snapshot_interval}} seconds.
+                The file ill be named {{motion_conf.snapshot_filename }}
                 </p></li>
 
             </ul>
@@ -120,7 +129,7 @@ function syntaxHighlight(json) {
     });
 }
 
-function make_cmd_function(url, sdata){
+function make_click_function(url, sdata){
     function func(){
         var btn =  $(this)
         btn.prop('disabled', true);
@@ -151,16 +160,18 @@ function make_cmd_function(url, sdata){
     return func
 }
 
-{% with "get_files send_usr1 send_sigterm send_sighup" as lis %}
-    {% for fun in lis.split %}
-        $("#btn_{{ fun }}").click(make_cmd_function("/motion_app/{{ fun }}"))
-    {% endfor %}
-{% endwith %}
-$("#btn_recent_events").click(make_cmd_function("/motion_app/recent_events", {"name":"all"}))
+// assigning click functions to buttons
+
+{% for d in lis_signals %}
+    $("#btn_{{ d.name }}").click(make_click_function("/motion_app/send_signal", { "cmd": "{{d.name}}" }))
+{% endfor %}
+
+$("#btn_recent_events").click(make_click_function("/motion_app/recent_events", {"name":"all"}))
+$("#btn_get_files").click(make_click_function("/motion_app/get_files"))
 
 $("#btn_start_stream").click(function (){
     var img = $('#img_stream');
-    img[0].setAttribute('src','http://192.168.1.201:8081');
+    img[0].setAttribute('src','http://192.168.1.201:9002');
     var btn = $("#btn_start_stream")
     btn.remove()
         }

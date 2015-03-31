@@ -9,12 +9,11 @@ def _get_conf():
     for ob in Conf.objects.all():
         try:
             js = json_util.loads(ob.data)
-            if js['label'] == settings.CONF_LABEL:
-                return js
+            return js
         except:
             print "!!was not able to parse and get label of a configuration row, skipping"
             pass
-    raise BaseException('could not find the configuration %s' %settings.CONF_LABEL)
+    raise BaseException('could not any parsable configuration')
 
 
 class MP():
@@ -64,7 +63,6 @@ class MP():
 
     def process_command(self):
         lis = []
-
         print "%s conf = %s" %(self.name, self.conf_label)
         ison_at_start = self.ison()
 

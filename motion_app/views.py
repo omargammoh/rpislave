@@ -8,11 +8,11 @@ import os
 from itertools import groupby
 from motion_app.process import get_motion_config
 
-def home(request, template_name='motion_app/home.html'):
-    motion_conf = {k : "<code>%s</code> (currently %s)" %(k, v) for (k,v) in get_motion_config().iteritems()}
-
-    return render_to_response(template_name, motion_conf, context_instance=RequestContext(request))
-
+lis_signals = [
+     {"name": "SIGHUP", "btn": "hangup",  "desc": "The config file will be reread.	This is a very useful signal when you experiment with settings in the config file"}
+    ,{"name": "SIGTERM", "btn": "terminate", "desc": "If needed motion will create an mpeg file of the last event and exit"}
+    ,{"name": "SIGUSR1", "btn": "usr1", "desc": "Motion will create an mpeg file of the current event"}
+]
 
 
 def _get_pid():
@@ -27,9 +27,17 @@ def _get_pid():
     return pid
 
 
-def _send_signal(signal):
+def home(request, template_name='motion_app/home.html'):
+    motion_conf = {k : "<code>%s</code> (currently %s)" %(k, v) for (k,v) in get_motion_config().iteritems()}
+    d = {"motion_conf": motion_conf, "lis_signals": lis_signals}
+    return render_to_response(template_name, d, context_instance=RequestContext(request))
+
+
+def send_signal(request):
     d = {}
     try:
+        signal = request.GET['cmd']
+
         pid = _get_pid()
         if pid:
             s = subprocess.Popen("sudo kill -s %s %s" %(signal, pid), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
@@ -42,18 +50,6 @@ def _send_signal(signal):
         print d["error"]
         return HttpResponse(json.dumps(d), content_type='application/json')
 
-
-def send_sighup(request):
-    #SIGHUP The config file will be reread.	This is a very useful signal when you experiment with settings in the config file.
-    return _send_signal(signal="SIGHUP")
-
-def send_sigterm(request):
-    #SIGTERM If needed motion will create an mpeg file of the last event and exit
-    return _send_signal(signal="SIGTERM")
-
-def send_usr1(request):
-    #SIGUSR1 Motion will create an mpeg file of the current event.
-    return _send_signal(signal="SIGUSR1")
 
 def get_files(request):
     d = {}

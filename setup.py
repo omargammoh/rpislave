@@ -9,8 +9,10 @@ try:
         raise BaseException('the json config file was not found %s' %conffile)
 
     fl = file(conffile,"r")
-    conf = json.load(fl)
+    conf_str = fl.read()
     fl.close()
+    conf = json.loads(conf_str)
+
 except:
     print 'error while getting the json configuration file'
     raise
@@ -114,6 +116,21 @@ iface default inet static
 
     print "setup_internetsettings: interfaces successful"
 
+
+def copy_config():
+    import os
+    import sys
+    import django
+    sys.path.append(os.path.dirname(__file__))
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'website.settings'
+    django.setup()
+    from website.models import Conf
+    for c in Conf.objects.all():
+        c.delete()
+    newconf = Conf(data=conf_str, meta="")
+    newconf.save()
+    print "copy_config: successful"
+
 def setup_realtimeclock():
     print "not ready for this yet"
     return None
@@ -180,6 +197,9 @@ if __name__ == "__main__":
 
         if "rtc" in conf:
             setup_realtimeclock()
+
+    copy_config()
+
     t4 = time()
     print "took %0.2f sec=" %(t4-t1)
     print "    %0.2f sec" %(t2-t1)

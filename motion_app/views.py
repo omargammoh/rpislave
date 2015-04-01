@@ -8,6 +8,13 @@ import os
 from itertools import groupby
 from motion_app.process import get_motion_config
 
+
+info = {
+    "label": "MOTION",
+    "desc": "Record videos, take pictures, create timelapse files and stream videos using a camera"
+}
+
+
 lis_signals = [
      {"name": "SIGHUP", "btn": "hangup",  "desc": "The config file will be reread.	This is a very useful signal when you experiment with settings in the config file"}
     ,{"name": "SIGTERM", "btn": "terminate", "desc": "If needed motion will create an mpeg file of the last event and exit"}
@@ -28,8 +35,8 @@ def _get_pid():
 
 
 def home(request, template_name='motion_app/home.html'):
-    motion_conf = {k : "<code>%s</code> (currently %s)" %(k, v) for (k,v) in get_motion_config().iteritems()}
-    d = {"motion_conf": motion_conf, "lis_signals": lis_signals}
+    motion_conf = {k: {"h" : "<code>%s</code> (currently %s)" %(k, v), "v": v} for (k,v) in get_motion_config().iteritems()}
+    d = {"motion_conf": motion_conf, "lis_signals": lis_signals, "info": info}
     return render_to_response(template_name, d, context_instance=RequestContext(request))
 
 

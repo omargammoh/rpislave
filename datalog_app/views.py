@@ -1,18 +1,18 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.http import HttpResponse
 import json
 from bson import json_util
 from datalog_app.models import Reading
 import traceback
 
+info = {
+    "label": "DATA-LOG",
+    "desc": "Record data from RS485 devices and signals connected to MCP3008 chip"
+}
 
 def home(request, template_name='datalog_app/home.html'):
-    return render_to_response(template_name, {}, context_instance=RequestContext(request))
-
+    return render_to_response(template_name, {"info": info}, context_instance=RequestContext(request))
 
 
 def recentdata(request):

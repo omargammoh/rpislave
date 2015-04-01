@@ -1,9 +1,9 @@
-{% extends "base.html" %}
+{% extends "base_website.html" %}
 
 {% block content %}
 <div>
     <div>
-        <h1>GPIO_APP</h1><i>  an app to control and observe the GPIO pins</i>
+        <h1>{{ info.label }}</h1><i> {{ info.desc }} </i>
     </div>
     <br>
     <br>
@@ -90,7 +90,7 @@
 
 {% endblock %}
 
-{% block sidebar %}
+{% block scripts %}
 {%comment%}scripts put in the side bar block, but this is just a workaround to get the scripts working{%endcomment%}
 
 <script>

@@ -13,13 +13,24 @@ import importlib
 import subprocess
 
 
+app_info = []
+for app in _get_conf()['apps'].keys():
+
+    try:
+        d = {"name": app}
+        m = importlib.import_module("%s.views" %app)
+        if hasattr(m, "info"):
+            d.update(m.info)
+            print "added app info %s" % app
+        else:
+            print "app %s has no info" % app
+        app_info.append(d)
+    except:
+        print '!!could not add info from the app %s' % (app)
+
+
 def home(request, template_name='home.html'):
-    dic_label = {
-        "motion_app":"MOTION",
-        "gpio_app":"GPIO"
-    }
-    app_list = [{"name": k, "label": dic_label.get(k, k)} for k in _get_conf()['apps'].keys()]
-    return render_to_response(template_name, {"app_list": app_list}, context_instance=RequestContext(request))
+    return render_to_response(template_name, {"app_info": app_info}, context_instance=RequestContext(request))
 
 
 def nourls(why):

@@ -56,7 +56,10 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'website.middleware.LoginRequiredMiddleware',
 )
+
+LOGIN_URL = "/admin/login/"
 
 ROOT_URLCONF = 'website.urls'
 

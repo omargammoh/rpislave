@@ -1,9 +1,9 @@
-{% extends "base.html" %}
+{% extends "base_website.html" %}
 
 {% block content %}
 <div>
     <div>
-        <h2>welcome to CAMSHOOT home</h2><i>take snap shots with the camera</i>
+        <h1>{{ info.label }}</h1><i> {{ info.desc }} </i>
     </div>
 
     <button type="button" id="btn_snapshot">get snap shot</button>

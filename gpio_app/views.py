@@ -10,6 +10,11 @@ from django.template import RequestContext
 from django.http import HttpResponse
 from datetime import datetime
 
+info = {
+    "label": "GPIO",
+    "desc": "Control and observe the GPIO (input output) pins of your device"
+}
+
 def home(request, template_name='gpio_app/home.html'):
     pins_conf = _get_conf()['apps']['gpio_app']['pins_conf']
     rev = {cf["pin"]: {"label": label, "desc": cf['desc']} for (label, cf) in pins_conf.iteritems()}
@@ -30,7 +35,7 @@ def home(request, template_name='gpio_app/home.html'):
         if d['iou'] != "unset": d['lowhigh'] = get_para(pin_bcm=pin_bcm, para="value")
         else: d['lowhigh'] = "x"
         gpio_list.append(d)
-    return render_to_response(template_name, {"gpio_list":gpio_list }, context_instance=RequestContext(request))
+    return render_to_response(template_name, {"gpio_list": gpio_list, "info": info }, context_instance=RequestContext(request))
 
 
 def pins(request):

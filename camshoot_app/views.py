@@ -9,9 +9,13 @@ import traceback
 try: import picamera
 except: print "!!could not import picamera"
 
+info = {
+        "label": "CAMSHOOT",
+    "desc": "Take high resolution pictures using your ras-pi camera"
+}
 
 def home(request, template_name='camshoot_app/home.html'):
-    return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    return render_to_response(template_name, {"info": info}, context_instance=RequestContext(request))
 
 def snapshot(request):
     d = {}

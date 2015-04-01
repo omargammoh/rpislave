@@ -1,13 +1,13 @@
-{% extends "base.html" %}
+{% extends "base_website.html" %}
 
 {% block content %}
 
 
 <div>
     <div>
-        <h2>APPS</h2>
+        <h1>APPS</h1>
         <table style="width:100%">
-            {% for app in app_list %}
+            {% for app in app_info %}
                 <col width="15%">
                 <col width="10%">
                 <col width="10%">
@@ -15,21 +15,22 @@
                 <col width="10%">
                 <col width="50%">
                 <tr>
-                    <td><h3>{{ app.label }}</h3></td>
+                    <td><h3>{% if app.label %} {{ app.label }} {% else %} {{ app.name }}{% endif %} </h3></td>
                     <td><button type="button" id="btn_{{app.name}}_start">Start</button></td>
                     <td><button type="button" id="btn_{{app.name}}_stop">Stop</button></td>
                     <td><button type="button" id="btn_{{app.name}}_status">Status</button></td>
                     <td><a href="/{{app.name}}/"><button type="button">app's home</button></a></td>
-                    <td>bla</td>
+                    <td>{% if app.desc %} {{ app.desc }} {% else %} no description available{% endif %} </td>
                 </tr>
             {% endfor %}
         </table>
         <br>
         <br>
+        <br>
     </div>
     <div>
         <div style="width: 40%; float:left; ">
-            <h2>STATUS</h2>
+            <h1>STATUS</h1>
             <table style="width:100%">
                 <col width="10%">
                 <col width="10%">
@@ -37,13 +38,14 @@
                 <col width="10%">
                 <col width="10%">
                 <tr>
-                    <td>django</td>
+                    <td><h4>django</h4></td>
                     <td><button type="button" id="btn_status_overview">Overview</button></td>
                     <td><button type="button" id="btn_status_conf">Config</button></td>
                 </tr>
                 <tr>
-                    <td>linux</td>
+                    <td><h4>system</h4></td>
                     <td><button type="button" id="btn_status_temp">temp</button></td>
+                    <td><button type="button" id="btn_status_df">df</button></td>
                     <td><button type="button" id="btn_status_pstree">pstree</button></td>
                     <td><button type="button" id="btn_status_psaux">ps aux</button></td>
                 </tr>
@@ -135,7 +137,7 @@ $("#btn_status_pstree").click(make_cmd_function("{% url "website.views.cmd" %}",
 $("#btn_status_psaux").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"ps aux"}))
 
 {% with cmd_list='start stop status' %}
-    {% for app in app_list %}
+    {% for app in app_info %}
         {% for cmd in cmd_list.split %}
             $("#btn_{{app.name}}_{{cmd}}").click(make_cmd_function("{% url "website.views.appmanage" %}", {"app":"{{app.name}}", "cmd":"{{cmd}}"}))
             {% if cmd == "status" %}

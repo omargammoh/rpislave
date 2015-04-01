@@ -43,6 +43,7 @@
                     <td><button type="button" id="btn_status_overview">Overview</button></td>
                     <td><button type="button" id="btn_status_conf">Config</button></td>
                     <td><button type="button" id="btn_status_update">Update</button></td>
+                    <td><button type="button" id="btn_status_setup">Setup</button></td>
                 </tr>
                 <tr>
                     <td><h4>system info</h4></td>
@@ -138,7 +139,7 @@ function make_cmd_function(url, sdata){
 $("#btn_status_overview").click(make_cmd_function("{% url "website.views.status" %}", {"cmd":"overview"}))
 $("#btn_status_conf").click(make_cmd_function("{% url "website.views.status" %}", {"cmd":"conf"}))
 $("#btn_status_update").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":". /home/pi/rpislave/update.sh"}))
-
+$("#btn_status_setup").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"sudo python /home/pi/rpislave/setup.py"}))
 
 $("#btn_status_temp").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"/opt/vc/bin/vcgencmd measure_temp"}))
 $("#btn_status_df").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"df -h"}))

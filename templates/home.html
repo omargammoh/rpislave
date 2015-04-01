@@ -4,41 +4,63 @@
 
 
 <div>
-    <div style="width: 60%; float:left; ">
+    <div>
         <h2>APPS</h2>
         <table style="width:100%">
             {% for app in app_list %}
+                <col width="15%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="50%">
                 <tr>
                     <td><h3>{{ app.label }}</h3></td>
                     <td><button type="button" id="btn_{{app.name}}_start">Start</button></td>
                     <td><button type="button" id="btn_{{app.name}}_stop">Stop</button></td>
                     <td><button type="button" id="btn_{{app.name}}_status">Status</button></td>
-                    <td><a href="/{{app.name}}/"><button>app's home</button></a></td>
+                    <td><a href="/{{app.name}}/"><button type="button">app's home</button></a></td>
+                    <td>bla</td>
                 </tr>
             {% endfor %}
         </table>
         <br>
         <br>
-        <div>
-            <h2>STATUS</h2>
-            <button type="button" id="btn_status_overview">Overview</button>
-            <button type="button" id="btn_status_conf">Config</button>
-            <button type="button" id="btn_status_temp">temp</button>
-            <button type="button" id="btn_status_pstree">pstree</button>
-            <button type="button" id="btn_status_psaux">ps aux</button>
-        </div>
     </div>
-    <div style="width: 40%; float:left; ">
-        <h2> >>  </h2>
-        <p id="p_jsresponse">...</p>
-        <h2> <<  </h2>
+    <div>
+        <div style="width: 40%; float:left; ">
+            <h2>STATUS</h2>
+            <table style="width:100%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <tr>
+                    <td>django</td>
+                    <td><button type="button" id="btn_status_overview">Overview</button></td>
+                    <td><button type="button" id="btn_status_conf">Config</button></td>
+                </tr>
+                <tr>
+                    <td>linux</td>
+                    <td><button type="button" id="btn_status_temp">temp</button></td>
+                    <td><button type="button" id="btn_status_pstree">pstree</button></td>
+                    <td><button type="button" id="btn_status_psaux">ps aux</button></td>
+                </tr>
+            </table>
+        </div>
+        <div style="width: 60%; float:left; ">
+            <h2> >>  </h2>
+            <p id="p_jsresponse">...</p>
+            <h2> <<  </h2>
+        </div>
     </div>
 
 </div>
 
 {% endblock %}
 
-{% block sidebar %}{% comment %}scripts put in the side bar block, but this is just a workaround to get the scripts working{% endcomment %}
+{% block scripts %}{% comment %}scripts put in the side bar block, but this is just a workaround to get the scripts working{% endcomment %}
 
 <script>
 function syntaxHighlight(json) {
@@ -109,7 +131,7 @@ $("#btn_status_overview").click(make_cmd_function("{% url "website.views.status"
 $("#btn_status_conf").click(make_cmd_function("{% url "website.views.status" %}", {"cmd":"conf"}))
 $("#btn_status_temp").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"/opt/vc/bin/vcgencmd measure_temp"}))
 $("#btn_status_df").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"df -h"}))
-$("#btn_status_pstree").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"pstree"}))
+$("#btn_status_pstree").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"pstree -p -l"}))
 $("#btn_status_psaux").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"ps aux"}))
 
 {% with cmd_list='start stop status' %}
@@ -136,6 +158,7 @@ hr {
     color: #333; /* old IE */
     background-color: #333; /* Modern Browsers */
 }
+
 
 </style>
 {% endblock %}

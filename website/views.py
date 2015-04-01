@@ -54,7 +54,7 @@ def cmd(request):
     d = {}
     try:
         cmd = request.GET['cmd']
-        d['data'] = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
+        d['data'] = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read().split("\n")
     except:
         d['error']=traceback.format_exc()
     return HttpResponse(json.dumps(d), content_type='application/json')

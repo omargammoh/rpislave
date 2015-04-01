@@ -12,7 +12,7 @@ from datetime import datetime
 
 info = {
     "label": "GPIO",
-    "desc": "Control and observe the GPIO (input output) pins of your device"
+    "desc": "Control and observe the GPIO (input output) pins of your rpi slave"
 }
 
 def home(request, template_name='gpio_app/home.html'):

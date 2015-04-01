@@ -182,7 +182,8 @@ if __name__ == "__main__":
     if 'apps' in conf:
         if 'datalog_app' in conf['apps']:
             execute([
-                'sudo pip install pymodbus==1.2.0'
+                'sudo pip install spidev'
+                ,'sudo pip install pymodbus==1.2.0'
                 ])
 
         if 'datasend_app' in conf['apps']:

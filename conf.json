@@ -17,26 +17,33 @@
             "autostart": false,
             "pins_conf": {
                "tv": {
-                   "pin": 7,
+                   "pin": 13,
                    "iou": "output",
                    "desc": "television control",
                    "start": "high"
                },
                "aircondition": {
-                   "pin": 11,
+                   "pin": 15,
+                   "iou": "output",
+                   "desc": "aircondition control",
+                   "start": "high"
+               },
+               "printer": {
+                   "pin": 16,
+                   "iou": "output",
+                   "desc": "aircondition control",
+                   "start": "low"
+               },
+               "charger": {
+                   "pin": 18,
                    "iou": "output",
                    "desc": "aircondition control",
                    "start": "low"
                },
                "light": {
-                   "pin": 13,
+                   "pin": 11,
                    "iou": "input",
                    "desc": "high if light is more than 200W/m2"
-               },
-               "temperature": {
-                   "pin": 15,
-                   "iou": "input",
-                   "desc": "high if temperature is more than 20 degrees C"
                }
             }
         },

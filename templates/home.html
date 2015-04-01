@@ -5,7 +5,8 @@
 
 <div>
     <div>
-        <h1>APPS</h1>
+        <h1>APPS {{ request.get_host }}</h1>
+
         <table style="width:100%">
             {% for app in app_info %}
                 <col width="15%">
@@ -32,7 +33,7 @@
         <div style="width: 40%; float:left; ">
             <h1>STATUS</h1>
             <table style="width:100%">
-                <col width="10%">
+                <col width="20%">
                 <col width="10%">
                 <col width="10%">
                 <col width="10%">
@@ -41,13 +42,18 @@
                     <td><h4>django</h4></td>
                     <td><button type="button" id="btn_status_overview">Overview</button></td>
                     <td><button type="button" id="btn_status_conf">Config</button></td>
+                    <td><button type="button" id="btn_status_update">Update</button></td>
                 </tr>
                 <tr>
-                    <td><h4>system</h4></td>
+                    <td><h4>system info</h4></td>
                     <td><button type="button" id="btn_status_temp">temp</button></td>
                     <td><button type="button" id="btn_status_df">df</button></td>
                     <td><button type="button" id="btn_status_pstree">pstree</button></td>
                     <td><button type="button" id="btn_status_psaux">ps aux</button></td>
+                </tr>
+                <tr>
+                    <td><h4>system actions</h4></td>
+                    <td><button type="button" id="btn_status_reboot">reboot</button></td>
                 </tr>
             </table>
         </div>
@@ -131,10 +137,15 @@ function make_cmd_function(url, sdata){
 
 $("#btn_status_overview").click(make_cmd_function("{% url "website.views.status" %}", {"cmd":"overview"}))
 $("#btn_status_conf").click(make_cmd_function("{% url "website.views.status" %}", {"cmd":"conf"}))
+$("#btn_status_update").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":". /home/pi/rpislave/update.sh"}))
+
+
 $("#btn_status_temp").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"/opt/vc/bin/vcgencmd measure_temp"}))
 $("#btn_status_df").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"df -h"}))
 $("#btn_status_pstree").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"pstree -p -l"}))
 $("#btn_status_psaux").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"ps aux"}))
+
+$("#btn_status_reboot").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"sudo reboot"}))
 
 {% with cmd_list='start stop status' %}
     {% for app in app_info %}

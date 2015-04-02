@@ -200,7 +200,7 @@ $("#btn_get_files").click(make_click_function("/motion_app/get_files"))
 
 $("#btn_start_stream").click(function (){
     var img = $('#img_stream');
-    img[0].setAttribute('src',{{ stream_address }});
+    img[0].setAttribute('src',"{{ stream_address }}");
     var btn = $("#btn_start_stream")
     btn.remove()
         }

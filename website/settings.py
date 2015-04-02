@@ -111,3 +111,9 @@ TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), '..', 'templates').repl
 
 #oga
 CONF_LABEL = 'example' #make sure this conf is in the database in the table mng_conf
+
+#this enables accessing the request object in the template
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.request'
+    )

@@ -10,7 +10,6 @@
     <br>
     <div style="width: 40%; float:left; ">
         <h2>Commands</h2>
-
         <table style="width:100%">
             <col width="25%">
             <col width="75%">
@@ -201,7 +200,7 @@ $("#btn_get_files").click(make_click_function("/motion_app/get_files"))
 
 $("#btn_start_stream").click(function (){
     var img = $('#img_stream');
-    img[0].setAttribute('src','http://192.168.1.201:9002');
+    img[0].setAttribute('src',{{ stream_address }});
     var btn = $("#btn_start_stream")
     btn.remove()
         }

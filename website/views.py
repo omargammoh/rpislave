@@ -1,3 +1,4 @@
+import website.templatetags.customfilters
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse
@@ -11,7 +12,6 @@ import traceback
 from website.processing import MP, _get_conf
 import importlib
 import subprocess
-
 
 app_info = []
 for app in _get_conf()['apps'].keys():

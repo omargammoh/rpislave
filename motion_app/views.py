@@ -35,8 +35,10 @@ def _get_pid():
 
 
 def home(request, template_name='motion_app/home.html'):
-    motion_conf = {k: {"h" : "<code>%s</code> (currently %s)" %(k, v), "v": v} for (k,v) in get_motion_config().iteritems()}
+    conf = get_motion_config()
+    motion_conf = {k: {"h" : "<code>%s</code> (currently %s)" %(k, v), "v": v} for (k,v) in conf.iteritems()}
     d = {"motion_conf": motion_conf, "lis_signals": lis_signals, "info": info}
+    d["stream_address"] = 'http://' + request.get_host().lstrip('http://').split(':')[0] + ":" + str(conf["webcam_port"])
     return render_to_response(template_name, d, context_instance=RequestContext(request))
 
 

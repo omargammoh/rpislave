@@ -23,15 +23,18 @@
     <!-- Header -->
     <div id="header">
         <div id="branding">
-        {% block branding %}
-        <h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('RPI SLAVE') }}</a></h1>
-        {% endblock %}
+            {% block branding %}
+                <div style="margin:0px auto">
+                    <h1>{% conflabel %} | {{ request.get_host }} </h1>
+                </div>
+
+            {% endblock %}
         </div>
         {% if user.is_active and user.is_staff %}
         <div id="user-tools">
             {% block welcome-msg %}
-                {% trans 'Welcome,' %}
-                <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+
+                Hello <strong>{% firstof user.get_short_name user.get_username %}</strong>, {% trans 'Welcome to RPI Slave, git version' %} {% git_short_version %}.
             {% endblock %}
             {% block userlinks %}
                 {% url 'django-admindocs-docroot' as docsroot %}
@@ -86,7 +89,7 @@
 {% endblock %}
 <style>
 button {
-    width: 100%
+    width: 100%;
 }
 code {
     color: blue

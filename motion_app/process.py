@@ -92,11 +92,8 @@ def main():
         #set the rasppi camera will be set as the /tty/video0 ?
         cmd = "sudo motion"
         print cmd
-        subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
-
-        #keep process alive
-        while True:
-            sleep(60)
+        sp = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        sp.communicate()
 
     except KeyboardInterrupt:
         interrupt_process()

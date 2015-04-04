@@ -16,11 +16,9 @@ def main():
         #run server
         pc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=r'/home/pi')
         pid = pc.pid
-        s = pc.stdout.read()
 
-        #keep this process alive
-        while True:
-            sleep(60)
+        #stay here if everything is ok and no dignal is given
+        _ = pc.communicate()
 
     except KeyboardInterrupt:
         if pid:

@@ -24,7 +24,7 @@ def main():
 
     except KeyboardInterrupt:
         if pid:
-            s = subprocess.Popen("sudo kill -INT %s" %pid, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
+            s = subprocess.Popen("sudo kill -INT %s" % pid, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
             print 'motion interrupted successfuly'
         else: print 'no pid'
         print "btsync_app exiting"

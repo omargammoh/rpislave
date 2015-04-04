@@ -117,19 +117,21 @@ iface default inet static
     print "setup_internetsettings: interfaces successful"
 
 
-def copy_config():
+def setup_db():
     import os
     import sys
     import django
+    from website.models import Conf
+
+    execute("sudo python /home/pi/rpislave/manage.py migrate")
     sys.path.append(os.path.dirname(__file__))
     os.environ['DJANGO_SETTINGS_MODULE'] = 'website.settings'
     django.setup()
-    from website.models import Conf
     for c in Conf.objects.all():
         c.delete()
     newconf = Conf(data=conf_str, meta="")
     newconf.save()
-    print "copy_config: successful"
+    print "setup_db: successful"
 
 
 def setup_realtimeclock():
@@ -159,7 +161,8 @@ def setup_realtimeclock():
 if __name__ == "__main__":
     t1 = time()
     execute([
-         "sudo apt-get -y update" #update is needed for motion
+         "sudo apt-get -y update"
+         #update is needed for motion
         #,"sudo apt-get -y upgrade"
         #,"sudo apt-get install rpi-update"
         #,"sudo rpi-update"
@@ -206,7 +209,7 @@ if __name__ == "__main__":
         if "rtc" in conf:
             setup_realtimeclock()
 
-    copy_config()
+    setup_db()
 
     t4 = time()
     print "took %0.2f sec=" %(t4-t1)

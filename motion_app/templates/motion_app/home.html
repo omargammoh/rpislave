@@ -60,6 +60,9 @@
                        Motions that are close to each other (i.e. within the same event) are saved in one file
                     </p>
                     <p>
+                       The maximum length of a movie is {{motion_conf.max_mpeg_time.h}} seconds. If the value is 0 then the maximum length is infinite
+                    </p>
+                    <p>
                        The {{motion_conf.ffmpeg_video_codec.h}} codec is used to save the file
                        Files are saved in the with name {{motion_conf.movie_filename.h}} in the {{motion_conf.target_dir.h}} directoy
                     </p></li>
@@ -72,7 +75,7 @@
                 <p>If {{motion_conf.output_normal.h}} is on, the images where motion is detected are saved.
                     If it's off, they are not saved, If it's first, then the first image of an event is saved,
                     If it's best, then the picture of the most motion in an event is saved.
-                    If it's center, then the image with the motion close to the center is saved
+                    If it's center, then the image with the motion close to the center is saved. Files are named {{motion_conf.jpeg_filename.h}}.
                 </p>
                 <p>If {{motion_conf.output_motion.h}} is on, then only the pixels with the moving objects are saved (ghost images)
                 </p></li>
@@ -100,7 +103,7 @@
                     timelapse
                     {% if motion_conf.ffmpeg_timelapse.v != 0 %} &#10004; {% else %} x {% endif %}
                     </h4>
-                <p>if {{motion_conf.ffmpeg_timelapse.h}}is not 0, timelapse will be on and the period between the shots is {{motion_conf.ffmpeg_timelapse.h}} seconds</p></li>
+                <p>if {{motion_conf.ffmpeg_timelapse.h}}is not 0, timelapse will be on and the period between the shots is {{motion_conf.ffmpeg_timelapse.h}} seconds. Files are named {{motion_conf.timelapse_filename.h}}</p></li>
 
                 <li>
                     <h4>
@@ -108,7 +111,7 @@
                     {% if motion_conf.snapshot_interval.v != 0 %} &#10004; {% else %} x {% endif %}
                     </h4>
                 <p>if {{motion_conf.snapshot_interval.h}}is not 0, snapshots will be on and the period between the shots is {{motion_conf.snapshot_interval.h}} seconds.
-                The file ill be named {{motion_conf.snapshot_filename.h}}
+                Files are named{{motion_conf.snapshot_filename.h}}
                 </p></li>
 
             </ul>

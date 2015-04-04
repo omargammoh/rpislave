@@ -36,6 +36,7 @@ RPI_APPS = (
     'gpio_app',
     'motion_app',
     'camshoot_app',
+    'btsync_app',
 )
 
 INSTALLED_APPS = (

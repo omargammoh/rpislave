@@ -5,6 +5,26 @@ from django.conf import settings
 from time import time, sleep
 import inspect
 import subprocess
+
+
+def get_pid(command):
+    """
+    gets the pid of the process using the command column in the ps aux table
+    """
+    s = subprocess.Popen("ps aux", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
+    lines = [line.split(None, 10) for line in s.split("\n") if line.lstrip() != ""]
+    matches = [line for line in lines if line[-1] == command]
+    if len(matches)==0:
+        print "no maches found"
+        return None
+    elif len(matches)>1:
+        print "multiple matches found"
+        return None
+    else:
+        pid = matches[0][1]
+    return pid
+
+
 def _get_conf():
     for ob in Conf.objects.all():
         try:

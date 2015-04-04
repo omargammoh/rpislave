@@ -131,6 +131,7 @@ def copy_config():
     newconf.save()
     print "copy_config: successful"
 
+
 def setup_realtimeclock():
     print "not ready for this yet"
     return None
@@ -194,6 +195,12 @@ if __name__ == "__main__":
         if 'motion_app' in conf['apps']:
             execute([
                 'sudo apt-get install -y motion'
+                ])
+
+        if 'btsync_app' in conf['apps']:
+            execute([
+                'cd&&wget https://download-cdn.getsyncapp.com/stable/linux-arm/BitTorrent-Sync_arm.tar.gz'
+                ,'cd&&tar -zxvf BitTorrent-Sync_arm.tar.gz'
                 ])
 
         if "rtc" in conf:

@@ -123,6 +123,12 @@ def setup_db():
     execute("sudo python /home/pi/rpislave/manage.py migrate")
 
     django.setup()
+    from django.contrib.auth.models import User
+    if len(User.objects.all()) == 0:
+        u = User.objects.create_superuser('pi', '', 'raspberry')
+        u.save()
+        print "superuser created"
+        
     from website.models import Conf
     for c in Conf.objects.all():
         c.delete()

@@ -4,19 +4,15 @@ import json
 from time import time
 try:
     conffile = os.path.join(os.path.dirname(__file__), 'conf.json')
-
     if not os.path.isfile(conffile):
         raise BaseException('the json config file was not found %s' %conffile)
-
     fl = file(conffile,"r")
     conf_str = fl.read()
     fl.close()
     conf = json.loads(conf_str)
-
 except:
     print 'error while getting the json configuration file'
     raise
-
 def execute(lis):
     if type(lis) == str:
         lis=[lis]
@@ -121,12 +117,13 @@ def setup_db():
     import os
     import sys
     import django
-    from website.models import Conf
 
-    execute("sudo python /home/pi/rpislave/manage.py migrate")
     sys.path.append(os.path.dirname(__file__))
     os.environ['DJANGO_SETTINGS_MODULE'] = 'website.settings'
+    execute("sudo python /home/pi/rpislave/manage.py migrate")
+
     django.setup()
+    from website.models import Conf
     for c in Conf.objects.all():
         c.delete()
     newconf = Conf(data=conf_str, meta="")

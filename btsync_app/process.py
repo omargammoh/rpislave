@@ -3,7 +3,7 @@ from time import sleep
 import traceback
 import os
 
-cmd = "./home/pi/btsync --webui.listen 0.0.0.0:9004"
+cmd = "./btsync --webui.listen 0.0.0.0:9004"
 
 def main():
     pid = None
@@ -14,7 +14,7 @@ def main():
         _ = subprocess.Popen('sudo chmod -R 0777 "/home/pi/data"', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
 
         #run server
-        pc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        pc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=r'/home/pi')
         pid = pc.pid
         s = pc.stdout.read()
 
@@ -25,9 +25,8 @@ def main():
     except KeyboardInterrupt:
         if pid:
             s = subprocess.Popen("sudo kill -INT %s" % pid, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
-            print 'motion interrupted successfuly'
-        else: print 'no pid'
-        print "btsync_app exiting"
+            print 'btsync_app interrupted successfuly'
+        else: print 'btsync_app: no pid'
 
     except:
         print traceback.format_exc()

@@ -6,8 +6,8 @@ import traceback
 
 def get_motion_config():
     def last_detection_cmd(s):
-        #return "touch /home/pi/data/motion_app/{0}&&echo `date +%Y-%m-%d:%H:%M:%S` > /home/pi/data/motion_app/{0} &&echo {0}".format(s)
-        return "wget --spider http://localhost:9001/motion_app/register_event/?label=%s" % s
+        return "touch /home/pi/data/motion_app/{0}&&echo `date +%Y-%m-%d %H:%M:%S` > /home/pi/data/motion_app/{0} &&echo {0}&&wget --spider http://localhost:9001/motion_app/register_event/?label={0}".format(s)
+        #return "wget --spider http://localhost:9001/motion_app/register_event/?label={0}".format(s)
 
     default_conf = {
         "control_localhost": "off",
@@ -37,7 +37,7 @@ def get_motion_config():
         "on_event_start": last_detection_cmd("event_start"),
         "on_event_end": last_detection_cmd("event_end"),
         "on_picture_save": last_detection_cmd("picture_save"),
-        "on_motion_detected": last_detection_cmd("detected"),
+        "on_motion_detected": last_detection_cmd("motion_detected"),
         "on_area_detected": last_detection_cmd("area_detected"),
         "on_movie_start": last_detection_cmd("movie_start"),
         "on_movie_end": last_detection_cmd("movie_end"),

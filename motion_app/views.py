@@ -98,7 +98,7 @@ def register_event(request):
     try:
         data = {}
         data["dt"] = datetime.datetime.utcnow()
-        data = request.GET['label']
+        data["label"] = request.GET['label']
         ev = Event(data=json_util.dumps(data))
         ev.save()
         d["msg"] = "done"

@@ -7,7 +7,9 @@ import subprocess
 import os
 from itertools import groupby
 from motion_app.process import get_motion_config
-
+from motion_app.models import Event
+from bson import json_util
+import datetime
 
 info = {
     "label": "MOTION",
@@ -16,9 +18,9 @@ info = {
 
 
 lis_signals = [
-     {"name": "SIGHUP", "btn": "hangup",  "desc": "The config file will be reread.	This is a very useful signal when you experiment with settings in the config file"}
-    ,{"name": "SIGTERM", "btn": "terminate", "desc": "If needed motion will create an mpeg file of the last event and exit"}
-    ,{"name": "SIGUSR1", "btn": "usr1", "desc": "Motion will create an mpeg file of the current event"}
+      {"name": "SIGHUP", "btn": "hangup",  "desc": "The config file will be reread.	This is a very useful signal when you experiment with settings in the config file"}
+    , {"name": "SIGTERM", "btn": "terminate", "desc": "If needed motion will create an mpeg file of the last event and exit"}
+    , {"name": "SIGUSR1", "btn": "usr1", "desc": "Motion will create an mpeg file of the current event"}
 ]
 
 
@@ -53,6 +55,7 @@ def send_signal(request):
             d["msg"] = "%done"
         else:
             d["msg"] = "could not find pid"
+        print request
         return HttpResponse(json.dumps(d), content_type='application/json')
     except:
         d["error"] = traceback.format_exc()
@@ -84,6 +87,21 @@ def get_files(request):
 
                 d[key] = d2
 
+        return HttpResponse(json.dumps(d), content_type='application/json')
+    except:
+        d["error"] = traceback.format_exc()
+        print d["error"]
+        return HttpResponse(json.dumps(d), content_type='application/json')
+
+def register_event(request):
+    d = {}
+    try:
+        data = {}
+        data["dt"] = datetime.datetime.utcnow()
+        data = request.GET['label']
+        ev = Event(data=json_util.dumps(data))
+        ev.save()
+        d["msg"] = "done"
         return HttpResponse(json.dumps(d), content_type='application/json')
     except:
         d["error"] = traceback.format_exc()
@@ -130,3 +148,4 @@ def recent_events(request):
         d["error"] = traceback.format_exc()
 
     return HttpResponse(json.dumps(d), content_type='application/json')
+

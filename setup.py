@@ -204,10 +204,11 @@ if __name__ == "__main__":
                 ])
 
         if 'btsync_app' in conf['apps']:
-            execute([
-                'cd /home/pi&&wget https://download-cdn.getsyncapp.com/stable/linux-arm/BitTorrent-Sync_arm.tar.gz'
-                ,'cd /home/pi&&tar -zxvf BitTorrent-Sync_arm.tar.gz'
-                ])
+            if not os.path.isfile('/home/pi/btsync'):
+                execute([
+                    'cd /home/pi&&wget https://download-cdn.getsyncapp.com/stable/linux-arm/BitTorrent-Sync_arm.tar.gz'
+                    ,'cd /home/pi&&tar -zxvf BitTorrent-Sync_arm.tar.gz'
+                    ])
 
         if "rtc" in conf:
             setup_realtimeclock()

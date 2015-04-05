@@ -6,8 +6,9 @@ import traceback
 
 def get_motion_config():
     def last_detection_cmd(s):
-        return "touch /home/pi/data/motion_app/{0}&&echo `date +%Y-%m-%d:%H:%M:%S` > /home/pi/data/motion_app/{0} &&echo {0}".format(s)
-        #touch /home/pi/las_xxx && echo `date +%Y-%m-%d:%H:%M:%S` > /home/pi/las_xxx
+        #return "touch /home/pi/data/motion_app/{0}&&echo `date +%Y-%m-%d:%H:%M:%S` > /home/pi/data/motion_app/{0} &&echo {0}".format(s)
+        return "wget --spider http://localhost:9001/motion_app/register_event/?label=%s" % s
+
     default_conf = {
         "control_localhost": "off",
         "webcam_localhost": "off",
@@ -32,15 +33,15 @@ def get_motion_config():
         "output_normal": "best",
         "output_motion": "off",
         "max_mpeg_time": 300,
-        "on_motion_detected": last_detection_cmd("last_motion_detected"),
-        "on_event_start": last_detection_cmd("last_event_start"),
-        "on_event_end": last_detection_cmd("last_event_end"),
-        "on_picture_save": last_detection_cmd("last_picture_save"),
-        "on_motion_detected": last_detection_cmd("last_motion_detected"),
-        "on_area_detected": last_detection_cmd("last_area_detected"),
-        "on_movie_start": last_detection_cmd("last_movie_start"),
-        "on_movie_end": last_detection_cmd("last_movie_end"),
-        "on_camera_lost": last_detection_cmd("last_camera_lost")
+        "on_motion_detected": last_detection_cmd("motion_detected"),
+        "on_event_start": last_detection_cmd("event_start"),
+        "on_event_end": last_detection_cmd("event_end"),
+        "on_picture_save": last_detection_cmd("picture_save"),
+        "on_motion_detected": last_detection_cmd("detected"),
+        "on_area_detected": last_detection_cmd("area_detected"),
+        "on_movie_start": last_detection_cmd("movie_start"),
+        "on_movie_end": last_detection_cmd("movie_end"),
+        "on_camera_lost": last_detection_cmd("camera_lost")
     }
     conf = _get_conf()
     motion_conf = conf['apps']['motion_app']

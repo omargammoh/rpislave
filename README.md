@@ -12,10 +12,14 @@ This project is a django server which can be easily installed on an rpi, where d
   * Enable camera
   * Enable SPI
 * Connect the rpi to the internet and:
-  * Get the rpislave files: `sudo git clone -b master https://github.com/omargammoh/rpislave.git ~/rpislave`
-  * Edit the conf file to your needs `sudo nano ~/rpislave/conf.json`, OR get it from somewhere and put it in the right place e.g. `sudo git clone https://gist.github.com/4d5eece56a8ac282dd06.git ~/rpislave && cp ~/rpislave/4d5eece56a8ac282dd06/example  ~/rpislave/conf.json`
-  * Install things (will take a while): `sudo python ~/rpislave/setup.py`
-  * Reboot `sudo reboot`. The server will start automatically after the reboot
+  * Get the rpislave files: 
+    * `sudo git clone -b master https://github.com/omargammoh/rpislave.git ~/rpislave`
+  * Get the configuration file from somewhere such as gist and put it in the right place e.g. 
+    * `id=4d5eece56a8ac282dd06&&sudo git clone https://gist.github.com/$id.git ~/conf&&sudo cp ~/conf/conf.json ~/rpislave/conf.json`
+  * Install things (will take a while): 
+    * `sudo python ~/rpislave/setup.py`
+  * Reboot, The server will start automatically after the reboot
+    * `sudo reboot`
 * To access it from anywhere, forward your router ports to your rpi device: 
   * Port 9001 for the website
   * Port 9002 for motion's video streaming

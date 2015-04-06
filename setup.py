@@ -189,7 +189,7 @@ if __name__ == "__main__":
         setup_internetsettings()
 
     if 'apps' in conf:
-        if 'datalog_app' in conf['apps']:
+        if 'datalog_app' in conf['apps']: 
             execute([
                 'sudo pip install spidev'
                 ,'sudo pip install pymodbus==1.2.0'

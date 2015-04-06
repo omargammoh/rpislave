@@ -6,7 +6,7 @@ import traceback
 
 def get_motion_config():
     def last_detection_cmd(s):
-        return "touch /home/pi/data/motion_app/{0}&&echo `date +%Y-%m-%d %H:%M:%S` > /home/pi/data/motion_app/{0} &&echo {0}&&wget --spider http://localhost:9001/motion_app/register_event/?label={0}".format(s)
+        return "touch /home/pi/data/motion_app/{0}&&echo `date +%Y-%m-%d-%H:%M:%S` > /home/pi/data/motion_app/{0} &&echo {0}&&wget --spider http://localhost:9001/motion_app/register_event/?label={0}".format(s)
         #return "wget --spider http://localhost:9001/motion_app/register_event/?label={0}".format(s)
 
     default_conf = {

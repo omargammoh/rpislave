@@ -110,15 +110,15 @@ def register_event(request):
 
 def recent_events(request):
     lis = [
-        "last_motion_detected"
-        ,"last_event_start"
-        ,"last_event_end"
-        ,"last_picture_save"
-        ,"last_motion_detected"
-        ,"last_area_detected"
-        ,"last_movie_start"
-        ,"last_movie_end"
-        ,"last_camera_lost"
+        "motion_detected"
+        ,"event_start"
+        ,"event_end"
+        ,"picture_save"
+        ,"motion_detected"
+        ,"area_detected"
+        ,"movie_start"
+        ,"movie_end"
+        ,"camera_lost"
     ]
     d = {}
     folder = "/home/pi/data/motion_app"

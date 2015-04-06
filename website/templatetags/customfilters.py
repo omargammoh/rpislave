@@ -81,7 +81,7 @@ def prependhttp(value):
 try:
     import subprocess
 
-    head = subprocess.Popen("git rev-parse HEAD",
+    head = subprocess.Popen("cd /home/pi&&git rev-parse HEAD",
                             shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     gitversion = head.stdout.readline().strip()
 except:

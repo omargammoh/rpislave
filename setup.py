@@ -17,9 +17,10 @@ def execute(lis):
     if type(lis) == str:
         lis=[lis]
     for cmd in lis:
+        print ""
         print ">>>> %s" %cmd
         out = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
-        print out
+        print out.strip()
         print "<<<<"
     return out
 
@@ -176,6 +177,7 @@ if __name__ == "__main__":
         ,'sudo apt-get install -y python-pip'
         ,'sudo apt-get install tmux'
         ,'sudo pip install django==1.7'
+        ,'sudo pip install pymongo==2.8'
         ])
     t3 = time()
 
@@ -194,9 +196,9 @@ if __name__ == "__main__":
                 ])
 
         if 'datasend_app' in conf['apps']:
-            execute([
-                'sudo pip install pymongo==2.8'
-                ])
+            pass
+            #execute([
+            #    ])
 
         if 'motion_app' in conf['apps']:
             execute([

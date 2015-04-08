@@ -178,6 +178,7 @@ if __name__ == "__main__":
         ,'sudo apt-get install tmux'
         ,'sudo pip install django==1.7'
         ,'sudo pip install pymongo==2.8'
+        ,'sudo pip install pytz'
         ])
     t3 = time()
 

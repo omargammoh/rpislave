@@ -16,7 +16,7 @@ def get_motion_config():
         "webcam_maxrate": 30,# limiting speed 0..100
         "framerate": 100, # 2..100
         "webcam_motion": "on",# if set to 'on' Motion sends slows down the webcam stream to 1 picture per second when no motion is detected. When motion is detected the stream runs as defined by webcam_maxrate. When 'off' the webcam stream always runs as defined by webcam_maxrate.
-        "threshold": 1500,
+        "threshold": 1000,
         "minimum_motion_frames": 1,
         "gap": 60,
         "pre_capture": 0,
@@ -33,15 +33,15 @@ def get_motion_config():
         "output_normal": "best",
         "output_motion": "off",
         "max_mpeg_time": 300,
-        "on_motion_detected": last_detection_cmd("motion_detected"),
-        "on_event_start": last_detection_cmd("event_start"),
-        "on_event_end": last_detection_cmd("event_end"),
-        "on_picture_save": last_detection_cmd("picture_save"),
-        "on_motion_detected": last_detection_cmd("motion_detected"),
-        "on_area_detected": last_detection_cmd("area_detected"),
+        "on_motion_detected": "", #last_detection_cmd("motion_detected"),
+        "on_event_start": "", #last_detection_cmd("event_start"),
+        "on_event_end": "", #last_detection_cmd("event_end"),
+        "on_picture_save": "", #last_detection_cmd("picture_save"),
+        "on_motion_detected": "", #last_detection_cmd("motion_detected"),
+        "on_area_detected": "", #last_detection_cmd("area_detected"),
         "on_movie_start": last_detection_cmd("movie_start"),
         "on_movie_end": last_detection_cmd("movie_end"),
-        "on_camera_lost": last_detection_cmd("camera_lost")
+        "on_camera_lost": "" #last_detection_cmd("camera_lost")
     }
     conf = _get_conf()
     motion_conf = conf['apps']['motion_app']

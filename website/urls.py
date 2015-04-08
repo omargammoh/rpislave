@@ -13,6 +13,7 @@ patterns_tup = ('',
     url(r'^status/$', website.views.status),
     url(r'^process/$', website.views.appmanage),
     url(r'^cmd/$', website.views.cmd),
+    url(r'^test/$', website.views.test),
 
     #include admin
     url(r'^admin/', include(admin.site.urls)),

@@ -10,6 +10,7 @@ from motion_app.process import get_motion_config
 from motion_app.models import Event
 from bson import json_util
 import datetime
+import pytz
 
 info = {
     "label": "MOTION",
@@ -149,3 +150,49 @@ def recent_events(request):
 
     return HttpResponse(json.dumps(d), content_type='application/json')
 
+def gantt_data(request):
+    d={}
+    try:
+
+        dbdata = [{'dt':datetime.datetime(2010,1,1) + datetime.timedelta(hours=7 * i+1), "event":["movie_start", "movie_end"][i%2]}for i in range(100)]
+        dbdata = [ev for ev in [json_util.loads(e.data) for e in Event.objects.all()] if ev['label'] in ["movie_start", "movie_end"]]
+        dbdata = sorted(dbdata, key=lambda x:x['dt'])
+        #print dbdata
+        lis=[]
+        d = {}
+        for p in dbdata:
+            print p
+            day = datetime.datetime(p['dt'].year, p['dt'].month, p['dt'].day, tzinfo=pytz.utc)
+            if p["label"] == "movie_start":
+                d = {'start': p['dt'], 'date': p['dt'].strftime('%Y%m%d'), 'startHour':((p['dt']-day).total_seconds()/3600.)}
+            elif p["label"] == "movie_end":
+                if "startHour" in d:
+                    if p['dt'].date() == d['start'].date():
+                        d['endHour'] = ((p['dt'] - day).total_seconds()/3600.)
+                        d["status"] = "SUCCEEDED"
+                        lis.append(d)
+                    elif p['dt'].date() > d['start'].date():
+                        d['endHour'] = 24
+                        lis.append(d)
+                        lis.append({'date': p['dt'].strftime('%Y%m%d'), 'startHour': 0, 'endHour': p['dt'].hour})
+                    else:
+                        print 'sdfsdddddddddddddddddddd'
+                        raise BaseException('xx')
+                d = {}
+            else:
+                continue
+
+        for l in lis:
+            if 'start' in l:
+                l.pop('start')
+            print l
+
+        d['data'] = [{"date":"group %s" %(i/3), "startHour": 1, "endHour":5, "status":"SUCCEEDED"} for i in range(20)]
+        d['data'] = lis
+
+        return HttpResponse(json.dumps(d), content_type='application/json')
+
+    except:
+        d["error"] = traceback.format_exc()
+        print d["error"]
+        return HttpResponse(json.dumps(d), content_type='application/json')

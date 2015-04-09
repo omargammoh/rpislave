@@ -184,15 +184,10 @@ def gantt_data(request):
             else:
                 continue
 
-        for l in lis:
-            if 'start' in l:
-                print "ddddddddddddddddd"
-            print l
+        dic = {}
+        dic['data'] = lis
 
-        #d['data'] = [{"date":"group %s" %(i/3), "startHour": 1, "endHour":5, "status":"SUCCEEDED"} for i in range(20)]
-        d['data'] = lis
-
-        return HttpResponse(json.dumps(d), content_type='application/json')
+        return HttpResponse(json.dumps(dic), content_type='application/json')
 
     except:
         d = {}

@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 function loadGantt(){
     $.ajax({
         url: '/motion_app/gantt_data',

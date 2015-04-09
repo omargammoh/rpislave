@@ -1,12 +1,21 @@
 import os
 import importlib
 from website.processing import _get_conf, MP
+import website.status
+import traceback
+import multiprocessing
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 
-import traceback
+
+try:
+    p = multiprocessing.Process(name="status", target=website.status.main)
+    p.start()
+except:
+    print "status failed"
+
+
 #>>>> autostart processes with the django server
 try:
-    import multiprocessing
     print '-'*20
     print 'initializing processes'
     ac = [m.name for m in multiprocessing.active_children()]

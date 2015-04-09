@@ -170,9 +170,11 @@ def gantt_data(request):
                     if p['dt'].date() == d['start'].date():
                         d['endHour'] = ((p['dt'] - day).total_seconds()/3600.)
                         d["status"] = "SUCCEEDED"
+                        d.pop('start')
                         lis.append(d)
                     elif p['dt'].date() > d['start'].date():
                         d['endHour'] = 24
+                        d.pop('start')
                         lis.append(d)
                         lis.append({'date': p['dt'].strftime('%Y%m%d'), 'startHour': 0, 'endHour': p['dt'].hour})
                     else:
@@ -184,7 +186,7 @@ def gantt_data(request):
 
         for l in lis:
             if 'start' in l:
-                l.pop('start')
+                print "ddddddddddddddddd"
             print l
 
         #d['data'] = [{"date":"group %s" %(i/3), "startHour": 1, "endHour":5, "status":"SUCCEEDED"} for i in range(20)]

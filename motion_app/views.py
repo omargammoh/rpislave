@@ -187,12 +187,14 @@ def gantt_data(request):
                 l.pop('start')
             print l
 
-        d['data'] = [{"date":"group %s" %(i/3), "startHour": 1, "endHour":5, "status":"SUCCEEDED"} for i in range(20)]
+        #d['data'] = [{"date":"group %s" %(i/3), "startHour": 1, "endHour":5, "status":"SUCCEEDED"} for i in range(20)]
         d['data'] = lis
 
         return HttpResponse(json.dumps(d), content_type='application/json')
 
     except:
-        d["error"] = traceback.format_exc()
+        d = {}
+        d["error"] = str(traceback.format_exc())
         print d["error"]
         return HttpResponse(json.dumps(d), content_type='application/json')
+

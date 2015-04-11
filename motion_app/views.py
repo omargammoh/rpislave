@@ -184,6 +184,13 @@ def gantt_data(request):
             else:
                 continue
 
+        now = datetime.datetime.utcnow()
+        nowday = datetime.datetime(now.year, now.month, now.day)
+        d = {'date': now.strftime('%Y%m%d'), 'startHour':((now - nowday).total_seconds()/3600.)}
+        d['endHour'] = 24.
+        d["status"] = "RUNNING"
+        lis.append(d)
+
         dic = {}
         dic['data'] = lis
 

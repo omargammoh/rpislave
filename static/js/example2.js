@@ -37,7 +37,7 @@ function loadGantt(){
             var gantt = d3.gantt().taskTypes(taskNames).taskStatus(taskStatus).tickFormat(format);
             //gantt.timeDomain([new Date("Sun Dec 09 04:54:19 EST 2012"),new Date("Sun Jan 09 04:54:19 EST 2013")]);
             //gantt.timeDomainMode("fixed");
-            gantt(data);
+            gantt(data, "#div_gantt");
 
 
         },

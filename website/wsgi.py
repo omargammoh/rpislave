@@ -38,6 +38,7 @@ try:
     ac = [m.name for m in multiprocessing.active_children()]
     print 'processes after: %s' %ac
     print '-'*20
+
 except:
     print traceback.format_exc()
     print "!!an error has occurred while performing the autostart operations"

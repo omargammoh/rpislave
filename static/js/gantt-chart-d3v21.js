@@ -8,18 +8,18 @@ d3.gantt = function() {
     var FIXED_TIME_DOMAIN_MODE = "fixed";
 
     var margin = {
-	top : 20,
-	right : 40,
-	bottom : 20,
-	left : 150
+	top : 10,
+	right : 20,
+	bottom : 10,
+	left : 80
     };
     var timeDomainStart = d3.time.day.offset(new Date(),-3);
     var timeDomainEnd = d3.time.hour.offset(new Date(),+3);
     var timeDomainMode = FIT_TIME_DOMAIN_MODE;// fixed or fit
     var taskTypes = [];
     var taskStatus = [];
-    var height = document.body.clientHeight - margin.top - margin.bottom-5;
-    var width = document.body.clientWidth - margin.right - margin.left-5;
+    var height = (document.body.clientHeight - margin.top - margin.bottom-5)/2.2;
+    var width = (document.body.clientWidth - margin.right - margin.left-5)/2.2;
 
     var tickFormat = "%H:%M";
 
@@ -67,12 +67,12 @@ d3.gantt = function() {
 	yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
     };
 
-    function gantt(tasks) {
+    function gantt(tasks, id) {
 
 	initTimeDomain(tasks);
 	initAxis();
 
-	var svg = d3.select("body")
+	var svg = d3.select(id)
 	.append("svg")
 	.attr("class", "chart")
 	.attr("width", width + margin.left + margin.right)

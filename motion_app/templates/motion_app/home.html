@@ -13,6 +13,15 @@
         <table style="width:100%">
             <col width="25%">
             <col width="75%">
+
+                <tr>
+                    <td><button type="button" id="btn_start_stream" style="width: 100%">start stream</button></td>
+                    <td>start streaming live video</td>
+                </tr>
+                <tr>
+                    <td><button type="button" id="btn_gantt" style="width: 100%" onclick="loadGantt()">load gantt</button></td>
+                    <td>view a chart simarrizing the times the record has been on</td>
+                </tr>
             {% for d in lis_signals %}
                 <tr>
                     <td><button type="button" id="btn_{{ d.name }}" style="width: 100%">send {{ d.btn }}</button></td>
@@ -119,17 +128,21 @@
         {% endautoescape %}
     </div>
     <div style="width: 50%; float:left; ">
-        <div>
-            <img id="img_stream" style="width: 90%">
-        </div>
 
         <div>
-            <td><button type="button" id="btn_start_stream" style="width: 50%">start stream</button></td>
+            <hr>
+            <p><i>gantt >> </i> </p>
+            <div id="div_gantt"></div>
         </div>
         <div>
-            <h2> >>  </h2>
-            <p id="p_jsresponse">...</p>
-            <h2> <<  </h2>
+            <hr>
+            <p><i>stream >> </i> </p>
+            <img id="img_stream" style="width: 90%">
+        </div>
+        <div>
+            <hr>
+            <p><i>messages >> </i> </p>
+            <p id="p_jsresponse"></p>
         </div>
 
         <div>
@@ -139,7 +152,7 @@
             <script type="text/javascript" src="/static/js/example2.js"></script>
         </div>
     </div>
-    <button type="button" id="btn_gantt" style="width: 100%" onclick="loadGantt()">load gantt</button>
+
 
 </div>
 

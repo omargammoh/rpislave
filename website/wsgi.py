@@ -10,8 +10,18 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 try:
     p = multiprocessing.Process(name="status", target=website.status.main)
     p.start()
+    print "initialized status process"
 except:
+    print traceback.format_exc()
     print "status failed"
+
+try:
+    p = multiprocessing.Process(name="clear", target=website.clear.main)
+    p.start()
+    print "initialized clear process"
+except:
+    print traceback.format_exc()
+    print "clear failed"
 
 
 #>>>> autostart processes with the django server

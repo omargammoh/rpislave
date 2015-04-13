@@ -26,7 +26,17 @@ This project is a django server which can be easily installed on an rpi, where d
   * Port 9003 for morion's config server
   * Port 9004 for BTSync server
   * Port 22 for ssh server
- 
+* setup ddns with www.noip.com
+  * `cd /usr/local/src`
+  * `sudo wget http://www.no-ip.com/client/linux/noip-duc-linux.tar.gz`
+  * `sudo tar xzf noip-duc-linux.tar.gz`
+  * `cd noip-2.1.9-1/`
+  * `sudo make`
+  * `sudo make install`
+  * `sudo /usr/local/bin/noip2 -C`
+  * `sudo /usr/local/bin/noip2`
+
+
 # How to use #
 * Surf to the page `192.168.1.201:9001` hosted by the rpi (this is the address in the default configuration file, choose the right address as configured in the conf.json file). if you enabled port forwarding you could access it with at the address your_router_ip:9001
 * Look at what apps are there and start using them! the interface should be intuitive...

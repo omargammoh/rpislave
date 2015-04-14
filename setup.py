@@ -67,46 +67,58 @@ def setup_autostart():
     print "setup_autostart: successful"
 
 def setup_internetsettings():
-    #write file1
+    network = conf["network"]
+    if not(type(network) is list):
+        network = [network]
+
+    #build file1
     contents = """
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
-
+"""
+    for nw in network:
+        nw["wifi_id"] = nw["wifi_name"].replace(' ', '').lower()
+        contents += """
 network={{
-    ssid="{0[network][wifi_name]}"
-    proto=RSN
-    key_mgmt=WPA-PSK
-    pairwise=CCMP TKIP
-    group=CCMP TKIP
-    psk="{0[network][wifi_pass]}"
-}}""".format(conf)
+    ssid="{wifi_name}"
+    psk="{wifi_pass}"
+    id_str="{wifi_id}"
+}}
+""".format(**nw)
+
+    #write file1
     f = file("/etc/wpa_supplicant/wpa_supplicant.conf", "w+")
     f.write(contents)
     f.close()
     print "setup_internetsettings: wpa_supplicant.conf successful"
 
-    #write file2
+
+    #build file2
     contents="""
 auto lo
+
 iface lo inet loopback
 iface eth0 inet dhcp
 
-#### for a wlan static ip
+# for a wlan static ip
 allow-hotplug wlan0
-auto wlan0
 iface wlan0 inet manual
 wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
-iface default inet static
-    #the address you want to give your pi, current address can be found with ifconfig, inet addr:192.168.1.4
-    address {0[network][address]}
-    #from ifconfig, Mask:255.255.255.0
-    netmask {0[network][netmask]}
-    #the router IP address, from netstat -nr, Destination 192.168.1.0#
-    network {0[network][network]}
-    #from netstat -nr, Gateway 192.168.1.1
-    gateway {0[network][gateway]}
+"""
+    for nw in network:
+        nw["wifi_id"] = nw["wifi_name"].replace(' ', '').lower()
+        contents += """
 
-""".format(conf)
+iface {wifi_id} inet static
+address {0[network][address]}
+netmask {0[network][netmask]}
+gateway {0[network][gateway]}
+""".format(**nw)
+        # the address you want to give your pi, current address can be found with ifconfig, inet addr:192.168.1.4
+        # from ifconfig, Mask:255.255.255.0
+        # from netstat -nr, Gateway 192.168.1.1
+
+    #write file1
     f = file("/etc/network/interfaces", "r+")
     f.write(contents)
     f.close()

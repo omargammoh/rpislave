@@ -5,6 +5,8 @@ import website.status
 import website.clear
 import traceback
 import multiprocessing
+import subprocess
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 
 
@@ -23,6 +25,13 @@ try:
 except:
     print traceback.format_exc()
     print "clear failed"
+
+try:
+    out = subprocess.Popen("sudo /usr/local/bin/noip2", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
+    print "initialized noip"
+except:
+    print traceback.format_exc()
+    print "noip failed"
 
 
 #>>>> autostart processes with the django server

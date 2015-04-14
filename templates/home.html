@@ -51,10 +51,6 @@
                     <td><button type="button" id="btn_status_pstree">pstree</button></td>
                     <td><button type="button" id="btn_status_psaux">ps aux</button></td>
                 </tr>
-                <tr>
-                    <td><h4>system actions</h4></td>
-                    <td><button type="button" id="btn_status_reboot">reboot</button></td>
-                </tr>
             </table>
         </div>
         <div style="width: 60%; float:left; ">
@@ -144,8 +140,6 @@ $("#btn_status_temp").click(make_cmd_function("{% url "website.views.cmd" %}", {
 $("#btn_status_df").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"df -h"}))
 $("#btn_status_pstree").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"pstree -p -l"}))
 $("#btn_status_psaux").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"ps aux"}))
-
-$("#btn_status_reboot").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"sudo reboot"}))
 
 {% with cmd_list='start stop status' %}
     {% for app in app_info %}

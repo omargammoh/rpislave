@@ -19,8 +19,8 @@
                     <td><button type="button" id="btn_{{app.name}}_start">Start</button></td>
                     <td><button type="button" id="btn_{{app.name}}_stop">Stop</button></td>
                     <td><button type="button" id="btn_{{app.name}}_status">Status</button></td>
-                    <td><a href="/{{app.name}}/"><button type="button">app's home</button></a></td>
-                    <td>{% if app.desc %} {{ app.desc }} {% else %} no description available{% endif %} </td>
+                    <td><a href="/{{app.name}}/"><button type="button">Home</button></a></td>
+                    <td>{% if app.desc %} {{ app.desc }} {% else %} - no description available - {% endif %} </td>
                 </tr>
             {% endfor %}
         </table>

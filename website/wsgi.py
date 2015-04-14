@@ -26,13 +26,6 @@ except:
     print traceback.format_exc()
     print "clear failed"
 
-try:
-    out = subprocess.Popen("sudo /usr/local/bin/noip2", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
-    print "initialized noip"
-except:
-    print traceback.format_exc()
-    print "noip failed"
-
 
 #>>>> autostart processes with the django server
 try:

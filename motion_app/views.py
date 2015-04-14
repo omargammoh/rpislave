@@ -21,7 +21,7 @@ info = {
 lis_signals = [
 #      {"name": "SIGHUP", "btn": "hangup",  "desc": "The config file will be reread.	This is a very useful signal when you experiment with settings in the config file"}
 #    , {"name": "SIGTERM", "btn": "terminate", "desc": "If needed motion will create an mpeg file of the last event and exit"}
-     {"name": "SIGUSR1", "create movie": "usr1", "desc": "Motion will create an mpeg file of the current event"}
+     {"name": "SIGUSR1", "btn": "create movie", "desc": "Motion will create an mpeg file of the current event"}
 ]
 
 

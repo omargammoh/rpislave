@@ -119,7 +119,7 @@ gateway {gateway}
         # from netstat -nr, Gateway 192.168.1.1
 
     #write file1
-    f = file("/etc/network/interfaces", "r+")
+    f = file("/etc/network/interfaces", "w+")
     f.write(contents)
     f.close()
 

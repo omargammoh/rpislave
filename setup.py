@@ -110,9 +110,9 @@ wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
         contents += """
 
 iface {wifi_id} inet static
-address {0[network][address]}
-netmask {0[network][netmask]}
-gateway {0[network][gateway]}
+address {address}
+netmask {netmask}
+gateway {gateway}
 """.format(**nw)
         # the address you want to give your pi, current address can be found with ifconfig, inet addr:192.168.1.4
         # from ifconfig, Mask:255.255.255.0

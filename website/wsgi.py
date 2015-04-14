@@ -2,6 +2,7 @@ import os
 import importlib
 from website.processing import _get_conf, MP
 import website.status
+import website.clear
 import traceback
 import multiprocessing
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")

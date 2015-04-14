@@ -28,7 +28,7 @@
                     <td>{{ d.desc }}</td>
                 </tr>
             {% endfor %}
-            {% with "get_files recent_events" as lis %}
+            {% with "du recent_events" as lis %}
                 {% for s in lis.split %}
                 <tr>
                     <td><button type="button" id="btn_{{ s }}">{{ s }}</button></td>
@@ -221,7 +221,7 @@ function make_click_function(url, sdata){
 {% endfor %}
 
 $("#btn_recent_events").click(make_click_function("/motion_app/recent_events", {"name":"all"}))
-$("#btn_get_files").click(make_click_function("/motion_app/get_files"))
+$("#btn_du").click(make_click_function("/motion_app/du"))
 
 $("#btn_start_stream").click(function (){
     var img = $('#img_stream');

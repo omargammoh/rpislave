@@ -19,9 +19,9 @@ info = {
 
 
 lis_signals = [
-      {"name": "SIGHUP", "btn": "hangup",  "desc": "The config file will be reread.	This is a very useful signal when you experiment with settings in the config file"}
-    , {"name": "SIGTERM", "btn": "terminate", "desc": "If needed motion will create an mpeg file of the last event and exit"}
-    , {"name": "SIGUSR1", "btn": "usr1", "desc": "Motion will create an mpeg file of the current event"}
+#      {"name": "SIGHUP", "btn": "hangup",  "desc": "The config file will be reread.	This is a very useful signal when you experiment with settings in the config file"}
+#    , {"name": "SIGTERM", "btn": "terminate", "desc": "If needed motion will create an mpeg file of the last event and exit"}
+     {"name": "SIGUSR1", "create movie": "usr1", "desc": "Motion will create an mpeg file of the current event"}
 ]
 
 
@@ -62,6 +62,15 @@ def send_signal(request):
         d["error"] = traceback.format_exc()
         print d["error"]
         return HttpResponse(json.dumps(d), content_type='application/json')
+
+
+def du(request):
+    d = {}
+    try:
+        d['data'] = subprocess.Popen("cd /home/pi/data/motion_app&&du -h", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read().split("\n")
+    except:
+        d['error']=traceback.format_exc()
+    return HttpResponse(json.dumps(d), content_type='application/json')
 
 
 def get_files(request):

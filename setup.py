@@ -188,6 +188,7 @@ if __name__ == "__main__":
         ,'sudo pip install django==1.7'
         ,'sudo pip install pymongo==2.8'
         ,'sudo pip install pytz'
+        ,'sudo pip install requests'
         ])
     t3 = time()
 

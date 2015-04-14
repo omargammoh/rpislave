@@ -6,6 +6,7 @@ import time
 from website.models import Log
 from website.processing import _get_conf
 import traceback
+import requests
 
 def execute(cmd):
     return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
@@ -63,8 +64,8 @@ def main():
                 if "status" in conf and set(["noip_username", "noip_password", "noip_hostname"]).issubset(set(conf["status"].keys())):
                     #update noip.com
                     conf["status"]["ip"] = new_status["ip"]
-                    new_status["req"] = 'http://{noip_username}:{noip_password}@dynupdate.no-ip.com/nic/update?hostname={noip_hostname}&myip={ip}'.format(**{conf["status"]})
-                    new_status["resp"] = urllib2.urlopen(new_status["req"]).read()
+                    new_status["req"] = 'http://{noip_username}:{noip_password}@dynupdate.no-ip.com/nic/update?hostname={noip_hostname}&myip={ip}'.format(**conf["status"])
+                    new_status["resp"] = requests.get(new_status["req"]).content
                     new_status["msg"] += ", updated noip"
                     print ">>> status: updated noip, response = %s" % new_status["resp"]
                 #else just print something

@@ -24,13 +24,15 @@ def get_status():
 
 def main():
     while True:
+        print ">>> status: starting loop"
         try:
             s = get_status()
             f = file('/home/pi/data/status', "w")
             f.write(s)
             f.close()
-            print "written", s
+            print ">>> status: wrote %s" %s
         except:
-            print "error writing status"
+            print ">>> status: error"
             pass
+        print ">>> status: ending loop"
         time.sleep(60)

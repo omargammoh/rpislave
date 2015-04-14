@@ -33,8 +33,8 @@ def main():
                 path = delete_oldest_day()
                 r2 = get_usage_ratio()
                 s = json.dumps({'dt': str(datetime.datetime.utcnow())
-                            , 'proc': "clear"
-                            , "msg": "deleted %s, usage before = %s, usage after = %s" %(path, r, r2)})
+                                ,'proc': "clear"
+                                ,"msg": "deleted %s, usage before = %s, usage after = %s" %(path, r, r2)})
 
                 newconf = Log(data=s, meta="")
                 newconf.save()
@@ -43,4 +43,5 @@ def main():
         except:
             print ">>> clear: error"
             pass
+        print ">>> clear: ending loop"
         time.sleep(60)

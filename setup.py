@@ -101,6 +101,7 @@ iface lo inet loopback
 iface eth0 inet dhcp
 
 # for a wlan static ip
+auto wlan0
 allow-hotplug wlan0
 iface wlan0 inet manual
 wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
@@ -177,11 +178,7 @@ def setup_realtimeclock():
 if __name__ == "__main__":
     t1 = time()
     execute([
-         "sudo apt-get -y update"
-         #update is needed for motion
-        #,"sudo apt-get -y upgrade"
-        #,"sudo apt-get install rpi-update"
-        #,"sudo rpi-update"
+         "sudo apt-get -y update" #update is needed for motion
     ])
     t2 = time()
     execute([
@@ -210,8 +207,6 @@ if __name__ == "__main__":
 
         if 'datasend_app' in conf['apps']:
             pass
-            #execute([
-            #    ])
 
         if 'motion_app' in conf['apps']:
             execute([

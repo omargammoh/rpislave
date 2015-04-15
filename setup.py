@@ -68,74 +68,14 @@ def setup_autostart():
     f.close()
     print "setup_autostart: successful"
 
-def setup_internetsettings():
-    network = conf["network"]
-    if not(type(network) is list):
-        network = [network]
-
-    #build file1
-    contents = """
-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-update_config=1
-"""
-    for nw in network:
-        if "wifi_name" in nw:
-            nw["wifi_id"] = nw["wifi_name"].replace(' ', '').lower()
-            contents += """
-network={{
-    ssid="{wifi_name}"
-    psk="{wifi_pass}"
-    id_str="{wifi_id}"
-}}
-""".format(**nw)
-
-    #write file1
-    f = file("/etc/wpa_supplicant/wpa_supplicant.conf", "w+")
-    f.write(contents)
-    f.close()
-    print "setup_internetsettings: wpa_supplicant.conf successful"
-
-
-    #build file2
-    contents="""
-### loopback ###
-auto lo
-iface lo inet loopback
-
-### ethernet ###
-auto eth0
-allow-hotplug eth0
-
-iface eth0 inet static
-address 192.168.1.201
-gateway 192.168.1.1
-
-### wireless lan ###
-auto wlan0
-allow-hotplug wlan0
-
-iface wlan0 inet manual
-wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
-"""
-    for nw in network:
-        if "wifi_name" in nw:
-            nw["wifi_id"] = nw["wifi_name"].replace(' ', '').lower()
-            contents += """
-iface {wifi_id} inet static
-address {address}
-netmask {netmask}
-gateway {gateway}
-""".format(**nw)
-            # the address you want to give your pi, current address can be found with ifconfig, inet addr:192.168.1.4
-            # from ifconfig, Mask:255.255.255.0
-            # from netstat -nr, Gateway 192.168.1.1
-
-    #write file1
+def setup_networkinterfaces():
+    network = conf["network_interfaces"]
+    contents = "\n".join(network)
     f = file("/etc/network/interfaces", "w+")
     f.write(contents)
     f.close()
 
-    print "setup_internetsettings: interfaces successful"
+    print "setup_networkinterfaces: interfaces successful"
 
 
 def setup_db():
@@ -207,8 +147,8 @@ if __name__ == "__main__":
 
     setup_autostart()
 
-    if 'network' in conf:
-        setup_internetsettings()
+    if 'network_interfaces' in conf:
+        setup_networkinterfaces()
 
     if 'apps' in conf:
         if 'datalog_app' in conf['apps']: 

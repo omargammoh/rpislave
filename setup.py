@@ -79,8 +79,9 @@ ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
 """
     for nw in network:
-        nw["wifi_id"] = nw["wifi_name"].replace(' ', '').lower()
-        contents += """
+        if "wifi_name" in nw:
+            nw["wifi_id"] = nw["wifi_name"].replace(' ', '').lower()
+            contents += """
 network={{
     ssid="{wifi_name}"
     psk="{wifi_pass}"
@@ -103,6 +104,7 @@ iface lo inet loopback
 
 iface eth0 inet static
 address 192.168.1.201
+gateway 192.168.1.1
 
 ### wlan ###
 auto wlan0
@@ -111,16 +113,17 @@ iface wlan0 inet manual
 wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
 """
     for nw in network:
-        nw["wifi_id"] = nw["wifi_name"].replace(' ', '').lower()
-        contents += """
+        if "wifi_name" in nw:
+            nw["wifi_id"] = nw["wifi_name"].replace(' ', '').lower()
+            contents += """
 iface {wifi_id} inet static
 address {address}
 netmask {netmask}
 gateway {gateway}
 """.format(**nw)
-        # the address you want to give your pi, current address can be found with ifconfig, inet addr:192.168.1.4
-        # from ifconfig, Mask:255.255.255.0
-        # from netstat -nr, Gateway 192.168.1.1
+            # the address you want to give your pi, current address can be found with ifconfig, inet addr:192.168.1.4
+            # from ifconfig, Mask:255.255.255.0
+            # from netstat -nr, Gateway 192.168.1.1
 
     #write file1
     f = file("/etc/network/interfaces", "w+")

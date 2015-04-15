@@ -98,17 +98,22 @@ network={{
 
     #build file2
     contents="""
-### ethernet ###
+### loopback ###
 auto lo
 iface lo inet loopback
+
+### ethernet ###
+auto eth0
+allow-hotplug eth0
 
 iface eth0 inet static
 address 192.168.1.201
 gateway 192.168.1.1
 
-### wlan ###
+### wireless lan ###
 auto wlan0
 allow-hotplug wlan0
+
 iface wlan0 inet manual
 wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
 """

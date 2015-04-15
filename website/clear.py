@@ -41,6 +41,7 @@ def main():
             else:
                 print ">>> clear: usage ratio is still small (%s)" %r
         except:
+
             print ">>> clear: error"
             pass
         print ">>> clear: ending loop"

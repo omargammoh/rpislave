@@ -7,3 +7,7 @@ class Conf(models.Model):
 class Log(models.Model):
     data = models.TextField()
     meta = models.TextField()
+
+class Error(models.Model):
+    data = models.TextField()
+    meta = models.TextField()

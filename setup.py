@@ -2,6 +2,7 @@ import subprocess
 import os
 import json
 from time import time
+
 try:
     conffile = os.path.join(os.path.dirname(__file__), 'conf.json')
     if not os.path.isfile(conffile):
@@ -13,6 +14,7 @@ try:
 except:
     print 'error while getting the json configuration file'
     raise
+
 def execute(lis):
     if type(lis) == str:
         lis=[lis]
@@ -95,12 +97,14 @@ network={{
 
     #build file2
     contents="""
+### ethernet ###
 auto lo
-
 iface lo inet loopback
-iface eth0 inet dhcp
 
-# for a wlan static ip
+iface eth0 inet static
+address 192.168.1.201
+
+### wlan ###
 auto wlan0
 allow-hotplug wlan0
 iface wlan0 inet manual
@@ -109,7 +113,6 @@ wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
     for nw in network:
         nw["wifi_id"] = nw["wifi_name"].replace(' ', '').lower()
         contents += """
-
 iface {wifi_id} inet static
 address {address}
 netmask {netmask}

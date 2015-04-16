@@ -37,7 +37,7 @@ This project is a django server which can be easily installed on an rpi, where d
   * <b>motion_app</b>: Record videos, take pictures, create timelapse files and stream videos using a camera (runs another software called [motion](http://www.lavrsen.dk/foswiki/bin/view/Motion/WebHome))
   * <b>datalog_app</b>: Record data from RS485 devices and signals connected to MCP3008 chip 
   * <b>datasend_app</b>: Send data produced by your other apps to a database
-  * <b>btsync_app</b>: Coming soon ...
+  * <b>btsync_app</b>: Sync the data of the other apps with other devices (runs another software called [bittorrent sync](https://www.getsync.com/))
 
 # Contribute #
 Feel free to fork and contribute with new apps or improve current apps! We need apps to use the rpi as a media center. 

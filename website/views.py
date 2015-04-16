@@ -13,8 +13,9 @@ from website.processing import MP, _get_conf
 import importlib
 import subprocess
 
+conf = _get_conf()
 app_info = []
-for app in _get_conf()['apps'].keys():
+for app in conf['apps'].keys():
 
     try:
         d = {"name": app}
@@ -30,7 +31,7 @@ for app in _get_conf()['apps'].keys():
 
 
 def home(request, template_name='home.html'):
-    return render_to_response(template_name, {"app_info": app_info}, context_instance=RequestContext(request))
+    return render_to_response(template_name, {"app_info": app_info, "desc": conf.get('desc', '-')}, context_instance=RequestContext(request))
 
 def test(request, template_name='test.html'):
     return render_to_response(template_name, {"app_info": app_info}, context_instance=RequestContext(request))

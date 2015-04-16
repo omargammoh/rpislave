@@ -152,7 +152,7 @@ def _process_data(data, sensors_conf):
 
     return res #{'Tamb-avg' : 5., 'Tamb-min' : 1., 'G-min' : 60.}
 
-def main(sample_period, data_period, rs485_conf, sensors_conf):
+def main(sample_period, data_period, sensors_conf, rs485_conf=None):
     _prepare_django()
     import datalog_app.models
 

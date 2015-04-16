@@ -178,9 +178,9 @@ if __name__ == "__main__":
     setup_db()
 
     t4 = time()
-    print "took %0.2f sec=" %(t4-t1)
-    print "    %0.2f sec" %(t2-t1)
-    print "    %0.2f sec" %(t3-t2)
-    print "    %0.2f sec" %(t4-t3)
+    print "took %0.2f sec=" % (t4 - t1)
+    print "    %0.2f sec" % (t2 - t1)
+    print "    %0.2f sec" % (t3 - t2)
+    print "    %0.2f sec" % (t4 - t3)
 
 

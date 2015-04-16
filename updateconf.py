@@ -20,6 +20,9 @@ def update_conf():
     # git checkout and pull
     execute("cd /home/pi/conf&&sudo git checkout .&&sudo git pull")
 
+    #copy
+    execute("sudo cp /home/pi/conf/conf.json /home/pi/rpislave/conf.json")
+
     #get conf_str
     try:
         conffile = os.path.join(os.path.dirname(__file__), 'conf.json')

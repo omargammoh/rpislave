@@ -67,7 +67,7 @@ def main(send_period, keep_period, mongo_address):
                     if meta['sent'] == 'false':
                         #send it
                         col = db['meteo_' + settings.CONF_LABEL]
-                        jdata=json_util.loads(ob.data)
+                        jdata = json_util.loads(ob.data)
                         col.insert(jdata)
                         #mark it as sent
                         meta['sent'] = datetime.utcnow().strftime('%Y%m%d%H%M%S')

@@ -44,7 +44,6 @@ class MP():
         self.request = request
         self.cmd = cmd if cmd else request.GET.get("cmd", None)
         self.dic = {}
-        self.conf_label = settings.CONF_LABEL
 
     def start(self):
         conf = _get_conf()['apps'][self.name]
@@ -83,7 +82,7 @@ class MP():
 
     def process_command(self):
         lis = []
-        print "%s conf = %s" %(self.name, self.conf_label)
+        print "%s" %(self.name)
         ison_at_start = self.ison()
 
         if self.cmd is None:

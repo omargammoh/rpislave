@@ -53,7 +53,6 @@ def status(request):
             dic['this process'] = multiprocessing.current_process().name
             dic['active child processes'] = [m.name for m in  multiprocessing.active_children()]
             dic['utc time'] = str(datetime.utcnow())
-            dic['configuration label'] = settings.CONF_LABEL
 
         if cmd == "recentdata":
             dic["the last 20 recorded stamps in local DB"] = [str({'data':json_util.loads(ob.data), 'meta':json_util.loads(ob.meta)}) for ob in Reading.objects.all().order_by('-id')[:20]]

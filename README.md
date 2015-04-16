@@ -22,7 +22,7 @@ This project is a django server which can be easily installed on an rpi, where d
     * `sudo reboot`
 
 # How to use #
-* Surf to the page `192.168.1.201:9001` hosted by the rpi (this is the address in the default configuration file, choose the right address as configured in the conf.json file). if you enabled port forwarding you could access it with at the address your_router_ip:9001
+* Surf to the page `<raspi_ip>:9001` hosted by the rpi
 * Look at what apps are there and start using them! the interface should be intuitive...
 * To access it from outside your network, you need to forward the following ports:
   * 9001 for the main website
@@ -40,5 +40,5 @@ This project is a django server which can be easily installed on an rpi, where d
   * <b>btsync_app</b>: Sync the data of the other apps with other devices (runs another software called [bittorrent sync](https://www.getsync.com/))
 
 # Contribute #
-Feel free to fork and contribute with new apps or improve current apps! We need apps to use the rpi as a media center. 
+Feel free to do so...
   

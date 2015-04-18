@@ -30,7 +30,21 @@
     </div>
     <div>
         <div style="width: 40%; float:left; ">
-            <h1>STATUS</h1>
+
+            <h1>CONFIGURATION</h1>
+            <table style="width:100%">
+                <col width="80%">
+                <col width="20%">
+                <tr>
+                    <td><button type="button" id="btn_status_conf">View</button></td>
+                    <td><button type="button" id="btn_status_updateconf">Update</button></td>
+                </tr>
+            </table>
+            <br>
+            <br>
+            <br>
+
+            <h1>SYSTEM</h1>
             <table style="width:100%">
                 <col width="20%">
                 <col width="10%">
@@ -39,14 +53,12 @@
                 <col width="10%">
                 <tr>
                     <td><h4>rpislave info</h4></td>
-                    <td><button type="button" id="btn_status_overview">Overview</button></td>
-                    <td><button type="button" id="btn_status_conf">Config</button></td>
+                    <td><button type="button" id="btn_status_overview">Processes</button></td>
                 </tr>
                 <tr>
                     <td><h4>rpislave actions</h4></td>
                     <td><button type="button" id="btn_status_update">Update</button></td>
                     <td><button type="button" id="btn_status_restart">Restart</button></td>
-                    <td><button type="button" id="btn_status_updateconf">Update conf</button></td>
                 </tr>
                 <tr>
                     <td><h4>linux info</h4></td>
@@ -116,7 +128,7 @@ function make_cmd_function(url, sdata){
                 btn.prop('disabled', false);
 
                 if ("conf" == sdata["cmd"]){}
-                else if ("overview" == sdata["cmd"]){}
+                else if ("r" == sdata["cmd"]){}
                 else if (data['ison'] == true) {
                     btn.parent().parent().find('h3').css('color', 'lightgreen');
                 }

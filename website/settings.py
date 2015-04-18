@@ -22,9 +22,10 @@ SECRET_KEY = 'ewowx!+2a(frgtz4_elhp6vx+m*hp5ox7$6$b!-y7=otu*2h%l'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
+ALLOWED_HOSTS = ['127.0.0.1']
 
-ALLOWED_HOSTS = []
+TEMPLATE_DEBUG = False
+
 
 
 # Application definition
@@ -58,6 +59,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'website.middleware.LoginRequiredMiddleware',
+    'website.middleware.StandardExceptionMiddleware',
 )
 
 LOGIN_URL = "/admin/login/"

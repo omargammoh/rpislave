@@ -21,7 +21,12 @@ patterns_tup = ('',
 
 
 #include apps e.g. url(r'^some_app/', include('some_app.urls')),
-for app in _get_conf()['apps'].keys():
+try:
+    appnames = _get_conf()['apps'].keys()
+except:
+    appnames = []
+
+for app in appnames:
     try:
         if not (app in website.settings.RPI_APPS):
             raise BaseException('the app %s was not found in the settings.RPI_APPS list' % app )

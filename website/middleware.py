@@ -1,11 +1,21 @@
 from django.http import HttpResponseRedirect
 from django.conf import settings
 from re import compile
- 
+from django.views.debug import technical_500_response
+import sys
+from django.conf import settings
+
 EXEMPT_URLS = [compile(settings.LOGIN_URL.lstrip('/'))]
 if hasattr(settings, 'LOGIN_EXEMPT_URLS'):
     EXEMPT_URLS += [compile(expr) for expr in settings.LOGIN_EXEMPT_URLS]
  
+class StandardExceptionMiddleware:
+    def process_exception(self, request, exception):
+        print "xxxxxxxxxxxxxxxxxxxxxxxxxxx"*100
+        #return technical_500_response(request, *sys.exc_info())
+        #if request.user.is_superuser or request.META.get('REMOTE_ADDR') in settings.INTERNAL_IPS:
+        return None
+
 class LoginRequiredMiddleware:
     """
     Middleware that requires a user to be authenticated to view any page other
@@ -17,6 +27,7 @@ class LoginRequiredMiddleware:
     loaded. You'll get an error if they aren't.
     """
     def process_request(self, request):
+        print "sssssssssssssssssssssssssssss"*10
         assert hasattr(request, 'user'), "The Login Required middleware\
  requires authentication middleware to be installed. Edit your\
  MIDDLEWARE_CLASSES setting to insert\
@@ -27,3 +38,7 @@ class LoginRequiredMiddleware:
             path = request.path_info.lstrip('/')
             if not any(m.match(path) for m in EXEMPT_URLS):
                 return HttpResponseRedirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
+
+
+
+

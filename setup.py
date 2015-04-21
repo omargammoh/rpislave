@@ -4,7 +4,7 @@ import json
 from time import time
 
 try:
-    conffolder = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'rpislave_conf')
+    conffolder = '/home/pi/rpislave_conf'
     conffile = None
     if not os.path.isdir(conffolder):
         raise BaseException('could not find the rpislave_conf folder %s' %conffolder)

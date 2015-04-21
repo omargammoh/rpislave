@@ -86,8 +86,19 @@ try:
     gitversion = head.stdout.readline().strip()
 except:
     gitversion = u'?'
-
 print "git version: ", gitversion
+
+
+try:
+    import subprocess
+
+    head = subprocess.Popen("cd /home/pi/rpislave_conf&&git rev-parse HEAD",
+                            shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    confgitversion = head.stdout.readline().strip()
+except:
+    confgitversion = u'?'
+print "conf git version: ", gitversion
+
 
 try:
     import subprocess
@@ -100,7 +111,7 @@ except:
 
 @register.simple_tag()
 def git_short_version():
-    return gitversion[:3]
+    return "%s-%s" %(gitversion[:2], confgitversion[:2])
 
 @register.simple_tag()
 def pip_freeze():

@@ -54,6 +54,7 @@
                 <tr>
                     <td><h4>rpislave info</h4></td>
                     <td><button type="button" id="btn_status_overview">Processes</button></td>
+                    <td><button type="button" id="btn_status_commitsbehind">commits behind</button></td>
                 </tr>
                 <tr>
                     <td><h4>rpislave actions</h4></td>
@@ -152,6 +153,7 @@ function make_cmd_function(url, sdata){
 }
 
 $("#btn_status_overview").click(make_cmd_function("{% url "website.views.status" %}", {"cmd":"overview"}))
+$("#btn_status_commitsbehind").click(make_cmd_function("{% url "website.views.commits_behind" %}"))
 $("#btn_status_conf").click(make_cmd_function("{% url "website.views.status" %}", {"cmd":"conf"}))
 $("#btn_status_update").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":". /home/pi/rpislave/update.sh"}))
 $("#btn_status_restart").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":". /home/pi/rpislave/restart.sh"}))

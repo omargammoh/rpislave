@@ -71,6 +71,23 @@ def cmd(request):
     return HttpResponse(json.dumps(d), content_type='application/json')
 
 
+def commits_behind(request):
+    def prcess_text(txt):
+        l = [x for x in txt.split('\n') if "# Your branch is behind" in x]
+        if l:
+            return l[0]
+        else:
+            return "nothing to pull"
+
+    d = {}
+    try:
+        d['rpislave'] = prcess_text(subprocess.Popen("cd /home/pi/rpislave&&sudo git remote update&&git status -uno", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read())
+        d['rpislave_conf'] = prcess_text(subprocess.Popen("cd /home/pi/rpislave_conf&&sudo git remote update&&git status -uno", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read())
+    except:
+        d['error']=traceback.format_exc()
+    return HttpResponse(json.dumps(d), content_type='application/json')
+
+
 def appmanage(request):
     try:
         m = importlib.import_module("%s.process" %request.GET['app'])

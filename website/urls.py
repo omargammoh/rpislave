@@ -14,6 +14,7 @@ patterns_tup = ('',
     url(r'^process/$', website.views.appmanage),
     url(r'^cmd/$', website.views.cmd),
     url(r'^test/$', website.views.test),
+    url(r'^commits_behind/$', website.views.commits_behind),
 
     #include admin
     url(r'^admin/', include(admin.site.urls)),

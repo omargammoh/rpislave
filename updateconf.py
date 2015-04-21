@@ -18,20 +18,26 @@ def execute(lis):
 def update_conf():
 
     # git checkout and pull
-    execute("cd /home/pi/conf&&sudo git checkout .&&sudo git pull")
+    execute("cd /home/pi/rpislave_conf&&sudo git checkout .&&sudo git pull")
 
-    #copy
-    execute("sudo cp /home/pi/conf/conf.json /home/pi/rpislave/conf.json")
-
-    #get conf_str
     try:
-        conffile = os.path.join(os.path.dirname(__file__), 'conf.json')
-        if not os.path.isfile(conffile):
-            raise BaseException('the json config file was not found %s' %conffile)
-        fl = file(conffile,"r")
+        conffolder = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'rpislave_conf')
+        conffile = None
+        if not os.path.isdir(conffolder):
+            raise BaseException('could not find the rpislave_conf folder %s' %conffolder)
+
+        for path, subdirs, files in os.walk(conffolder ):
+            if not ".git" in path:
+                for name in files:
+                    if name.endswith(".json"):
+                        conffile = os.path.join(path, name)
+
+        if conffile is None:
+            raise BaseException('no json config file was not found in folder %s' %conffolder)
+
+        fl = file(conffile, "r")
         conf_str = fl.read()
         fl.close()
-        #conf = json.loads(conf_str)
     except:
         print 'error while getting the json configuration file'
         raise

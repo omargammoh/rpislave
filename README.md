@@ -15,7 +15,7 @@ This project is a django server which can be easily installed on an rpi, where d
   * Get the rpislave repository:
     * `sudo git clone -b master https://github.com/omargammoh/rpislave.git ~/rpislave`
   * Get the configuration file from somewhere and put it in the right place, for example: 
-    * `conf_id=4d5eece56a8ac282dd06&&sudo git clone https://gist.github.com/$conf_id.git ~/conf&&sudo cp ~/conf/conf.json ~/rpislave/conf.json`
+    * `conf_id=4d5eece56a8ac282dd06&&sudo git clone https://gist.github.com/$conf_id.git ~/rpislave_conf`
   * Install things (will take a while): 
     * `sudo python ~/rpislave/setup.py`
   * Reboot, The server will start automatically after the reboot

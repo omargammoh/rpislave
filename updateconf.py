@@ -60,7 +60,7 @@ def update_conf():
     if not os.path.isdir(pth):
         os.mkdir(pth)
 
-    f = file(os.path.join(path, "conf"), "w")
+    f = file(os.path.join(pth, "conf"), "w")
     f.write(conf_str)
     f.close()
 

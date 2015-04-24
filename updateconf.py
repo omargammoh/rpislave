@@ -55,7 +55,18 @@ def update_conf():
     newconf = Conf(data=conf_str, meta="")
     newconf.save()
 
+    # create data folder if not existing and copy conf there
+    pth = '/home/pi/data'
+    if not os.path.isdir(pth):
+        os.mkdir(pth)
+
+    f = file(os.path.join(path, "conf"), "w")
+    f.write(conf_str)
+    f.close()
+
     print "update_conf: successful"
+
+
 
 if __name__ == "__main__":
     update_conf()

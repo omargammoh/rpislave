@@ -112,6 +112,16 @@ def setup_db():
     newconf.save()
     print "setup_db: successful"
 
+def create_datafolder():
+    #create datafolder if doesnt exist
+    pth = '/home/pi/data'
+    if not os.path.isdir(pth):
+        os.mkdir(pth)
+
+    #write the conf file in the datafolder
+    f = file(os.path.join(path, "conf"), "w")
+    f.write(conf_str)
+    f.close()
 
 def setup_realtimeclock():
     print "not ready for this yet"
@@ -187,7 +197,8 @@ if __name__ == "__main__":
             setup_realtimeclock()
 
     setup_db()
-
+    create_datafolder()
+    
     t4 = time()
     print "took %0.2f sec=" % (t4 - t1)
     print "    %0.2f sec" % (t2 - t1)

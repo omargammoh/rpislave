@@ -26,10 +26,40 @@ def get_status():
     d['dt'] = datetime.datetime.utcnow().__str__()
     return d
 
-def main():
+def main(status_period=30):
     conf = _get_conf()
     while True:
         print ">> status: starting loop"
+
+        #checking internet connectivity
+        try:
+            t1 = time.time()
+            _ = urllib2.urlopen('http://www.google.com', timeout=10)
+            time_needed = (time.time() - t1)
+            internet_ison = True
+            print ">> status: connected to internet needed %s sec to ping google" % time_needed
+        #if not connected
+        except:
+            internet_ison = False
+            #try to restart the networking
+            try:
+                print ">> status: not connected to internet, will attempt to restart network"
+                print '>> status: sudo /etc/init.d/networking stop'
+                execute('sudo /etc/init.d/networking stop')
+                print '>> status: sudo /etc/init.d/networking start'
+                execute('sudo /etc/init.d/networking start')
+                time.sleep(3)
+            except:
+                pass
+
+            #now see if the internet is connected after that we have corrected it is restarted
+            try:
+                _ = urllib2.urlopen('http://www.google.com', timeout=10)
+                internet_ison = True
+                print ">> status: connected to internet after network restart"
+            except:
+                internet_ison = False
+
         try:
             fp = '/home/pi/data/status'
 
@@ -78,9 +108,13 @@ def main():
                 print ">> status: wrote %s" % new_status
 
         except:
+            # TODO: if internet is off, exception is raised, but this should not be the case, we should handle this case gracefully
             print traceback.format_exc()
             print ">> status: error"
             pass
 
         print ">> status: ending loop"
-        time.sleep(30)
+        time.sleep(status_period)
+
+
+

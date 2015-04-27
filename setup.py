@@ -146,6 +146,34 @@ def setup_realtimeclock():
     else:
         raise BaseException('we do not know how to install this clock %s' %typ)
 
+def change_sshport():
+    #apends a line to a file
+    filepath = "sudo nano /etc/ssh/sshd_config"
+    linetoappend = r"Port 9005"
+
+    f = file(filepath, "r")
+    s = f.readlines()
+    f.close()
+    if any([ss.strip() == linetoappend for ss in s]):
+        print "change_sshport: already done"
+        return None
+
+    done = False
+    newlis = []
+    for ss in s:
+        if ss.strip()=="Port 22":
+            newlis.append(linetoappend)
+            done = True
+        else:
+            newlis.append(ss)
+    if done:
+        f = file(filepath, "w+")
+        s = f.writelines(newlis)
+        f.close()
+        print "change_sshport: successful"
+    else:
+        print "change_sshport: !!strange behaviour"
+
 
 if __name__ == "__main__":
     t1 = time()
@@ -198,7 +226,8 @@ if __name__ == "__main__":
 
     setup_db()
     create_datafolder()
-    
+    change_sshport()
+
     t4 = time()
     print "took %0.2f sec=" % (t4 - t1)
     print "    %0.2f sec" % (t2 - t1)

@@ -21,13 +21,13 @@ def delete_oldest_day():
     todel = sorted(os.listdir(dir))[0]
     path_to_del = os.path.join(dir, todel)
     shutil.rmtree(path_to_del)
-    print "deleted %s" %path_to_del
+    print ">> clear: deleted %s" %path_to_del
     return path_to_del
 
 def main():
     while True:
         try:
-            print ">>> clear: starting loop"
+            print ">> clear: starting loop"
             r = get_usage_ratio()
             if r > 0.95:
                 path = delete_oldest_day()
@@ -39,10 +39,10 @@ def main():
                 newconf = Log(data=s, meta="")
                 newconf.save()
             else:
-                print ">>> clear: usage ratio is still small (%s)" %r
+                print ">> clear: usage ratio is still small (%s)" %r
         except:
 
-            print ">>> clear: error"
+            print ">> clear: error"
             pass
-        print ">>> clear: ending loop"
+        print ">> clear: ending loop"
         time.sleep(60)

@@ -16,17 +16,14 @@ def main():
         #run server
         pc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=r'/home/pi')
         pid = pc.pid
-        print "getsync_app started in pid %s" %pid
+        print ">> getsync: started in pid %s" %pid
         pc.communicate()#when running, compiler is stuck here
 
     except KeyboardInterrupt:
         pc = subprocess.Popen("sudo pkill btsync", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         pc.communicate()
-        print 'btsync_app: interrupted successfuly'
+        print '>> getsync: interrupted successfuly'
 
     except:
         print traceback.format_exc()
         raise
-
-
-

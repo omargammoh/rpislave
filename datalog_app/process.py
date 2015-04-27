@@ -11,12 +11,12 @@ try:
     from pymodbus.client.sync import ModbusSerialClient as MSC
     from pymodbus.transaction import ModbusRtuFramer
 except:
-    print "!!could not load pymodbus module"
+    print ">>> datalog_app: !!could not load pymodbus module"
 
 try:
     import spidev
 except:
-    print "!!could not load spidev module"
+    print ">>> datalog_app: !!could not load spidev module"
 
 def _read_spi(spi, channel):
     adc = spi.xfer2([1,(8+channel)<<4,0])
@@ -52,17 +52,17 @@ def _decide_start(data_period, dt):
         return np.ceil(x/base) * base
 
     if (data_period<60) and (60%data_period == 0):
-        print "_decide_start: periodic seconds"
+        print ">>> datalog_app: _decide_start: periodic seconds"
     elif (data_period<3600) and (3600%data_period == 0):
-        print "_decide_start: periodic minutes"
+        print ">>> datalog_app: _decide_start: periodic minutes"
     elif (data_period<=86400) and (86400%data_period == 0):
-        print "_decide_start: periodic hours"
+        print ">>> datalog_app: _decide_start: periodic hours"
     else:
         raise BaseException('this stamp period cannot be periodic over minutes, hours or days %s' %data_period)
 
     shift = ceil(totalsec, data_period)
     starton = today + timedelta(seconds=shift)
-    print "_decide_start: %s %s %s, totalsec = %s, shift = %s" %(dt, data_period, starton, totalsec, shift)
+    print ">>> datalog_app: _decide_start: %s %s %s, totalsec = %s, shift = %s" %(dt, data_period, starton, totalsec, shift)
     return starton
 
 def _get_mb_client(rs485_conf):
@@ -92,7 +92,7 @@ def _get_point(mb_client, spi_client, sensors_conf):
             else:
                 pass
         except:
-            print '!!_get_point: sensor %s failed' %label
+            print '>>> datalog_app: !!_get_point: sensor %s failed' %label
             pass
 
     #return a dic which looks like {'Tamb':21.0, 'Tmod'=30.0, 'G':946.5}
@@ -112,7 +112,7 @@ def _get_stamp(sample_period, data_period, mb_client, spi_client, sensors_conf):
             #print "wait %s seconds" %wait
             sleep(wait)
         else:
-            print "!!_get_stamp: point missed by %s, skipping to next" %wait
+            print ">>> datalog_app: !!_get_stamp: point missed by %s, skipping to next" %wait
             #res[midstamp] = None
             i += 1
             continue
@@ -146,7 +146,7 @@ def _process_data(data, sensors_conf):
             elif func=='std':
                 agg = np.std(lis)
             else:
-                print "!!the function %s if unknown, choose between min,max,avg and std" %func
+                print ">>> datalog_app: !!the function %s if unknown, choose between min,max,avg and std" %func
                 pass
             res['%s-%s' %(key,func)] = round(agg,2)
 
@@ -189,11 +189,11 @@ def main(sample_period, data_period, sensors_conf, rs485_conf=None):
     starton = _decide_start(data_period, now)
 
     i = 0
-    print "datalog_app: starton %s" %starton
+    print ">>> datalog_app: starton %s" %starton
 
     #loop forever
     while (True) :
-        print '\n>>>> datalog_app loop, i= %s, t= %s ' %(i, _pretty_time_delta(i * data_period))
+        print '>>> datalog_app: loop, i= %s, t= %s ' %(i, _pretty_time_delta(i * data_period))
         j = 0
 
         #initialize with not ok
@@ -231,34 +231,34 @@ def main(sample_period, data_period, sensors_conf, rs485_conf=None):
             if ((not mb_client_ok) and (not spi_ok)):
                 #sleep before trying again
                 retryin = 10
-                print "    !!couldnt connect spi_client or mb_client at j=%s, retrying in %s seconds" % (j,retryin)
+                print ">>> datalog_app:    !!couldnt connect spi_client or mb_client at j=%s, retrying in %s seconds" % (j,retryin)
                 sleep(retryin)
             j += 1
 
-        print "    mb_client_ok %s, spi_ok %s, at j=%s, took %s sec" %(mb_client_ok,spi_ok,j,round(t2-t1,4))
+        print ">>> datalog_app:    mb_client_ok %s, spi_ok %s, at j=%s, took %s sec" %(mb_client_ok,spi_ok,j,round(t2-t1,4))
 
 
         #calculate the time for stamp and waiting period, and skip if this stamp is already passed
         stamp = starton + timedelta(seconds = i * data_period)#beginning ts
         wait = (stamp - datetime.utcnow()).total_seconds()
         if wait >= 0:
-            print '    wait %s sec before getting samples' %wait
+            print '>>> datalog_app:    wait %s sec before getting samples' %wait
             sleep(wait)
         else:
             skipi = int(abs(wait)/data_period) + 1
             i += skipi
-            print '    !! stamp missed by %s seconds, stamp = %s' %(wait, stamp)
-            print '    skipping i by %s' %(skipi)
+            print '>>> datalog_app:    !! stamp missed by %s seconds, stamp = %s' %(wait, stamp)
+            print '>>> datalog_app:    skipping i by %s' %(skipi)
             continue
 
         #get the data of the stamp
         try:
             #raise exception if there is no data at all, if there is just one sensor not working, dont fail
-            print '    getting samples now...'
+            print '>>> datalog_app:    getting samples now...'
             dic_samples = _get_stamp(sample_period, data_period, mb_client, spi_client, sensors_conf)
             processed = _process_data(dic_samples, sensors_conf)
-            print '    [%s] now = %s' %(stamp, datetime.utcnow())
-            print '    %s' %(processed)
+            print '>>> datalog_app:    [%s] now = %s' %(stamp, datetime.utcnow())
+            print '>>> datalog_app:    %s' %(processed)
 
         except:
             dic_samples = None
@@ -274,15 +274,15 @@ def main(sample_period, data_period, sensors_conf, rs485_conf=None):
                 processed['timestamp']=stamp
                 datalog_app.models.Reading(data=json_util.dumps(processed)
                         ,meta=json_util.dumps({'sent':'false', 'quality':'?'})).save()
-                print "    data saved in db"
+                print ">>> datalog_app:    data saved in db"
 
             except:
-                print '    !!could not send data to local DB'
+                print '>>> datalog_app:    !!could not send data to local DB'
                 print traceback.format_exc()
         else:
-            print "    no data saved in db"
+            print ">>> datalog_app:    no data saved in db"
 
-        print '<<<< r'
+        print '>>> datalog_app: finished loop'
     return None
 
 

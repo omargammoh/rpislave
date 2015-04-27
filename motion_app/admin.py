@@ -1,7 +1,5 @@
 from django.contrib import admin
-from motion_app.models import Event
+from django.db.models import get_models, get_app
 
-class EventAdmin(admin.ModelAdmin):
-    list_display = ('data', 'meta')
-
-admin.site.register(Event, EventAdmin)
+for model in get_models(get_app('motion_app')):
+    admin.site.register(model)

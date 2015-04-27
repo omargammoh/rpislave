@@ -29,7 +29,7 @@ def get_status():
 def main():
     conf = _get_conf()
     while True:
-        print ">>> status: starting loop"
+        print ">> status: starting loop"
         try:
             fp = '/home/pi/data/status'
 
@@ -42,14 +42,14 @@ def main():
                 oldip = prev_status["ip"]
             except:
                 oldip = None
-                print ">>> status: previous status not loadable"
+                print ">> status: previous status not loadable"
 
             #get new status
             new_status = get_status()
 
             #if they are the same the do nothing
             if oldip == new_status["ip"]:
-                print ">>> status: ip remains the same as before %s" % oldip
+                print ">> status: ip remains the same as before %s" % oldip
                 pass
 
             #if different or none then
@@ -67,20 +67,20 @@ def main():
                     new_status["req"] = 'http://{noip_username}:{noip_password}@dynupdate.no-ip.com/nic/update?hostname={noip_hostname}&myip={ip}'.format(**conf["status"])
                     new_status["resp"] = requests.get(new_status["req"]).content
                     new_status["msg"] += ", updated noip"
-                    print ">>> status: updated noip, response = %s" % new_status["resp"]
+                    print ">> status: updated noip, response = %s" % new_status["resp"]
                 #else just print something
                 else:
-                    print ">>> status: no data to update noip"
+                    print ">> status: no data to update noip"
 
                 #write log
                 logline = Log(data=json.dumps(new_status), meta="")
                 logline.save()
-                print ">>> status: wrote %s" % new_status
+                print ">> status: wrote %s" % new_status
 
         except:
             print traceback.format_exc()
-            print ">>> status: error"
+            print ">> status: error"
             pass
 
-        print ">>> status: ending loop"
+        print ">> status: ending loop"
         time.sleep(30)

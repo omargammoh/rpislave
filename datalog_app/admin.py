@@ -1,7 +1,5 @@
 from django.contrib import admin
-from datalog_app.models import Reading
+from django.db.models import get_models, get_app
 
-class ReadingAdmin(admin.ModelAdmin):
-    list_display = ('data', 'meta')
-
-admin.site.register(Reading, ReadingAdmin)
+for model in get_models(get_app('datalog_app')):
+    admin.site.register(model)

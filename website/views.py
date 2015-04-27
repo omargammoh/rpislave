@@ -12,6 +12,7 @@ from website.processing import MP, _get_conf
 import importlib
 import subprocess
 
+
 def home(request, template_name='home.html'):
     conf = _get_conf()
     app_info = []
@@ -107,5 +108,3 @@ def appmanage(request):
         err = traceback.format_exc()
         dic = json.dumps({"error": err})
         return HttpResponse(dic, content_type='application/json')
-
-

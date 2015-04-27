@@ -38,7 +38,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name):
             if sent == 'false':
 
                 #send it
-                col = db["%s_%s_%s" %(conf_label, app_name, model_name)]
+                col = db[".".join([conf_label, app_name, model_name])]
                 jdata = json_util.loads(ob.data)
                 col.insert(jdata)
 
@@ -52,7 +52,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name):
                 #do nothing
                 pass
         except:
-            print '    !!sending data to mongodb failed'
+            print '>> datasend: !!sending data to mongodb failed'
             print traceback.format_exc()
 
         #handle the sent data(do not delete data from website because config is there)
@@ -68,29 +68,29 @@ def _send_model_data(model, keep_period, db, conf_label, app_name):
                 ob.delete()
                 cnt['del'] += 1
     t2 = time()
-    print '    sent model data for %s, took %s sec to process db with %s' % (model_name, round(t2 - t1, 3), cnt)
-
+    print '>> datasend: model %s done, took %s sec, %s' % (model_name, round(t2 - t1, 3), cnt)
 
 def _send_app_data(app_name, keep_period, db, conf_label):
     app = get_app(app_name)
     for model in get_models(app):
-        print "_send_model_data for %s" % model.__name__
+        print ">> datasend: working on model %s" % model.__name__
         _send_model_data(model=model, keep_period=keep_period, db=db, conf_label=conf_label, app_name=app_name)
 
-
-def main(send_period, keep_period, mongo_address, app_list=None):
+def main(send_period=60*2, keep_period=60*60*24*7, app_list=None):
     '''
+    take data from db and send it to mongodb, if successfull, mark data as successfull and delete after a while (except for the website app)
+
     send_period: every how often should i send?
     keep_period: how long should i wait before i delete the sent items
-    take data from db and send it to mongodb, if successfull, mark data as successfull and delete after a while
+    app_list: a list of apps to send their data, if None, then all apps in the conf will be done
     '''
 
     _prepare_django()
-    import datalog_app.models
 
     conf = _get_conf()
-    if app_list is None:
-        app_list = conf['apps'].keys()
+
+    if app_list is None: app_list = conf['apps'].keys()
+    mongo_address = conf['mongo_address']
 
     app_list.append("website")
 
@@ -99,8 +99,7 @@ def main(send_period, keep_period, mongo_address, app_list=None):
     sleep(10)
     i = 0
     while True:
-        print '-'*30
-        print "\n>>>> datasend_app loop, i=%s" %i
+        print ">> datasend: loop, i=%s" % i
         #waiting to have a connection
         t1 = time()
         j = 0
@@ -110,8 +109,6 @@ def main(send_period, keep_period, mongo_address, app_list=None):
                 db = client.get_default_database()
             except:
                 pass
-                #print '!! connecting to mongodb failed %s' %mongo_address
-                #print traceback.format_exc()
 
             try:
                 connected = client.alive()
@@ -121,28 +118,27 @@ def main(send_period, keep_period, mongo_address, app_list=None):
             if not connected:
                 #keep trying
                 retryin = min(20 * (j + 1), 60*60)
-                print "    !!couldnt connect at j=%s, retrying in %s" % (j, retryin)
+                print ">> datasend: !!couldnt connect at j=%s, retrying in %s" % (j, retryin)
                 sleep(retryin)
             j += 1
         t2 = time()
-        print '    connected to mongo, took %s sec, and %s trials to connect' % (round(t2 - t1, 3), j)
+        print '>> datasend:    connected to mongo, took %s sec, and %s trials to connect' % (round(t2 - t1, 3), j)
 
         #when connection is good
         if connected:
             # send the data of the apps
             for app_name in app_list:
                 try:
-                    print "_send_app_data for %s" % app_name
+                    print ">> datasend: working on app %s" % app_name
                     _send_app_data(app_name=app_name, keep_period=keep_period, db=db, conf_label=conf_label)
                 except:
-                    print '!! _send_app_data for %s failed' % app_name
+                    print '>> datasend: !! _send_app_data for %s failed' % app_name
                     print traceback.format_exc()
 
 
         i += 1
         #waiting for next sending time
-        print "    next iteration is after %s sec" %send_period
-        print '<<<< s'
+        print ">> datasend: next iteration is after %s sec" %send_period
         sleep(send_period)
 
     return None

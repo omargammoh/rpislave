@@ -25,16 +25,15 @@ def set_para(pin_bcm, para, value):
 def export(pin_bcm):
     cmd = "echo %s > /sys/class/gpio/export" %pin_bcm
     subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
-    print cmd
+    print ">>> gpio_app:", cmd
 
 def unexport(pin_bcm):
     cmd = "echo %s > /sys/class/gpio/unexport" %pin_bcm
     subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
-    print cmd
+    print ">>> gpio_app:", cmd
 
 def main(pins_conf):
 
-    print ""
     for bcmpin in board_bmc.values():
         export(bcmpin)
 
@@ -57,9 +56,9 @@ def main(pins_conf):
                 pass
             else:
                 raise BaseException('iou is not known %s' %conf["iou"] )
-            print "succesfuly done %s" %conf
+            print ">>> gpio_app: succesfuly done %s" %conf
         except:
-            print "!!failed setting up pin %s" %label
+            print ">>> gpio_app: !!failed setting up pin %s" %label
             #print traceback.format_exc()
 
     return None

@@ -1,11 +1,21 @@
 from bson import json_util
 import multiprocessing
 from website.models import Conf
-from django.conf import settings
 from time import time, sleep
 import inspect
 import subprocess
 
+def filter_kwargs(func, kwargs_input):
+    """
+    creates the kwargs of func from kwargs_input
+    func: function to inspect
+    """
+    argnames,_,_,defaults = inspect.getargspec(func)
+    if defaults is None: defaults=[]
+    required_args = set(argnames[:len(argnames)-len(defaults)])
+    optional_args = set(argnames[len(argnames)-len(defaults):])
+    kwargs_needed = {k:v for (k,v) in kwargs_input.iteritems() if k in required_args.union(optional_args) }
+    return kwargs_needed
 
 def get_pid(command):
     """
@@ -46,16 +56,8 @@ class MP():
         self.dic = {}
 
     def start(self):
-        conf = _get_conf()['apps'][self.name]
-
-        #not all the parameters in the conf are needed in the target, trim to our needs
-        argnames,_,_,defaults = inspect.getargspec(self.target)
-        if defaults is None: defaults=[]
-        required_args=set(argnames[:len(argnames)-len(defaults)])
-        optional_args=set(argnames[len(argnames)-len(defaults):])
-        trimmed_conf = {k:v for (k,v) in conf.iteritems() if k in required_args.union(optional_args) }
-
-        p = multiprocessing.Process(name=self.name, target=self.target, kwargs=trimmed_conf)
+        app_conf = _get_conf()['apps'][self.name]
+        p = multiprocessing.Process(name=self.name, target=self.target, kwargs=filter_kwargs(func=self.target, kwargs_input=app_conf))
         p.start()
 
 

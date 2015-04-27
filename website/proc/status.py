@@ -18,12 +18,21 @@ def get_status():
         d['ip'] = json.loads(resp)['ip']
     except:
         pass
+
     try:
         resp = execute("cat /proc/cpuinfo")
         d['serial'] = [x for x in execute("cat /proc/cpuinfo").split("\n") if "Serial" in x][0].split()[-1]
     except:
         pass
+
+    try:
+        ipint = execute("ip route get \"$(ip route show to 0/0 | grep -oP '(?<=via )\S+')\" | grep -oP '(?<=src )\S+'")
+        d['ip_lan'] = ipint.strip()
+    except:
+        pass
+
     d['dt'] = datetime.datetime.utcnow().__str__()
+
     return d
 
 def main(status_period=30):

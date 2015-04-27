@@ -34,11 +34,11 @@ for app in appnames:
 
         toadd = url(r'^%s/' %app, include('%s.urls' %app))
         patterns_tup = patterns_tup + (toadd,)
-        print "added %s" % app
+        print "> included urls from %s" % app
     except:
         toadd = url(r'^%s/' %app, website.views.nourls(traceback.format_exc()))
         patterns_tup = patterns_tup + (toadd,)
-        print '!!could not include urls from the app %s' % (app)
+        print '> !!could not include urls from the app %s' % (app)
 
 
 urlpatterns = patterns(*patterns_tup)

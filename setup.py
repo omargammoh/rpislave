@@ -3,6 +3,7 @@ import os
 import json
 from time import time
 
+#get the configuration file
 try:
     conffolder = '/home/pi/rpislave_conf'
     conffile = None
@@ -148,7 +149,7 @@ def setup_realtimeclock():
 
 def change_sshport():
     #apends a line to a file
-    filepath = "sudo nano /etc/ssh/sshd_config"
+    filepath = "/etc/ssh/sshd_config"
     linetoappend = r"Port 9005"
 
     f = file(filepath, "r")
@@ -161,8 +162,8 @@ def change_sshport():
     done = False
     newlis = []
     for ss in s:
-        if ss.strip()=="Port 22":
-            newlis.append("\n" + linetoappend + "\n")
+        if ss.strip() == "Port 22":
+            newlis.append(linetoappend + "\n")
             done = True
         else:
             newlis.append(ss)

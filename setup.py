@@ -162,7 +162,7 @@ def change_sshport():
     newlis = []
     for ss in s:
         if ss.strip()=="Port 22":
-            newlis.append(linetoappend)
+            newlis.append("\n" + linetoappend + "\n")
             done = True
         else:
             newlis.append(ss)

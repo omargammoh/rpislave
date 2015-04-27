@@ -29,7 +29,7 @@ This project is a django server which can be easily installed on an rpi, where d
   * 9002 for motion's video streaming
   * 9003 for morion's configuration
   * 9004 for BTSync server
-  * 22 for ssh server
+  * 9005 for ssh server
 
 # Current apps #
   * <b>gpio_app</b>: Control and observe the GPIO (input output) pins of your rpi slave

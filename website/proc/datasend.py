@@ -109,6 +109,12 @@ def main(send_period=60*2, keep_period=60*60*24*7, app_list=None):
         #waiting to have a connection
         t1 = time()
         j = 0
+
+        try:
+            connected = client.alive()
+        except:
+            connected = False
+
         while not connected:
             try:
                 client = pymongo.MongoClient(mongo_address)

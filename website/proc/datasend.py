@@ -21,6 +21,12 @@ def _send_model_data(model, keep_period, db, conf_label, app_name):
     """
     t1 = time()
     model_name = model.__name__
+
+    if hasattr(model, "mode"):
+        model_mode = model.mode
+    else:
+        model_mode = ""
+
     cnt = {'del': 0, 'send': 0}
     for ob in model.objects.all():
 
@@ -57,7 +63,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name):
 
         #handle the sent data(do not delete data from website because config is there)
         meta = json_util.loads(ob.meta)
-        if app_name != "website" and len(meta['sent']) == 4+2+2+2+2+2 and meta['sent'].isdigit():
+        if (not ("nodelete" in model_mode)) and len(meta['sent']) == 4+2+2+2+2+2 and meta['sent'].isdigit():
             sentdate = datetime.strptime(meta['sent'], "%Y%m%d%H%M%S")
             now = datetime.utcnow()
             #if this data point has been there for a short time, keep it
@@ -68,7 +74,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name):
                 ob.delete()
                 cnt['del'] += 1
     t2 = time()
-    print '>> datasend: model %s done, took %s sec, %s' % (model_name, round(t2 - t1, 3), cnt)
+    print '>> datasend: model %s done, took %s sec, %s, mode %s' % (model_name, round(t2 - t1, 3), cnt, model_mode)
 
 def _send_app_data(app_name, keep_period, db, conf_label):
     app = get_app(app_name)
@@ -134,6 +140,25 @@ def main(send_period=60*2, keep_period=60*60*24*7, app_list=None):
                 except:
                     print '>> datasend: !! _send_app_data for %s failed' % app_name
                     print traceback.format_exc()
+
+
+
+        if connected:
+            try:
+                li_conf = db['latestinfo']
+                li_conf.update(
+                   { "label": conf_label },
+                   {
+                      "label": conf_label,
+                      "dt": datetime.utcnow(),
+                      "send_period": send_period
+                   },
+                   upsert = True
+                )
+                print ">> datasend: sent latest info"
+            except:
+                print ">> !!datasend: error sending latest info"
+
 
 
         i += 1

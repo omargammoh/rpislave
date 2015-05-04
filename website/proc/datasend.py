@@ -129,7 +129,7 @@ def main(send_period=60*2, keep_period=60*60*24*7, app_list=None):
 
             if not connected:
                 #keep trying
-                retryin = min(20 * (j + 1), 60*60)
+                retryin = min(20 * (j + 1), 60*10)
                 print ">> datasend: !!couldnt connect at j=%s, retrying in %s" % (j, retryin)
                 sleep(retryin)
             j += 1

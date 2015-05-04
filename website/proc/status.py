@@ -4,9 +4,7 @@ import datetime
 import json
 import time
 from website.models import Log
-from website.processing import _get_conf
 import traceback
-import requests
 
 def execute(cmd):
     return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
@@ -17,57 +15,73 @@ def get_status():
         resp = urllib2.urlopen('http://api.ipify.org?format=json').read()
         d['ip'] = json.loads(resp)['ip']
     except:
+        d['ip'] = "-"
         pass
 
     try:
         resp = execute("cat /proc/cpuinfo")
         d['serial'] = [x for x in execute("cat /proc/cpuinfo").split("\n") if "Serial" in x][0].split()[-1]
     except:
+        d['serial'] = "-"
         pass
 
     try:
         ipint = execute("ip route get \"$(ip route show to 0/0 | grep -oP '(?<=via )\S+')\" | grep -oP '(?<=src )\S+'")
         d['ip_lan'] = ipint.strip()
     except:
+        d['ip_lan'] = "-"
         pass
 
     d['dt'] = datetime.datetime.utcnow().__str__()
 
     return d
 
+def check_internet():
+    try:
+        t1 = time.time()
+        _ = urllib2.urlopen('http://www.google.com', timeout=10)
+        time_needed = (time.time() - t1)
+        internet_ison = True
+        print ">> status: connected to internet needed %s sec to ping google" % time_needed
+    #if not connected
+    except:
+        internet_ison = False
+    return internet_ison
+
+def restart_networking():
+    try:
+        print ">> status: not connected to internet, will attempt to restart network"
+        print '>> status: sudo /etc/init.d/networking stop'
+        execute('sudo /etc/init.d/networking stop')
+        print '>> status: sudo /etc/init.d/networking start'
+        execute('sudo /etc/init.d/networking start')
+        time.sleep(3)
+    except:
+        pass
+
 def main(status_period=30):
-    conf = _get_conf()
     while True:
         print ">> status: starting loop"
 
-        #checking internet connectivity
-        try:
-            t1 = time.time()
-            _ = urllib2.urlopen('http://www.google.com', timeout=10)
-            time_needed = (time.time() - t1)
-            internet_ison = True
-            print ">> status: connected to internet needed %s sec to ping google" % time_needed
-        #if not connected
-        except:
-            internet_ison = False
-            #try to restart the networking
-            try:
-                print ">> status: not connected to internet, will attempt to restart network"
-                print '>> status: sudo /etc/init.d/networking stop'
-                execute('sudo /etc/init.d/networking stop')
-                print '>> status: sudo /etc/init.d/networking start'
-                execute('sudo /etc/init.d/networking start')
-                time.sleep(3)
-            except:
-                pass
+        #checking internet connectivity and trying to reconnect if not connected
+        if True:
+            internet_ison = check_internet()
 
-            #now see if the internet is connected after that we have corrected it is restarted
-            try:
-                _ = urllib2.urlopen('http://www.google.com', timeout=10)
-                internet_ison = True
-                print ">> status: connected to internet after network restart"
-            except:
-                internet_ison = False
+            if internet_ison:
+                print ">> status: internet already on"
+
+            #if not on
+            else:
+                #try to restart the networking
+                restart_networking()
+
+                #now see if the internet is connected after that we have corrected it is restarted
+                internet_ison = check_internet()
+
+                if internet_ison:
+                    print ">> status: connected to internet after network restart"
+                else:
+                    print ">> status: could not connected to internet even after network restart"
 
         try:
             fp = '/home/pi/data/status'
@@ -78,38 +92,29 @@ def main(status_period=30):
                 s = f.read()
                 f.close()
                 prev_status = json.loads(s)
-                oldip = prev_status["ip"]
             except:
-                oldip = None
+                prev_status = None
                 print ">> status: previous status not loadable"
 
             #get new status
             new_status = get_status()
 
-            #if they are the same the do nothing
-            if oldip == new_status["ip"]:
-                print ">> status: ip remains the same as before %s" % oldip
+            #if prev_status  is loadable and is equal to new_status
+            if (prev_status is not None) and \
+                            prev_status["ip_lan"] == new_status["ip_lan"] and \
+                            prev_status["ip"] == new_status["ip"] and \
+                            prev_status["serial"] == new_status["serial"]:
+
+                print ">> status: ip, ip_lan, serial remains the same as before ip = %s" %prev_status["ip_lan"]
                 pass
 
-            #if different or none then
+            #if None or different
             else:
                 #create status file
                 f = file(fp, "w")
                 f.write(json.dumps(new_status))
                 f.close()
-                new_status["msg"] = "updated status file"
-
-                #if noip info is there
-                if "status" in conf and set(["noip_username", "noip_password", "noip_hostname"]).issubset(set(conf["status"].keys())):
-                    #update noip.com
-                    conf["status"]["ip"] = new_status["ip"]
-                    new_status["req"] = 'http://{noip_username}:{noip_password}@dynupdate.no-ip.com/nic/update?hostname={noip_hostname}&myip={ip}'.format(**conf["status"])
-                    new_status["resp"] = requests.get(new_status["req"]).content
-                    new_status["msg"] += ", updated noip"
-                    print ">> status: updated noip, response = %s" % new_status["resp"]
-                #else just print something
-                else:
-                    print ">> status: no data to update noip"
+                new_status["msg"] = "status update"
 
                 #write log
                 logline = Log(data=json.dumps(new_status), meta="")
@@ -118,9 +123,7 @@ def main(status_period=30):
 
         except:
             # TODO: if internet is off, exception is raised, but this should not be the case, we should handle this case gracefully
-            print traceback.format_exc()
-            print ">> status: error"
-            pass
+            print ">> status: error: %s" %traceback.format_exc()
 
         print ">> status: ending loop"
         time.sleep(status_period)

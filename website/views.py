@@ -108,3 +108,14 @@ def appmanage(request):
         err = traceback.format_exc()
         dic = json.dumps({"error": err})
         return HttpResponse(dic, content_type='application/json')
+
+def rqst(request):
+    d = {}
+    try:
+        d["request"] = request
+        return HttpResponse(json.dumps(d), content_type='application/json')
+    except:
+        d["error"] = traceback.format_exc()
+        print d["error"]
+        return HttpResponse(json.dumps(d), content_type='application/json')
+

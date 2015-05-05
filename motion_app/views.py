@@ -39,9 +39,31 @@ def _get_pid():
 
 def home(request, template_name='motion_app/home.html'):
     conf = get_motion_config()
+    host = request.get_host().lstrip('http://').split(':')[0]
+
+    #camera is accessed from lan, the host is the ip of the rpi
+    if host.startswith('192.168.1'):
+        cameraport = str(conf["webcam_port"])
+
+    #camera is accessed from wan, port needs to be calculated
+    else:
+        #try get lan ip, because based on it we will find the camera ip
+        try:
+            fp = '/home/pi/data/status'
+            f = file(fp, "r")
+            s = f.read()
+            f.close()
+            ip_lan = json.loads(s)['ip_lan']
+            if not ip_lan.startswith('192.168.1'):
+                raise BaseException('')
+            cameraport = '9' + ip_lan.split('.')[-1][1:3] + '2'
+        except:
+            cameraport = conf["webcam_port"]
+            print ">> status: previous status not loadable"
+
     motion_conf = {k: {"h" : "<code>%s</code> (currently %s)" %(k, v), "v": v} for (k,v) in conf.iteritems()}
     d = {"motion_conf": motion_conf, "lis_signals": lis_signals, "info": info}
-    d["stream_address"] = 'http://' + request.get_host().lstrip('http://').split(':')[0] + ":" + str(conf["webcam_port"])
+    d["stream_address"] = 'http://' + host + ":" + cameraport
     return render_to_response(template_name, d, context_instance=RequestContext(request))
 
 
@@ -117,6 +139,7 @@ def register_event(request):
         d["error"] = traceback.format_exc()
         print d["error"]
         return HttpResponse(json.dumps(d), content_type='application/json')
+
 
 def recent_events(request):
     lis = [

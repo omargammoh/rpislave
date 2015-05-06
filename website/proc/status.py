@@ -33,6 +33,20 @@ def get_status():
         pass
 
     try:
+        ver = execute("cd /home/pi/rpislave&&git rev-parse HEAD")
+        d['git_rpislave'] = ver.strip()
+    except:
+        d['git_rpislave'] = "-"
+        pass
+
+    try:
+        ver = execute("cd /home/pi/rpislave_conf&&git rev-parse HEAD")
+        d['git_rpislave_conf'] = ver.strip()
+    except:
+        d['git_rpislave_conf'] = "-"
+        pass
+
+    try:
         ipint = execute("ip route get \"$(ip route show to 0/0 | grep -oP '(?<=via )\S+')\" | grep -oP '(?<=src )\S+'")
         d['ip_lan'] = ipint.strip()
     except:
@@ -108,11 +122,13 @@ def main(status_period=30):
 
             #if prev_status  is loadable and is equal to new_status
             if (prev_status is not None) and \
-                            prev_status["ip_lan"] == new_status["ip_lan"] and \
-                            prev_status["ip"] == new_status["ip"] and \
-                            prev_status["serial"] == new_status["serial"]:
+                            prev_status.get("ip_lan", "") == new_status.get("ip_lan", "") and \
+                            prev_status.get("ip", "") == new_status.get("ip", "")and \
+                            prev_status.get("serial", "") == new_status.get("serial", "") and \
+                            prev_status.get("git_rpislave", "") == new_status.get("git_rpislave", "") and \
+                            prev_status.get("git_rpislave_conf", "") == new_status.get("git_rpislave_conf", ""):
 
-                print ">> status: ip, ip_lan, serial remains the same as before ip = %s" %prev_status["ip_lan"]
+                print ">> status: all params remain the same, ip = %s" % prev_status.get("ip_lan","-")
                 pass
 
             #if None or different

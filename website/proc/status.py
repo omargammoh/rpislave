@@ -26,6 +26,13 @@ def get_status():
         pass
 
     try:
+        resp = execute("cat /proc/cpuinfo")
+        d['revision'] = [x for x in execute("cat /proc/cpuinfo").split("\n") if "Revision" in x][0].split()[-1]
+    except:
+        d['revision'] = "-"
+        pass
+
+    try:
         ipint = execute("ip route get \"$(ip route show to 0/0 | grep -oP '(?<=via )\S+')\" | grep -oP '(?<=src )\S+'")
         d['ip_lan'] = ipint.strip()
     except:

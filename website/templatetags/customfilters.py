@@ -29,7 +29,7 @@ print "conf git version: ", gitversion
 
 @register.simple_tag()
 def git_short_version():
-    return "%s-%s" %(gitversion[:2], confgitversion[:2])
+    return "%s, %s" %(gitversion[:2], confgitversion[:2])
 
 @register.filter()
 def rev(value):

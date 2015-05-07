@@ -147,8 +147,20 @@ def setup_realtimeclock():
     else:
         raise BaseException('we do not know how to install this clock %s' %typ)
 
+def install_btsync():
+    if os.path.isfile('/home/pi/btsync'):
+        print "install_btsync: btsync already installed"
+    else:
+        execute([
+            'cd /home/pi&&wget https://download-cdn.getsyncapp.com/stable/linux-arm/BitTorrent-Sync_arm.tar.gz'
+            ,'cd /home/pi&&tar -zxvf BitTorrent-Sync_arm.tar.gz'
+            ])
+        print "install_btsync: sucessful"
+
 def change_sshport():
-    #apends a line to a file
+    """
+    changes the line Port 22 to Port 9005
+    """
     filepath = "/etc/ssh/sshd_config"
     linetoappend = r"Port 9005"
 
@@ -215,16 +227,10 @@ if __name__ == "__main__":
                 'sudo apt-get install -y motion'
                 ])
 
-        if 'btsync_app' in conf['apps']:
-            if not os.path.isfile('/home/pi/btsync'):
-                execute([
-                    'cd /home/pi&&wget https://download-cdn.getsyncapp.com/stable/linux-arm/BitTorrent-Sync_arm.tar.gz'
-                    ,'cd /home/pi&&tar -zxvf BitTorrent-Sync_arm.tar.gz'
-                    ])
-
         if "rtc" in conf:
             setup_realtimeclock()
 
+    install_btsync()
     setup_db()
     create_datafolder()
     change_sshport()

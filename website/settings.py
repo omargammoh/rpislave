@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import traceback
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -17,7 +18,31 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ewowx!+2a(frgtz4_elhp6vx+m*hp5ox7$6$b!-y7=otu*2h%l'
+try:
+    SECRET_KEY_PATH = os.path.join(BASE_DIR, "SECRET_KEY")
+    #if file exists
+    if os.path.isfile(SECRET_KEY_PATH):
+        #read secret
+        f = file(SECRET_KEY_PATH,'r')
+        SECRET_KEY = f.read().strip()
+        f.close()
+        print "Loaded SECRET succesfuly"
+    #else
+    else:
+        #generate secret
+        from django.utils.crypto import get_random_string
+        SECRET_KEY = get_random_string(50, 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
+        #save it to file
+        f = file(SECRET_KEY_PATH,'w')
+        f.write(SECRET_KEY)
+        f.close()
+        print "Created SECRET succesfuly"
+except:
+    print '!!SECRET is not secret!! '* 100
+    print traceback.format_exc()
+    SECRET_KEY = 'ewowx!+2a(frgtz4_elhp6vx+m*hp5ox7$6$b!-y7=otu*2h%l'
+
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

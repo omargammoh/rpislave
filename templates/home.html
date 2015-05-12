@@ -60,6 +60,7 @@
                     <td><h4>rpislave actions</h4></td>
                     <td><button type="button" id="btn_status_update">Update</button></td>
                     <td><button type="button" id="btn_status_restart">Restart</button></td>
+                    <td><button type="button" id="btn_status_blink">Blink</button></td>
                 </tr>
                 <tr>
                     <td><h4>linux info</h4></td>
@@ -156,6 +157,7 @@ $("#btn_status_commitsbehind").click(make_cmd_function("{% url "website.views.co
 $("#btn_status_conf").click(make_cmd_function("{% url "website.views.status" %}", {"cmd":"conf"}))
 $("#btn_status_update").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":". /home/pi/rpislave/update.sh"}))
 $("#btn_status_restart").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":". /home/pi/rpislave/restart.sh"}))
+$("#btn_status_blink").click(make_cmd_function("{% url "website.views.blink_led" %}", {}))
 
 $("#btn_status_updateconf").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"sudo python /home/pi/rpislave/updateconf.py"}))
 

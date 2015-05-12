@@ -119,3 +119,33 @@ def rqst(request):
         print d["error"]
         return HttpResponse(json.dumps(d), content_type='application/json')
 
+
+
+
+
+def blink_led():
+    """
+    could not get the following code to work:,
+    echo none | sudo tee /sys/class/leds/ACT/trigger
+    for (( i=1; i <= 5; i++ ))
+    do
+      echo 1 | sudo tee /sys/class/leds/ACT/brightness
+      sleep 0.1s
+      echo 0 | sudo tee /sys/class/leds/ACT/brightness
+      sleep 0.1s
+    done
+    echo mmc0 | sudo tee /sys/class/leds/ACT/trigger
+    """
+    d = {}
+    try:
+        lis_cmd = []
+        lis_cmd.append("echo none | sudo tee /sys/class/leds/ACT/trigger")
+        blink = ["echo 1 | sudo tee /sys/class/leds/ACT/brightness", "sleep 0.1s", "echo 0 | sudo tee /sys/class/leds/ACT/brightness", "sleep 0.1s"]
+        lis_cmd = lis_cmd + blink * 25
+        lis_cmd.append("echo mmc0 | sudo tee /sys/class/leds/ACT/trigger")
+        d['data'] = subprocess.Popen("\n".join(lis_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read().split("\n")
+    except:
+        d['error']=traceback.format_exc()
+    return HttpResponse(json.dumps(d), content_type='application/json')
+
+

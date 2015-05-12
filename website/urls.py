@@ -16,6 +16,7 @@ patterns_tup = ('',
     url(r'^test/$', website.views.test),
     url(r'^commits_behind/$', website.views.commits_behind),
     url(r'^rqst/$', website.views.rqst),
+    url(r'^blink/$', website.views.blink_led),
 
     #include admin
     url(r'^admin/', include(admin.site.urls)),

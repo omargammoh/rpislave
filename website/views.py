@@ -119,11 +119,7 @@ def rqst(request):
         print d["error"]
         return HttpResponse(json.dumps(d), content_type='application/json')
 
-
-
-
-
-def blink_led():
+def blink_led(request):
     """
     could not get the following code to work:,
     echo none | sudo tee /sys/class/leds/ACT/trigger

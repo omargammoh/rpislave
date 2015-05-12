@@ -3,33 +3,29 @@ from random import randint
 import re
 from django.core.urlresolvers import reverse
 from website.processing import _get_conf
+import subprocess
 
 register = template.Library()
 
 try:
-    import subprocess
-
-    head = subprocess.Popen("cd /home/pi/rpislave&&git rev-parse HEAD",
-                            shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    gitversion = head.stdout.readline().strip()
+    gitversion = subprocess.Popen("cd /home/pi/rpislave&&git rev-parse HEAD",shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.readline().strip()
+    gitbranch = subprocess.Popen("cd /home/pi/rpislave&&git rev-parse --abbrev-ref HEAD",shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.readline().strip()
 except:
     gitversion = u'?'
-print "git version: ", gitversion
-
+    gitbranch = u'?'
 
 try:
-    import subprocess
-
-    head = subprocess.Popen("cd /home/pi/rpislave_conf&&git rev-parse HEAD",
-                            shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    confgitversion = head.stdout.readline().strip()
+    confgitversion = subprocess.Popen("cd /home/pi/rpislave_conf&&git rev-parse HEAD", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.readline().strip()
+    confgitbranch = subprocess.Popen("cd /home/pi/rpislave_conf&&git rev-parse --abbrev-ref HEAD", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.readline().strip()
 except:
     confgitversion = u'?'
-print "conf git version: ", gitversion
+    confgitbranch = u'?'
+
+
 
 @register.simple_tag()
-def git_short_version():
-    return "%s, %s" %(gitversion[:2], confgitversion[:2])
+def git_info():
+    return "rpis-%s-%s, conf-%s-%s" %(gitbranch, gitversion[:2], confgitbranch, confgitversion[:2])
 
 @register.filter()
 def rev(value):

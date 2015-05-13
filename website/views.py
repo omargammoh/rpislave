@@ -82,8 +82,10 @@ def commits_behind(request):
 
     d = {}
     try:
-        d['rpislave'] = prcess_text(subprocess.Popen("cd /home/pi/rpislave&&sudo git remote update&&git status -uno", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read())
-        d['rpislave_conf'] = prcess_text(subprocess.Popen("cd /home/pi/rpislave_conf&&sudo git remote update&&git status -uno", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read())
+        d['rpislave'] = [prcess_text(subprocess.Popen("cd /home/pi/rpislave&&sudo git remote update&&git status -uno", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read())]
+        d['rpislave'].append(subprocess.Popen("cd /home/pi/rpislave&&sudo git fetch&&sudo git log ..@{u}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read().split('\n'))
+        d['rpislave_conf'] = [prcess_text(subprocess.Popen("cd /home/pi/rpislave_conf&&sudo git remote update&&git status -uno", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read())]
+        d['rpislave_conf'].append(subprocess.Popen("cd /home/pi/rpislave_conf&&sudo git fetch&&sudo git log ..@{u}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read().split('\n'))
     except:
         d['error']=traceback.format_exc()
     return HttpResponse(json.dumps(d), content_type='application/json')

@@ -13,47 +13,57 @@ def get_status():
     d = {}
     try:
         resp = urllib2.urlopen('http://api.ipify.org?format=json').read()
-        d['ip'] = json.loads(resp)['ip']
+        d['ip_wan'] = json.loads(resp)['ip']
     except:
-        d['ip'] = "-"
+        d['ip_wan'] = "-"
         pass
 
     try:
         resp = execute("cat /proc/cpuinfo")
-        d['serial'] = [x for x in execute("cat /proc/cpuinfo").split("\n") if "Serial" in x][0].split()[-1]
+        d['serial'] = [x for x in resp.split("\n") if "Serial" in x][0].split()[-1]
     except:
         d['serial'] = "-"
         pass
 
     try:
         resp = execute("cat /proc/cpuinfo")
-        d['revision'] = [x for x in execute("cat /proc/cpuinfo").split("\n") if "Revision" in x][0].split()[-1]
+        d['revision'] = [x for x in resp.split("\n") if "Revision" in x][0].split()[-1]
     except:
         d['revision'] = "-"
         pass
 
     try:
-        ver = execute("cd /home/pi/rpislave&&git rev-parse HEAD")
-        d['git_rpislave'] = ver.strip()
+        resp = execute("cd /home/pi/rpislave&&git rev-parse HEAD")
+        d['git_rpislave'] = resp.strip()
     except:
         d['git_rpislave'] = "-"
         pass
 
     try:
-        ver = execute("cd /home/pi/rpislave_conf&&git rev-parse HEAD")
-        d['git_rpislave_conf'] = ver.strip()
+        resp = execute("cd /home/pi/rpislave_conf&&git rev-parse HEAD")
+        d['git_rpislave_conf'] = resp.strip()
     except:
         d['git_rpislave_conf'] = "-"
         pass
 
     try:
-        ipint = execute("ip route get \"$(ip route show to 0/0 | grep -oP '(?<=via )\S+')\" | grep -oP '(?<=src )\S+'")
-        d['ip_lan'] = ipint.strip()
+        resp = execute("ip route get \"$(ip route show to 0/0 | grep -oP '(?<=via )\S+')\" | grep -oP '(?<=src )\S+'")
+        d['ip_lan'] = resp.strip()
     except:
         d['ip_lan'] = "-"
         pass
 
-    d['dt'] = datetime.datetime.utcnow().__str__()
+    try:
+        resp = execute("ip route")
+        d['ip_vlan'] = [line for line in resp.split("\n") if "nrtap" in line][0].strip().split(' ')[-1].strip()
+    except:
+        d['ip_vlan'] = "-"
+        pass
+
+    try:
+        d['dt'] = datetime.datetime.utcnow().__str__()
+    except:
+        d['dt'] = "-"
 
     return d
 
@@ -122,13 +132,14 @@ def main(status_period=30):
 
             #if prev_status  is loadable and is equal to new_status
             if (prev_status is not None) and \
+                            prev_status.get("ip_vlan", "") == new_status.get("ip_vlan", "") and \
                             prev_status.get("ip_lan", "") == new_status.get("ip_lan", "") and \
-                            prev_status.get("ip", "") == new_status.get("ip", "")and \
+                            prev_status.get("ip_wan", "") == new_status.get("ip_wan", "")and \
                             prev_status.get("serial", "") == new_status.get("serial", "") and \
                             prev_status.get("git_rpislave", "") == new_status.get("git_rpislave", "") and \
                             prev_status.get("git_rpislave_conf", "") == new_status.get("git_rpislave_conf", ""):
 
-                print ">> status: all params remain the same, ip = %s" % prev_status.get("ip_lan","-")
+                print ">> status: all params remain the same, ip_wan = %s" % prev_status.get("ip_wan","-")
                 pass
 
             #if None or different

@@ -11,6 +11,18 @@ def execute(cmd):
 
 def get_status():
     d = {}
+
+    try:
+        import dateutil.parser
+        import pytz
+        resp = urllib2.urlopen('http://www.timeapi.org/utc/now', timeout=5).read().strip()
+        dt_internet = dateutil.parser.parse(resp).astimezone(pytz.utc)
+        seconds = (datetime.datetime.utcnow().replace(tzinfo=pytz.utc) - dt_internet).total_seconds()
+        d['time_error'] = seconds
+    except:
+        d['time_error'] = "-"
+        pass
+
     try:
         resp = urllib2.urlopen('http://api.ipify.org?format=json').read()
         d['ip_wan'] = json.loads(resp)['ip']

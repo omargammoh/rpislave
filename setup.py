@@ -202,6 +202,7 @@ if __name__ == "__main__":
         ,'sudo pip install pymongo==2.8'
         ,'sudo pip install pytz'
         ,'sudo pip install requests'
+        ,'sudo pip install python-dateutil'
         ])
     t3 = time()
 

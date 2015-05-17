@@ -119,7 +119,7 @@ def create_datafolder():
         os.mkdir(pth)
 
     #write the conf file in the datafolder
-    f = file(os.path.join(path, "conf"), "w")
+    f = file(os.path.join(pth, "conf"), "w")
     f.write(conf_str)
     f.close()
 

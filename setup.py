@@ -89,7 +89,6 @@ def setup_networkinterfaces():
 
     print "setup_networkinterfaces: interfaces successful"
 
-
 def setup_db():
     import os
     import sys
@@ -102,7 +101,7 @@ def setup_db():
     django.setup()
     from django.contrib.auth.models import User
     if len(User.objects.all()) == 0:
-        u = User.objects.create_superuser('pi', '', 'raspberry')
+        u = User.objects.create_superuser(conf.get('superuser', {}).get('login', 'pi'), '', conf.get('superuser', {}).get('password', 'raspberry'))
         u.save()
         print "superuser created"
         

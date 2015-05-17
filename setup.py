@@ -101,7 +101,7 @@ def setup_db():
     django.setup()
     from django.contrib.auth.models import User
     if len(User.objects.all()) == 0:
-        u = User.objects.create_superuser(conf.get('superuser', {}).get('login', 'pi'), '', conf.get('superuser', {}).get('password', 'raspberry'))
+        u = User.objects.create_superuser(conf.get('super_user', {}).get('login', 'pi'), '', conf.get('super_user', {}).get('password', 'raspberry'))
         u.save()
         print "superuser created"
         

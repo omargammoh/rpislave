@@ -12,6 +12,7 @@ def execute(cmd):
 def get_status():
     d = {}
 
+    #TIME ERROR
     try:
         import dateutil.parser
         import pytz
@@ -30,6 +31,7 @@ def get_status():
         d['ip_wan'] = "-"
         pass
 
+    #CPU
     try:
         resp = execute("cat /proc/cpuinfo")
         d['serial'] = [x for x in resp.split("\n") if "Serial" in x][0].split()[-1]
@@ -44,20 +46,23 @@ def get_status():
         d['revision'] = "-"
         pass
 
+    #GIT
     try:
-        resp = execute("cd /home/pi/rpislave&&git rev-parse HEAD")
-        d['git_rpislave'] = resp.strip()
+        d['git_rpislave'] = execute("cd /home/pi/rpislave&&git rev-parse HEAD").strip()
+        d['gitbranch_rpislave'] = execute("cd /home/pi/rpislave&&git rev-parse --abbrev-ref HEAD").strip()
     except:
-        d['git_rpislave'] = "-"
-        pass
+        d['git_rpislave'] = '-'
+        d['gitbranch_rpislave'] = '-'
 
     try:
-        resp = execute("cd /home/pi/rpislave_conf&&git rev-parse HEAD")
-        d['git_rpislave_conf'] = resp.strip()
+        d['git_rpislave_conf'] = execute("cd /home/pi/rpislave_conf&&git rev-parse HEAD").strip()
+        d['gitbranch_rpislave_conf'] = execute("cd /home/pi/rpislave_conf&&git rev-parse --abbrev-ref HEAD").strip()
     except:
-        d['git_rpislave_conf'] = "-"
-        pass
+        d['git_rpislave_conf'] = '-'
+        d['gitbranch_rpislave_conf'] = '-'
 
+
+    #IP
     try:
         resp = execute("ip route get \"$(ip route show to 0/0 | grep -oP '(?<=via )\S+')\" | grep -oP '(?<=src )\S+'")
         d['ip_lan'] = resp.strip()
@@ -72,6 +77,7 @@ def get_status():
         d['ip_vlan'] = "-"
         pass
 
+    #DT
     try:
         d['dt'] = datetime.datetime.utcnow().__str__()
     except:
@@ -149,7 +155,9 @@ def main(status_period=30):
                             prev_status.get("ip_wan", "") == new_status.get("ip_wan", "")and \
                             prev_status.get("serial", "") == new_status.get("serial", "") and \
                             prev_status.get("git_rpislave", "") == new_status.get("git_rpislave", "") and \
-                            prev_status.get("git_rpislave_conf", "") == new_status.get("git_rpislave_conf", ""):
+                            prev_status.get("gitbranch_rpislave", "") == new_status.get("gitbranch_rpislave", "") and \
+                            prev_status.get("git_rpislave_conf", "") == new_status.get("git_rpislave_conf", "") and \
+                            prev_status.get("gitbranch_rpislave_conf", "") == new_status.get("gitbranch_rpislave_conf", ""):
 
                 print ">> status: all params remain the same, ip_wan = %s" % prev_status.get("ip_wan","-")
                 pass
@@ -168,7 +176,6 @@ def main(status_period=30):
                 print ">> status: wrote %s" % new_status
 
         except:
-            # TODO: if internet is off, exception is raised, but this should not be the case, we should handle this case gracefully
             print ">> status: error: %s" %traceback.format_exc()
 
         print ">> status: ending loop"

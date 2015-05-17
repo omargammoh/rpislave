@@ -44,7 +44,7 @@ try:
 
     for (ps_name,conf) in conf["apps"].iteritems():
         try:
-            if conf.get('autostart', False) == True:
+            if conf.get('autostart', True) == True:
                 m = importlib.import_module("%s.process" %ps_name)
                 target = m.main
                 if not (ps_name in ac):

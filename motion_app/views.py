@@ -186,7 +186,7 @@ def gantt_data(request):
     d={}
     try:
 
-        dbdata = [{'dt':datetime.datetime(2010,1,1) + datetime.timedelta(hours=7 * i+1), "event":["movie_start", "movie_end"][i%2]}for i in range(100)]
+        #dbdata = [{'dt':datetime.datetime(2010,1,1) + datetime.timedelta(hours=7 * i+1), "event":["movie_start", "movie_end"][i%2]}for i in range(100)]
         dbdata = [ev for ev in [json_util.loads(e.data) for e in Event.objects.all()] if ev['label'] in ["movie_start", "movie_end"]]
         dbdata = sorted(dbdata, key=lambda x:x['dt'])
         #print dbdata

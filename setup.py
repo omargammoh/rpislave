@@ -81,7 +81,7 @@ def setup_autostart():
     print "setup_autostart: successful"
 
 def setup_networkinterfaces():
-    network = conf["network_interfaces"]
+    network = conf.get("network_interfaces", ["### loopback ###","auto lo","iface lo inet loopback","### ethernet ###","iface eth0 inet dhcp"])
     contents = "\n".join(network)
     f = file("/etc/network/interfaces", "w+")
     f.write(contents)

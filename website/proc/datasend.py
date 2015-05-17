@@ -96,7 +96,9 @@ def main(send_period=60*2, keep_period=60*60*24*7, app_list=None):
     conf = _get_conf()
 
     if app_list is None: app_list = conf['apps'].keys()
-    mongo_address = conf['mongo_address']
+    mongo_address = conf.get('mongo_address')
+    if mongo_address is None:
+        return None
 
     app_list.append("website")
 
@@ -147,24 +149,33 @@ def main(send_period=60*2, keep_period=60*60*24*7, app_list=None):
                     print '>> datasend: !! _send_app_data for %s failed' % app_name
                     print traceback.format_exc()
 
-
-
         if connected:
             try:
+                try:
+                    import dateutil.parser
+                    import pytz
+                    import urllib2
+                    resp = urllib2.urlopen('http://www.timeapi.org/utc/now', timeout=5).read().strip()
+                    dt_internet = dateutil.parser.parse(resp).astimezone(pytz.utc)
+                    time_error = (datetime.datetime.utcnow().replace(tzinfo=pytz.utc) - dt_internet).total_seconds()
+                except:
+                    time_error = "-"
+                    pass
+
                 li_conf = db['latestinfo']
                 li_conf.update(
                    { "label": conf_label },
                    {
                       "label": conf_label,
                       "dt": datetime.utcnow(),
-                      "send_period": send_period
+                      "send_period": send_period,
+                      "time_error": time_error
                    },
                    upsert = True
                 )
                 print ">> datasend: sent latest info"
             except:
                 print ">> !!datasend: error sending latest info"
-
 
 
         i += 1

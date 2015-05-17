@@ -157,7 +157,7 @@ def main(send_period=60*2, keep_period=60*60*24*7, app_list=None):
                     import urllib2
                     resp = urllib2.urlopen('http://www.timeapi.org/utc/now', timeout=5).read().strip()
                     dt_internet = dateutil.parser.parse(resp).astimezone(pytz.utc)
-                    time_error = (datetime.datetime.utcnow().replace(tzinfo=pytz.utc) - dt_internet).total_seconds()
+                    time_error = (datetime.utcnow().replace(tzinfo=pytz.utc) - dt_internet).total_seconds()
                 except:
                     time_error = "-"
                     pass

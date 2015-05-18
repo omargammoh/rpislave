@@ -18,9 +18,20 @@ try:
 except:
     print ">>> datalog_app: !!could not load spidev module"
 
-def _read_spi(spi, channel):
+def __read_spi(spi, channel):
     adc = spi.xfer2([1,(8+channel)<<4,0])
     data = ((adc[1]&3) << 8) + adc[2]
+    return data
+
+def _read_spi(spi, channel):
+    t0 = time()
+    lis_v = []
+    while True:
+        v = __read_spi(spi, channel)
+        lis_v.append(v)
+        if time() - t0 > 0.1:
+            break
+    data = np.average(lis_v)
     return data
 
 def _pretty_time_delta(seconds):

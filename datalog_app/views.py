@@ -26,3 +26,32 @@ def recentdata(request):
 
     return HttpResponse(jdic, content_type='application/json')
 
+def highresmcp3008(request):
+    try:
+        import spidev
+        import time
+        n = min(int(request.GET.get("n", 200)), 2000)
+        channel = int(request.GET.get("channel", 0))
+
+        spi_client = spidev.SpiDev()
+        spi_client.open(0, 0)
+
+        def _read_spi(spi, channel):
+            adc = spi.xfer2([1,(8+channel)<<4,0])
+            data = ((adc[1]&3) << 8) + adc[2]
+            return data
+
+        t1 = time.time()
+        lis_v = [_read_spi(spi_client, channel) for i in range(n)]
+        t2 = time.time()
+        sec = (t2 - t1)
+        spi_client.close()
+
+        dic = {'lis':lis_v, "period": sec}
+        jdic= json_util.dumps(dic)
+    except:
+        err = traceback.format_exc()
+        jdic = json.dumps({"error": err})
+
+    return HttpResponse(jdic, content_type='application/json')
+

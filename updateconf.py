@@ -26,11 +26,15 @@ def update_conf():
         if not os.path.isdir(conffolder):
             raise BaseException('could not find the rpislave_conf folder %s' %conffolder)
 
+        n = 0
         for path, subdirs, files in os.walk(conffolder ):
             if not ".git" in path:
                 for name in files:
                     if name.endswith(".json"):
                         conffile = os.path.join(path, name)
+                        n += 1
+        if n > 1:
+            raise BaseException('More than one json file found, this is dangerous %s' %conffolder)
 
         if conffile is None:
             raise BaseException('no json config file was not found in folder %s' %conffolder)

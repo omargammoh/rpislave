@@ -150,4 +150,4 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request'
     )
 
-LOGIN_EXEMPT_URLS = ("^motion_app/register_event/$",)
+LOGIN_EXEMPT_URLS = ("^motion_app/register_event/$", "^datalog_app/highresmcp3008/$")

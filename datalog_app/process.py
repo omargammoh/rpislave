@@ -230,6 +230,7 @@ def main(sample_period, data_period, sensors_conf, rs485_conf=None):
             #connect if spi_client if present and not ok (it will always be not ok in the first loop)
             if mcp3008_present and not(spi_ok):
                 try:
+                    spi_client.close()#this is important, otherwise too many files exception is raised after a whime
                     spi_client.open(0, 0)
                     spi_ok = True
                 except:

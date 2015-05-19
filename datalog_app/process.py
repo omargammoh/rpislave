@@ -2,6 +2,7 @@ from time import sleep,time
 from datetime import datetime, timedelta
 import numpy as np
 import itertools
+import sys
 
 import os, django
 from bson import json_util
@@ -202,7 +203,7 @@ def main(sample_period, data_period, sensors_conf, rs485_conf=None):
     i = 0
     print ">>> datalog_app: starton %s" %starton
 
-    #loop forever
+    #loop forever, each loop is a timestamp
     while (True) :
         print '>>> datalog_app: loop, i= %s, t= %s ' %(i, _pretty_time_delta(i * data_period))
         j = 0
@@ -211,37 +212,53 @@ def main(sample_period, data_period, sensors_conf, rs485_conf=None):
         mb_client_ok = False
         spi_ok = False
 
-        #if none is ok, stay in this loop, till at least one is ok
-        while ((not mb_client_ok) and (not spi_ok)):
+        #if at least one [is needed and is [not ok]]
+        while (rs485_present and not(mb_client_ok)) or (mcp3008_present and not(spi_ok)):
 
             t1 = time()
 
-            #connect if mb_client
-            if rs485_present:
+            #connect if mb_client if present and not ok (it will always be not ok in the first loop)
+            if rs485_present and not(mb_client_ok):
                 try:
                     mb_client.close()#this is important to restablish the connection in another loop
                     mb_client_ok = mb_client.connect()
                 except:
                     mb_client_ok = False
             else:
-                mb_client_ok  = True
+                mb_client_ok = True
 
-            #connect if spi_client is ok
-            if mcp3008_present:
+            #connect if spi_client if present and not ok (it will always be not ok in the first loop)
+            if mcp3008_present and not(spi_ok):
                 try:
                     spi_client.open(0, 0)
                     spi_ok = True
                 except:
-                    spi_ok = False
+                    print ">>> datalog: first attempt to spi_client.open(0, 0) failed"
+                    try:
+                        spi_client = spidev.SpiDev()
+                        spi_client.open(0, 0)
+                        spi_ok = True
+                        print ">>> datalog: spi connected after recreating client"
+                    except:
+                        print ">>> datalog: !!could not connect to spi even after recreating client"
+                        print traceback.format_exc()
+                        spi_client = None
+                        spi_ok = False
             else:
                 spi_ok = True
 
             t2 = time()
 
-            #try connect spi
-            if ((not mb_client_ok) and (not spi_ok)):
+            #if at least one [is needed and is ok]
+            if (rs485_present and (mb_client_ok)) or (mcp3008_present and (spi_ok)):
+                print '>>>'
+                #break this while loop and go get the data, we dont want one broken client to stop the other working client from doing its job
+                break
+
+            else:
                 #sleep before trying again
                 retryin = 10
+                print ">>> datalog_app rs485_present %s mb_client_ok %s mcp3008_present %s spi_ok %s" %(rs485_present, mb_client_ok, mcp3008_present, spi_ok)
                 print ">>> datalog_app:    !!couldnt connect spi_client or mb_client at j=%s, retrying in %s seconds" % (j,retryin)
                 sleep(retryin)
             j += 1
@@ -271,6 +288,9 @@ def main(sample_period, data_period, sensors_conf, rs485_conf=None):
             print '>>> datalog_app:    [%s] now = %s' %(stamp, datetime.utcnow())
             print '>>> datalog_app:    %s' %(processed)
 
+        except KeyboardInterrupt:
+            print "Good bye from the datalog process"
+            sys.exit()
         except:
             dic_samples = None
             processed = None

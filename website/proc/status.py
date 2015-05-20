@@ -175,6 +175,14 @@ def main(status_period=30):
                 logline.save()
                 print ">> status: wrote %s" % new_status
 
+            #if vlan is not working, try to fix it
+            try:
+                if new_status.get('ip_vlan', "-") == "-":
+                    print ">> status: attempting to reconnect the vlan"
+                    print ">> status: ", execute("sudo /etc/init.d/nrservice.sh start").strip()
+            except:
+                print ">> status: !! error while trying to fix the ip_vlan"
+
         except:
             print ">> status: error: %s" %traceback.format_exc()
 

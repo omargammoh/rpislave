@@ -16,11 +16,11 @@ def get_motion_config():
         "webcam_maxrate": 30,# limiting speed 0..100
         "framerate": 100, # 2..100
         "webcam_motion": "on",# if set to 'on' Motion sends slows down the webcam stream to 1 picture per second when no motion is detected. When motion is detected the stream runs as defined by webcam_maxrate. When 'off' the webcam stream always runs as defined by webcam_maxrate.
-        "threshold": 1000,
+        "threshold": 300,
         "minimum_motion_frames": 1,
         "gap": 60,
-        "pre_capture": 0,
-        "post_capture": 0,
+        "pre_capture": 5,
+        "post_capture": 20,
         "ffmpeg_video_codec": "swf",
         "movie_filename": "movie/%Y%m%d/%H%M%S",
         "webcam_port": 9002,
@@ -29,7 +29,7 @@ def get_motion_config():
         "snapshot_interval": 0,
         "jpeg_filename": "picture/%Y%m%d/%H%M%S",
         "snapshot_filename": "snapshot/%Y%m%d/%H%M%S",
-        "timelapse_filename": "timelapse/%Y%m%d",
+        "timelapse_filename": "timelapse/%Y%m%d/%H%M%S",
         "output_normal": "best",
         "output_motion": "off",
         "max_mpeg_time": 300,

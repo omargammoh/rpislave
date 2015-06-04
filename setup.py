@@ -35,7 +35,7 @@ try:
         except:
             #proceed with conf = None, conf_str = None
             print "was not able to get conf from sqlite db"
-            print "proceeding the installation with conf = None"
+            print "proceeding the installation with conf = None, which installs all the apps"
             conf_str = None
             conf = None
 except:

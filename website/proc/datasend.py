@@ -15,6 +15,24 @@ def _prepare_django():
     os.environ['DJANGO_SETTINGS_MODULE'] = 'website.settings'
     django.setup()
 
+def sanitize_colname(label):
+    if label == "":
+        return ""
+    if not(label[0].isalpha() or label[0] == "_"):
+        label = "_" + label
+    if label.startswith('system.') or label.startswith('objectlabs-system.'):
+        label = "_" + label
+
+    label = label.replace(' ', '_').lower()
+    label = "".join([l if (l.isdigit() or l.isalpha() or l in ['_', '-', '.']) else '_' for l in label])
+    if len(label)>50:
+        label=label[:50]
+    return label
+
+#The name you choose must begin with a letter or underscore and must not begin with 'system.' or 'objectlabs-system.'
+#. It also must have fewer than 80 characters and cannot have any spaces or special characters (hyphens, underscores and periods are OK) in it.
+
+
 def _send_model_data(model, keep_period, db, conf_label, app_name):
     """
     model: the actual model object
@@ -27,6 +45,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name):
     else:
         model_mode = ""
 
+    conf_label_san = sanitize_colname(conf_label)
     cnt = {'del': 0, 'send': 0}
     for ob in model.objects.all():
 
@@ -44,7 +63,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name):
             if sent == 'false':
 
                 #send it
-                col = db[".".join([conf_label, app_name, model_name])]
+                col = db[".".join([conf_label_san, app_name, model_name])]
                 jdata = json_util.loads(ob.data)
                 col.insert(jdata)
 

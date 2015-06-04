@@ -2,7 +2,7 @@ import subprocess
 import os
 import json
 from time import time
-from website.processing import _get_conf
+
 
 #get the configuration file
 try:
@@ -28,6 +28,7 @@ try:
         print 'no json config file was not found in folder %s' % conffolder
         print "attempting to get conf from sqlite db"
         try:
+            from website.processing import _get_conf
             conf = _get_conf()
             conf_str = json.dumps(conf)
             print "got the conf from sqlite db, using it for the installation"

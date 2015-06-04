@@ -2,32 +2,45 @@ import subprocess
 import os
 import json
 from time import time
+from website.processing import _get_conf
 
 #get the configuration file
 try:
+    #priority is to use the conf.json file
     conffolder = '/home/pi/rpislave_conf'
     conffile = None
-    if not os.path.isdir(conffolder):
-        raise BaseException('could not find the rpislave_conf folder %s' %conffolder)
+    if os.path.isdir(conffolder):
+        for path, subdirs, files in os.walk(conffolder ):
+            if not ".git" in path:
+                for name in files:
+                    if name.endswith(".json"):
+                        conffile = os.path.join(path, name)
 
-    for path, subdirs, files in os.walk(conffolder ):
-        if not ".git" in path:
-            for name in files:
-                if name.endswith(".json"):                    
-                    conffile = os.path.join(path, name)
+    if conffile is not None:
+        fl = file(conffile, "r")
+        conf_str = fl.read()
+        fl.close()
+        conf = json.loads(conf_str)
+        print 'using the json file for the installation %s' % conffile
 
-    if conffile is None:
-        raise BaseException('no json config file was not found in folder %s' %conffolder)
-
-    fl = file(conffile, "r")
-    conf_str = fl.read()
-    fl.close()
-    conf = json.loads(conf_str)
+    #then to check for a configuration in the sqlite database
+    else:
+        print 'no json config file was not found in folder %s' % conffolder
+        print "attempting to get conf from sqlite db"
+        try:
+            conf = _get_conf()
+            conf_str = json.dumps(conf)
+            print "got the conf from sqlite db, using it for the installation"
+        except:
+            #proceed with conf = None, conf_str = None
+            print "was not able to get conf from sqlite db"
+            print "proceeding the installation with conf = None"
+            conf_str = None
+            conf = None
 except:
-    print 'error while getting the json configuration file'
     raise
 
-def execute(lis):
+def _execute(lis):
     if type(lis) == str:
         lis=[lis]
     for cmd in lis:
@@ -41,7 +54,7 @@ def execute(lis):
 def setup_autologin():
     # replaces a line in a file
 
-    filepath=r"/etc/inittab"
+    filepath = r"/etc/inittab"
     linetocomment = "1:2345:respawn:/sbin/getty --noclear 38400 tty1"
     linetoappend = "1:2345:respawn:/bin/login -f pi tty1 </dev/tty1 >/dev/tty1 2>&1"
 
@@ -50,7 +63,7 @@ def setup_autologin():
     f.close()
 
     if linetocomment in text:
-        newtext = text.replace(linetocomment,linetoappend)
+        newtext = text.replace(linetocomment, linetoappend)
     elif linetoappend in text:
         print "setup_autologin: file seems to be already done"
         return None
@@ -81,12 +94,15 @@ def setup_autostart():
     print "setup_autostart: successful"
 
 def setup_networkinterfaces():
+    if conf is None or 'network_interfaces' in conf:
+        print "setup_networkinterfaces: Nothing done"
+        return None
+
     network = conf.get("network_interfaces", ["### loopback ###","auto lo","iface lo inet loopback","### ethernet ###","iface eth0 inet dhcp"])
     contents = "\n".join(network)
     f = file("/etc/network/interfaces", "w+")
     f.write(contents)
     f.close()
-
     print "setup_networkinterfaces: interfaces successful"
 
 def setup_db():
@@ -96,20 +112,30 @@ def setup_db():
 
     sys.path.append(os.path.dirname(__file__))
     os.environ['DJANGO_SETTINGS_MODULE'] = 'website.settings'
-    execute("sudo python /home/pi/rpislave/manage.py migrate")
+    _execute("sudo python /home/pi/rpislave/manage.py migrate")
 
     django.setup()
-    from django.contrib.auth.models import User
-    if len(User.objects.all()) == 0:
-        u = User.objects.create_superuser(conf.get('super_user', {}).get('login', 'pi'), '', conf.get('super_user', {}).get('password', 'raspberry'))
+
+    #adding a superuser
+    if conf is not None:
+        from django.contrib.auth.models import User
+        for u in User.objects.all():
+            u.delete()
+            print "setup_db: deleted old superuser"
+        login = conf.get('super_user', {}).get('login', 'pi')
+        password = conf.get('super_user', {}).get('password', 'raspberry')
+        u = User.objects.create_superuser(login, '', password)
         u.save()
-        print "superuser created"
-        
-    from website.models import Conf
-    for c in Conf.objects.all():
-        c.delete()
-    newconf = Conf(data=conf_str, meta="")
-    newconf.save()
+        print "setup_db: created new superuser: %s, %s" % (login, password)
+
+    #updating the conf in the sqlite db
+    if conf_str is not None:
+        from website.models import Conf
+        for c in Conf.objects.all():
+            c.delete()
+        newconf = Conf(data=conf_str, meta="")
+        newconf.save()
+        print "setup_db: deleted old confs and wrote the new one"
     print "setup_db: successful"
 
 def create_datafolder():
@@ -118,18 +144,20 @@ def create_datafolder():
     if not os.path.isdir(pth):
         os.mkdir(pth)
 
-    #write the conf file in the datafolder
-    f = file(os.path.join(pth, "conf"), "w")
-    f.write(conf_str)
-    f.close()
+    if conf_str is not None:
+        #write the conf file in the datafolder
+        f = file(os.path.join(pth, "conf"), "w")
+        f.write(conf_str)
+        f.close()
 
 def setup_realtimeclock():
     print "not ready for this yet"
     return None
-
+    if conf is None:
+        return None
     typ = conf['rtc'].get('type','rasclock')
     if typ == "rasclock":
-        execute("wget http://afterthoughtsoftware.com/files/linux-image-3.6.11-atsw-rtc_1.0_armhf.deb&&sudo dpkg -i linux-image-3.6.11-atsw-rtc_1.0_armhf.deb&&sudo cp /boot/vmlinuz-3.6.11-atsw-rtc+ /boot/kernel.img")
+        _execute("wget http://afterthoughtsoftware.com/files/linux-image-3.6.11-atsw-rtc_1.0_armhf.deb&&sudo dpkg -i linux-image-3.6.11-atsw-rtc_1.0_armhf.deb&&sudo cp /boot/vmlinuz-3.6.11-atsw-rtc+ /boot/kernel.img")
 
         filepath = "/etc/modules"
         toappend = [
@@ -150,7 +178,7 @@ def install_btsync():
     if os.path.isfile('/home/pi/btsync'):
         print "install_btsync: btsync already installed"
     else:
-        execute([
+        _execute([
             'cd /home/pi&&wget https://download-cdn.getsyncapp.com/stable/linux-arm/BitTorrent-Sync_arm.tar.gz'
             ,'cd /home/pi&&tar -zxvf BitTorrent-Sync_arm.tar.gz'
             ])
@@ -189,11 +217,11 @@ def change_sshport():
 
 if __name__ == "__main__":
     t1 = time()
-    execute([
+    _execute([
          "sudo apt-get -y update" #update is needed for motion
     ])
     t2 = time()
-    execute([
+    _execute([
          'sudo apt-get install -y python-dev'
         ,'sudo apt-get install -y python-pip'
         ,'sudo apt-get install tmux'
@@ -209,26 +237,20 @@ if __name__ == "__main__":
 
     setup_autostart()
 
-    if 'network_interfaces' in conf:
-        setup_networkinterfaces()
+    setup_networkinterfaces()
 
-    if 'apps' in conf:
-        if 'datalog_app' in conf['apps']: 
-            execute([
-                'sudo pip install spidev'
-                ,'sudo pip install pymodbus==1.2.0'
-                ])
+    #if 'datalog_app' in conf.get('apps', {}):
+    _execute([
+         'sudo pip install spidev'
+        ,'sudo pip install pymodbus==1.2.0'
+        ])
 
-        if 'datasend_app' in conf['apps']:
-            pass
+    #if 'motion_app' in conf.get('apps', {}):
+    _execute([
+        'sudo apt-get install -y motion'
+        ])
 
-        if 'motion_app' in conf['apps']:
-            execute([
-                'sudo apt-get install -y motion'
-                ])
-
-        if "rtc" in conf:
-            setup_realtimeclock()
+    setup_realtimeclock()
 
     install_btsync()
     setup_db()

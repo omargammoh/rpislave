@@ -11,7 +11,7 @@ import traceback
 from website.processing import MP, _get_conf
 import importlib
 import subprocess
-
+from website.templatetags.customfilters import conf
 
 def home(request, template_name='home.html'):
     conf = _get_conf()
@@ -30,16 +30,13 @@ def home(request, template_name='home.html'):
             print '!!could not add info from the app %s' % (app)
     return render_to_response(template_name, {"app_info": app_info, "desc": conf.get('desc', '-')}, context_instance=RequestContext(request))
 
-
 def test(request, template_name='test.html'):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
-
 
 def nourls(why):
     def nourls(request, template_name='nourls.html'):
         return render_to_response(template_name,{"why": why}, context_instance=RequestContext(request))
     return nourls
-
 
 def status(request):
     try:
@@ -61,7 +58,6 @@ def status(request):
 
     return HttpResponse(jdic, content_type='application/json')
 
-
 def cmd(request):
     d = {}
     try:
@@ -70,7 +66,6 @@ def cmd(request):
     except:
         d['error']=traceback.format_exc()
     return HttpResponse(json.dumps(d), content_type='application/json')
-
 
 def commits_behind(request):
     def prcess_text(txt):
@@ -89,7 +84,6 @@ def commits_behind(request):
     except:
         d['error']=traceback.format_exc()
     return HttpResponse(json.dumps(d), content_type='application/json')
-
 
 def appmanage(request):
     try:
@@ -146,4 +140,16 @@ def blink_led(request):
         d['error']=traceback.format_exc()
     return HttpResponse(json.dumps(d), content_type='application/json')
 
+def setup_conf(request):
+    try:
+        if conf is None:
+            str_conf = request.GET['str_conf']
+            try:
+                json_conf = json.loads(str_conf)
 
+            except:
+                return HttpResponse(json.dumps({"error": "not able to parse the conf that you sent %s" % str_conf}), content_type='application/json')
+        else:
+            return HttpResponse(json.dumps({"error": "conf is already installed, you may not overwrite it"}), content_type='application/json')
+    except:
+        return HttpResponse(json.dumps({"error": "%s" %traceback.format_exc()}), content_type='application/json')

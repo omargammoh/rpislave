@@ -3,7 +3,7 @@
 # About this project #
 
 There are many things a raspberry pi (rpi) can do (e.g. record data, stream video, ...).
-This project is a django server which can be easily installed on an rpi, where different things an rpi can do are coded in django apps. The rpi will serve an intuitive website which can be used to control the apps and the rpi device.
+This project is a django server which can be easily installed on a rpi, where different things an rpi can do are coded in django apps. The rpi will serve an intuitive website which can be used to control the apps and the rpi device.
 
 # How to easily install #
 * Install the raspberian image on the raspberry pi
@@ -18,6 +18,11 @@ This project is a django server which can be easily installed on an rpi, where d
     * `sudo git clone https://gist.github.com/4d5eece56a8ac282dd06.git ~/rpislave_conf`
   * Install things (will take a while): 
     * `sudo python ~/rpislave/setup.py`
+  * To enable the rpimaster directly access rpislave, setup the neorouter on the rpi. this will enable the gpio control, camera stream and visiting the rpislave site via the rpimaster site. you need the vpn address and password
+    * `wget http://download.neorouter.com/Downloads/NRFree/Update_2.3.1.4360/inabox/Raspbian/nrclient-2.3.1.4360-free-raspbian-armhf.deb`
+    * `sudo dpkg -i nrclient-2.3.1.4360-free-raspbian-armhf.deb`
+    * `/usr/bin/nrclientcmd`
+
   * Reboot, The server will start automatically after the reboot
     * `sudo reboot`
 

@@ -21,7 +21,10 @@ except:
     confgitversion = u'?'
     confgitbranch = u'?'
 
-
+try:
+    conf = _get_conf()
+except:
+    conf = None
 
 @register.simple_tag()
 def git_info():

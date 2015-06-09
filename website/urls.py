@@ -27,7 +27,9 @@ patterns_tup = ('',
 try:
     appnames = _get_conf()['apps'].keys()
 except:
+    print "> urls: app names could not be loaded from conf"
     appnames = []
+
 
 for app in appnames:
     try:

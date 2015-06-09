@@ -16,8 +16,8 @@ info = {
 }
 
 def home(request, template_name='gpio_app/home.html'):
-    pins_conf = _get_conf()['apps']['gpio_app']['pins_conf']
-    rev = {cf["pin"]: {"label": label, "desc": cf['desc']} for (label, cf) in pins_conf.iteritems()}
+    pins_ = _get_conf()['apps']['gpio_app']['pins']
+    rev = {cf["pin"]: {"label": label, "desc": cf['desc']} for (label, cf) in pins_.iteritems()}
 
     gpio_list = []
     for pin, pin_bcm in board_bmc.iteritems():
@@ -41,8 +41,8 @@ def home(request, template_name='gpio_app/home.html'):
 def pins(request):
     t1 = time()
     try:
-        pins_conf = _get_conf()['apps']['gpio_app']['pins_conf']
-        rev = {cf["pin"]: {"label": label, "desc": cf['desc']} for (label, cf) in pins_conf.iteritems()}
+        pins_ = _get_conf()['apps']['gpio_app']['pins']
+        rev = {cf["pin"]: {"label": label, "desc": cf['desc']} for (label, cf) in pins_.iteritems()}
 
         pin = int(request.GET["pin"])
         iou = request.GET["iou"]

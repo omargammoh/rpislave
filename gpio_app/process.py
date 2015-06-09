@@ -32,14 +32,14 @@ def unexport(pin_bcm):
     subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
     print ">>> gpio_app:", cmd
 
-def main(pins_conf):
+def main(pins):
 
     for bcmpin in board_bmc.values():
         export(bcmpin)
 
-    pins_conf = _get_conf()['apps']['gpio_app']['pins_conf']
+    pins = _get_conf()['apps']['gpio_app']['pins']
 
-    for label, conf in pins_conf.iteritems():
+    for label, conf in pins.iteritems():
         try:
             pin_bcm = board_bmc[conf["pin"]]
             if conf["iou"] == "input":

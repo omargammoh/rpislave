@@ -14,8 +14,8 @@ This project is a django server which can be easily installed on an rpi, where d
 * Connect the rpi to the internet and:
   * Get the rpislave repository:
     * `sudo git clone -b master https://github.com/omargammoh/rpislave.git ~/rpislave`
-  * Get the configuration file from somewhere and put it in the right place, for example: 
-    * `conf_id=4d5eece56a8ac282dd06&&sudo git clone https://gist.github.com/$conf_id.git ~/rpislave_conf`
+  * Create the folder ~/rpislave_conf and make sure there is one configuration file in it (or in its subfolders). the configuration file name is not important, it just needs to end with ".json". if the ~/rpislave_conf folder is a git repo, then you will be able to easily update the configuration later. for documentation of the configuration file, see the rpi-master website. this step can be done with a command like:
+    * `sudo git clone https://gist.github.com/4d5eece56a8ac282dd06.git ~/rpislave_conf`
   * Install things (will take a while): 
     * `sudo python ~/rpislave/setup.py`
   * Reboot, The server will start automatically after the reboot
@@ -24,6 +24,7 @@ This project is a django server which can be easily installed on an rpi, where d
 # How to use #
 * Surf to the page `<raspi_ip>:9001` hosted by the rpi
 * Look at what apps are there and start using them! the interface should be intuitive...
+* If the raspberry pi is logging its data to an online database that is connected to the rpi-master website, you can also visit your device from there 
 * To access it from outside your network, you need to forward the following ports:
   * 9001 for the main website
   * 9002 for motion's video streaming

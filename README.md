@@ -5,7 +5,7 @@
 There are many things a raspberry pi (rpi) can do (e.g. record data, stream video, ...).
 This project is a django server which can be easily installed on a rpi, where different things an rpi can do are coded in django apps. The rpi will serve an intuitive website which can be used to control the apps and the rpi device.
 
-# How to easily install #
+# How to install on a raspberry pi#
 * Install the raspberian image on the raspberry pi
 * `sudo raspi-config`
   * Expand filesystem
@@ -22,7 +22,6 @@ This project is a django server which can be easily installed on a rpi, where di
   * `wget http://download.neorouter.com/Downloads/NRFree/Update_2.3.1.4360/inabox/Raspbian/nrclient-2.3.1.4360-free-raspbian-armhf.deb`
   * `sudo dpkg -i nrclient-2.3.1.4360-free-raspbian-armhf.deb`
   * `/usr/bin/nrclientcmd`
-
 * Reboot, The server will start automatically after the reboot
   * `sudo reboot`
 

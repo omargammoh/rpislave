@@ -11,20 +11,20 @@ This project is a django server which can be easily installed on a rpi, where di
   * Expand filesystem
   * Enable camera
   * Enable SPI
-* Connect the rpi to the internet and:
-  * Get the rpislave repository:
-    * `sudo git clone -b master https://github.com/omargammoh/rpislave.git ~/rpislave`
-  * Create the folder ~/rpislave_conf and make sure there is one configuration file in it (or in its subfolders). the configuration file name is not important, it just needs to end with ".json". if the ~/rpislave_conf folder is a git repo, then you will be able to easily update the configuration later. for documentation of the configuration file, see the rpi-master website. this step can be done with a command like:
-    * `sudo git clone https://gist.github.com/4d5eece56a8ac282dd06.git ~/rpislave_conf`
-  * Install things (will take a while): 
-    * `sudo python ~/rpislave/setup.py`
-  * To enable the rpimaster directly access rpislave, setup the neorouter on the rpi. this will enable the gpio control, camera stream and visiting the rpislave site via the rpimaster site. you need the vpn address and password
-    * `wget http://download.neorouter.com/Downloads/NRFree/Update_2.3.1.4360/inabox/Raspbian/nrclient-2.3.1.4360-free-raspbian-armhf.deb`
-    * `sudo dpkg -i nrclient-2.3.1.4360-free-raspbian-armhf.deb`
-    * `/usr/bin/nrclientcmd`
+* Connect the rpi to the internet
+* Get the rpislave repository:
+  * `sudo git clone -b master https://github.com/omargammoh/rpislave.git ~/rpislave`
+* Create the folder ~/rpislave_conf and make sure there is one configuration file in it (or in its subfolders). the configuration file name is not important, it just needs to end with ".json". if the ~/rpislave_conf folder is a git repo, then you will be able to easily update the configuration later. for documentation of the configuration file, see the rpi-master website. this step can be done with a command like:
+  * `sudo git clone https://gist.github.com/4d5eece56a8ac282dd06.git ~/rpislave_conf`
+* Install things (will take a while): 
+  * `sudo python ~/rpislave/setup.py`
+* To enable the rpimaster directly access rpislave, setup the neorouter on the rpi. this will enable the gpio control, camera stream and visiting the rpislave site via the rpimaster site. you need the vpn address and password
+  * `wget http://download.neorouter.com/Downloads/NRFree/Update_2.3.1.4360/inabox/Raspbian/nrclient-2.3.1.4360-free-raspbian-armhf.deb`
+  * `sudo dpkg -i nrclient-2.3.1.4360-free-raspbian-armhf.deb`
+  * `/usr/bin/nrclientcmd`
 
-  * Reboot, The server will start automatically after the reboot
-    * `sudo reboot`
+* Reboot, The server will start automatically after the reboot
+  * `sudo reboot`
 
 # How to use #
 * Surf to the page `<raspi_ip>:9001` hosted by the rpi

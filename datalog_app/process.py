@@ -77,9 +77,9 @@ def _decide_start(data_period, dt):
     print ">>> datalog_app: _decide_start: %s %s %s, totalsec = %s, shift = %s" %(dt, data_period, starton, totalsec, shift)
     return starton
 
-def _get_mb_client(rs485_conf):
-    rs485_conf["framer"]=ModbusRtuFramer
-    client = MSC(**rs485_conf) ##  port = "COM3",  client = MSC(port=port ,method='rtu', baudrate=9600, stopbits=1 ,bytesize=8, parity='N' ,retries=1000, rtscts=True,framer=ModbusRtuFramer, timeout = 0.05)
+def _get_mb_client(rs485):
+    rs485["framer"]=ModbusRtuFramer
+    client = MSC(**rs485) ##  port = "COM3",  client = MSC(port=port ,method='rtu', baudrate=9600, stopbits=1 ,bytesize=8, parity='N' ,retries=1000, rtscts=True,framer=ModbusRtuFramer, timeout = 0.05)
     return client
 
 def _get_point(mb_client, spi_client, sensors_conf):
@@ -164,7 +164,7 @@ def _process_data(data, sensors_conf):
 
     return res #{'Tamb-avg' : 5., 'Tamb-min' : 1., 'G-min' : 60.}
 
-def main(sample_period, data_period, sensors_conf, rs485_conf=None):
+def main(sample_period, data_period, sensors, rs485=None):
     _prepare_django()
     import datalog_app.models
 
@@ -174,10 +174,10 @@ def main(sample_period, data_period, sensors_conf, rs485_conf=None):
 
 
     #check if a modbus client is needed and create it
-    rs485_present = any([(sensor['active'] and sensor['type'] == "rs485") for (_,sensor) in sensors_conf.iteritems()])
+    rs485_present = any([(sensor['active'] and sensor['type'] == "rs485") for (_,sensor) in sensors.iteritems()])
     if rs485_present:
         try:
-            mb_client = _get_mb_client(rs485_conf)
+            mb_client = _get_mb_client(rs485)
         except:
             print traceback.format_exc()
             mb_client = None
@@ -185,7 +185,7 @@ def main(sample_period, data_period, sensors_conf, rs485_conf=None):
         mb_client = None
 
     #check if a spi client is needed and create it
-    mcp3008_present = any([(sensor['active'] and sensor['type'] == "mcp3008") for (_,sensor) in sensors_conf.iteritems()])
+    mcp3008_present = any([(sensor['active'] and sensor['type'] == "mcp3008") for (_,sensor) in sensors.iteritems()])
     if mcp3008_present:
         try:
             spi_client = spidev.SpiDev()
@@ -284,8 +284,8 @@ def main(sample_period, data_period, sensors_conf, rs485_conf=None):
         try:
             #raise exception if there is no data at all, if there is just one sensor not working, dont fail
             print '>>> datalog_app:    getting samples now...'
-            dic_samples = _get_stamp(sample_period, data_period, mb_client, spi_client, sensors_conf)
-            processed = _process_data(dic_samples, sensors_conf)
+            dic_samples = _get_stamp(sample_period, data_period, mb_client, spi_client, sensors)
+            processed = _process_data(dic_samples, sensors)
             print '>>> datalog_app:    [%s] now = %s' %(stamp, datetime.utcnow())
             print '>>> datalog_app:    %s' %(processed)
 

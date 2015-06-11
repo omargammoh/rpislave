@@ -38,7 +38,7 @@ def home(request, template_name='gpio_app/home.html'):
     return render_to_response(template_name, {"gpio_list": gpio_list, "info": info }, context_instance=RequestContext(request))
 
 
-def pins(request):
+def control(request):
     t1 = time()
     try:
         pins_ = _get_conf()['apps']['gpio_app']['pins']

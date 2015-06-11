@@ -18,7 +18,7 @@ def execute(lis):
 def update_conf():
 
     # git checkout and pull
-    execute("cd /home/pi/rpislave_conf&&sudo git checkout .&&sudo git pull")
+    execute("cd /home/pi/rpislave_conf&&sudo git reset&&sudo git pull")
 
     try:
         conffolder = '/home/pi/rpislave_conf'

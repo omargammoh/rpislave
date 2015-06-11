@@ -95,7 +95,7 @@ def setup_autostart():
     print "setup_autostart: successful"
 
 def setup_networkinterfaces():
-    if conf is None or 'network_interfaces' in conf:
+    if conf is None or (not('network_interfaces' in conf)):
         print "setup_networkinterfaces: Nothing done"
         return None
 

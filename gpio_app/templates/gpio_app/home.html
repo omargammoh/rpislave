@@ -25,10 +25,10 @@
                     <td>{{ gpio.label }}</td>
                     <td>{{ gpio.iou }}</td>
                     <td class="lowhigh">{{ gpio.lowhigh }}</td>
-                    <td><button id="btn_{{ gpio.pin }}_unset">unset</button></td>
-                    <td><button id="btn_{{ gpio.pin }}_refresh">refresh</button></td>
-                    <td><button id="btn_{{ gpio.pin }}_setlow">set low</button></td>
-                    <td><button id="btn_{{ gpio.pin }}_sethigh">set high</button></td>
+                    <td><button onclick="control(this, {'pin': '{{ gpio.pin }}', 'cmd': 'unset'})">unset</button></td>
+                    <td><button onclick="control(this, {'pin': '{{ gpio.pin }}', 'cmd': 'refresh'})">refresh</button></td>
+                    <td><button onclick="control(this, {'pin': '{{ gpio.pin }}', 'cmd': 'setlow'})">set low</button></td>
+                    <td><button onclick="control(this, {'pin': '{{ gpio.pin }}', 'cmd': 'sethigh'})">set high</button></td>
                     <td class="msg">...</td>
                 </tr>
             {% endif %}
@@ -52,8 +52,8 @@
                     <td>{{ gpio.label }}</td>
                     <td>{{ gpio.iou }}</td>
                     <td class="lowhigh">{{ gpio.lowhigh }}</td>
-                    <td><button id="btn_{{ gpio.pin }}_unset">unset</button></td>
-                    <td><button id="btn_{{ gpio.pin }}_refresh">refresh</button></td>
+                    <td><button onclick="control(this, {'pin': '{{ gpio.pin }}', 'cmd': 'unset'})">unset</button></td>
+                    <td><button onclick="control(this, {'pin': '{{ gpio.pin }}', 'cmd': 'refresh'})">refresh</button></td>
                     <td class="msg">...</td>
                 </tr>
             {% endif %}
@@ -75,8 +75,8 @@
                     <td>{{ gpio.pin }}</td>
                     <td>{{ gpio.label }}</td>
                     <td>{{ gpio.iou }}</td>
-                    <td><button id="btn_{{ gpio.pin }}_setasinput">set as input</button></td>
-                    <td><button id="btn_{{ gpio.pin }}_setasoutput">set as output</button></td>
+                    <td><button onclick="control(this, {'pin': '{{ gpio.pin }}', 'cmd': 'setasinput'})">set as input</button></td>
+                    <td><button onclick="control(this, {'pin': '{{ gpio.pin }}', 'cmd': 'setasoutput'})">set as output</button></td>
                     <td class="msg">...</td>
                 </tr>
             {% endif %}
@@ -95,65 +95,37 @@
 
 <script>
 
-function make_click_func(url, data){
-    function func(){
-        var btn =  $(this)
-        btn.prop('disabled', true);
+function control(btn, data){
+    var btn = $(btn)
+    btn.prop('disabled', true);
 
-        $.ajax({
-            url: url,
-            data: data,
-            success: function (data, textStatus, jqXHR) {
-                if ('error' in data) {
-                    btn.parent().parent().find('.msg').html("server error: " + d["error"]);
-                    alert("server error for " + url + data['error'])
-                }
-                var d = data
-                btn.prop('disabled', false);
-                btn.parent().parent().find('.msg').html(d["msg"]);
-                btn.parent().parent().find('.lowhigh').html(d["lowhigh"]);
-
-                var log = document.createElement('p');
-                log.innerHTML = d["msg"];
-                $("#p_log")[0].appendChild( log )
-
-            },
-            error: function (err) {
-                e = err
-                btn.parent().parent().find('.msg').html("ajax error");
-                alert("ajax error for " + url + " error = " + err)
-                btn.prop('disabled', false);
+    $.ajax({
+        url: "{% url "gpio_app.views.control" %}",
+        data: data,
+        success: function (data, textStatus, jqXHR) {
+            if ('error' in data) {
+                btn.parent().parent().find('.msg').html("server error: " + d["error"]);
+                alert("server error for " + url + data['error'])
             }
+            d = data
+            btn.prop('disabled', false);
+            btn.parent().parent().find('.msg').html(d["msg"]);
+            btn.parent().parent().find('.lowhigh').html(d["lowhigh"]);
 
-        });
-    }
-    return func
+            var log = document.createElement('p');
+            log.innerHTML = d["msg"];
+            $("#p_log")[0].appendChild( log )
+
+        },
+        error: function (err) {
+            e = err
+            btn.parent().parent().find('.msg').html("ajax error");
+            alert("ajax error for " + url + " error = " + err)
+            btn.prop('disabled', false);
+        }
+
+    });
 }
-
-
-{% for gpio in gpio_list %}
-    {% if gpio.iou == 'in' %}
-        {% with "refresh unset" as list_cmd %}
-            {% for cmd in list_cmd.split %}
-                $("#btn_{{ gpio.pin }}_{{ cmd }}").click(make_click_func("{% url "gpio_app.views.control" %}", {"pin":{{ gpio.pin }}, "iou":"in", "cmd":"{{ cmd }}"}))
-            {% endfor %}
-        {% endwith %}
-    {% endif %}
-    {% if gpio.iou == 'out' %}
-        {% with "unset refresh setlow sethigh" as list_cmd %}
-            {% for cmd in list_cmd.split %}
-                $("#btn_{{ gpio.pin }}_{{ cmd }}").click(make_click_func("{% url "gpio_app.views.control" %}", {"pin":{{ gpio.pin }}, "iou":"out", "cmd":"{{ cmd }}"}))
-            {% endfor %}
-        {% endwith %}
-    {% endif %}
-    {% if gpio.iou == 'unset' %}
-        {% with "setasinput setasoutput" as list_cmd %}
-            {% for cmd in list_cmd.split %}
-                $("#btn_{{ gpio.pin }}_{{ cmd }}").click(make_click_func("{% url "gpio_app.views.control" %}", {"pin":{{ gpio.pin }}, "iou":"unset", "cmd":"{{ cmd }}"}))
-            {% endfor %}
-        {% endwith %}
-    {% endif %}
-{% endfor %}
 
 </script>
 {% endblock %}

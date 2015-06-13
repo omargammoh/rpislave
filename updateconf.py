@@ -14,31 +14,30 @@ def execute(lis):
         print "<<<<"
     return out
 
+def get_conffile():
+    conffolder = '/home/pi/rpislave_conf'
+    conffile = None
+    if not os.path.isdir(conffolder):
+        raise BaseException('could not find the rpislave_conf folder %s' %conffolder)
+    n = 0
+    for path, subdirs, files in os.walk(conffolder ):
+        if not ".git" in path:
+            for name in files:
+                if name.endswith(".json"):
+                    conffile = os.path.join(path, name)
+                    n += 1
+    if n > 1:
+        raise BaseException('More than one json file found, this is dangerous %s' %conffolder)
+    if conffile is None:
+        raise BaseException('no json config file was not found in folder %s' %conffolder)
+    return conffile
 
 def update_conf():
-
     # git checkout and pull
-    execute("cd /home/pi/rpislave_conf&&sudo git reset&&sudo git pull")
-
+    #sudo git checkout origin/master Omar\'s\ fridge\ monitoring.json
     try:
-        conffolder = '/home/pi/rpislave_conf'
-        conffile = None
-        if not os.path.isdir(conffolder):
-            raise BaseException('could not find the rpislave_conf folder %s' %conffolder)
-
-        n = 0
-        for path, subdirs, files in os.walk(conffolder ):
-            if not ".git" in path:
-                for name in files:
-                    if name.endswith(".json"):
-                        conffile = os.path.join(path, name)
-                        n += 1
-        if n > 1:
-            raise BaseException('More than one json file found, this is dangerous %s' %conffolder)
-
-        if conffile is None:
-            raise BaseException('no json config file was not found in folder %s' %conffolder)
-
+        conffile = get_conffile()
+        execute("cd /home/pi/rpislave_conf&&sudo git fetch&&sudo git checkout origin/master \"%s\""%os.path.relpath(conffile, '/home/pi/rpislave_conf'))
         fl = file(conffile, "r")
         conf_str = fl.read()
         fl.close()

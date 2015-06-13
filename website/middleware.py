@@ -31,12 +31,14 @@ class LoginRequiredMiddleware:
         if conf is None:
             return render_to_response("confsetup.html", {}, context_instance=RequestContext(request))
 
-
-        if not request.user.is_authenticated():
-            path = request.path_info.lstrip('/')
-            if not any(m.match(path) for m in EXEMPT_URLS):
-                return HttpResponseRedirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
-
+        if request.user.is_authenticated():
+            return None
+        if any(m.match(request.path_info.lstrip('/')) for m in EXEMPT_URLS):
+            return None
+        if request.META.get('REMOTE_ADDR', '').startswith('10.0.0'):
+            return None
+        else:
+            return HttpResponseRedirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
 
 
 

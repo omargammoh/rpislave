@@ -37,8 +37,8 @@ class LoginRequiredMiddleware:
             return None
         if request.META.get('REMOTE_ADDR', '').startswith('10.0.0'):
             return None
-        else:
-            return HttpResponseRedirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
+
+        return HttpResponseRedirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
 
 
 

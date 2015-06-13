@@ -108,7 +108,7 @@ def appmanage(request):
 def rqst(request):
     d = {}
     try:
-        d["request"] = request
+        d["request"] = str(request)
         return HttpResponse(json.dumps(d), content_type='application/json')
     except:
         d["error"] = traceback.format_exc()

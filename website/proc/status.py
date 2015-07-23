@@ -178,13 +178,15 @@ def main(status_period=30):
             #if vlan is not working, try to fix it
             try:
                 if new_status.get('ip_vlan', "-") == "-":
-                    print ">> status: attempting to reconnect the vlan"
-                    print ">> status: ", execute("sudo /etc/init.d/nrservice.sh start").strip()
+                    print ">> status: no vlan, attempting to reconnect to vlan"
+                    #print ">> status: ", execute("sudo /etc/init.d/nrservice.sh start").strip()
+                    #TODO: here the neorouter parameters are hard coded, they should be taken from configuration!!!
+                    print ">> status: ", execute("/usr/bin/nrclientcmd -d rpimaster -u pi -p raspberry <<< quit").strip()
             except:
                 print ">> status: !! error while trying to fix the ip_vlan"
 
         except:
-            print ">> status: error: %s" %traceback.format_exc()
+            print ">> status: !! error: %s" %traceback.format_exc()
 
         print ">> status: ending loop"
         time.sleep(status_period)

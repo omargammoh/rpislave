@@ -6,6 +6,23 @@ import time
 from website.models import Log
 import traceback
 
+try:
+    import signal
+except:
+    print "signal cannot be imported"
+
+class timeout:
+    def __init__(self, seconds=1, error_message='Timeout'):
+        self.seconds = seconds
+        self.error_message = error_message
+    def handle_timeout(self, signum, frame):
+        raise BaseException(self.error_message)
+    def __enter__(self):
+        signal.signal(signal.SIGALRM, self.handle_timeout)
+        signal.alarm(self.seconds)
+    def __exit__(self, type, value, traceback):
+        signal.alarm(0)
+
 def execute(cmd):
     return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
 
@@ -181,7 +198,10 @@ def main(status_period=30):
                     print ">> status: no vlan, attempting to reconnect to vlan"
                     #print ">> status: ", execute("sudo /etc/init.d/nrservice.sh start").strip()
                     #TODO: here the neorouter parameters are hard coded, they should be taken from configuration!!!
-                    print ">> status: ", execute("/usr/bin/nrclientcmd -d rpimaster -u pi -p raspberry <<< quit").strip()
+                    with timeout(seconds=10):
+                        #in the normal behaviour, timeout is reached, this is just a workaround to stop the process
+                        execute("sudo /usr/bin/nrclientcmd -d rpimaster -u pi -p raspberry")
+
             except:
                 print ">> status: !! error while trying to fix the ip_vlan"
 

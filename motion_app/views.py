@@ -7,7 +7,7 @@ import subprocess
 import os
 from itertools import groupby
 from motion_app.process import get_motion_config
-from motion_app.models import Event
+from motion_app.models import EventFile
 from bson import json_util
 import datetime
 import pytz
@@ -131,8 +131,11 @@ def register_event(request):
         data = {}
         data["dt"] = datetime.datetime.utcnow()
         data["label"] = request.GET['label']
-        ev = Event(data=json_util.dumps(data))
-        ev.save()
+        data["path"] = request.GET['path']
+
+        ef = EventFile(data=json_util.dumps(data))
+        ef.save()
+
         d["msg"] = "done"
         return HttpResponse(json.dumps(d), content_type='application/json')
     except:

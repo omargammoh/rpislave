@@ -1,12 +1,11 @@
 import subprocess
-from time import sleep
 from website.processing import _get_conf
 import traceback
 
 
 def get_motion_config():
-    def last_detection_cmd(s):
-        return "touch /home/pi/data/motion_app/{0}&&echo `date +%Y-%m-%d-%H:%M:%S` > /home/pi/data/motion_app/{0} &&echo {0}&&wget --spider http://localhost:9001/motion_app/register_event/?label={0}".format(s)
+    def on_event(s):
+        return "wget --spider http://localhost:9001/motion_app/register_event/?label={0}&path=%f".format(s)
         #return "wget --spider http://localhost:9001/motion_app/register_event/?label={0}".format(s)
 
     default_conf = {
@@ -36,11 +35,11 @@ def get_motion_config():
         "on_motion_detected": "", #last_detection_cmd("motion_detected"),
         "on_event_start": "", #last_detection_cmd("event_start"),
         "on_event_end": "", #last_detection_cmd("event_end"),
-        "on_picture_save": "", #last_detection_cmd("picture_save"),
+        "on_picture_save": on_event("picture_save"),
         "on_motion_detected": "", #last_detection_cmd("motion_detected"),
         "on_area_detected": "", #last_detection_cmd("area_detected"),
-        "on_movie_start": last_detection_cmd("movie_start"),
-        "on_movie_end": last_detection_cmd("movie_end"),
+        "on_movie_start": on_event("movie_start"),
+        "on_movie_end": on_event("movie_end"),
         "on_camera_lost": "" #last_detection_cmd("camera_lost")
     }
     conf = _get_conf()

@@ -8,7 +8,8 @@ urlpatterns = patterns('',
     url(r'^du/$', views.du),
     url(r'^recent_events/$', views.recent_events),
     url(r'^register_event/$', views.register_event),
-    url(r'^gantt_data/$', views.gantt_data)
+    url(r'^gantt_data/$', views.gantt_data),
+    url(r'^getfile/$', views.getfile)
 )
 
 

@@ -237,3 +237,14 @@ def gantt_data(request):
         print d["error"]
         return HttpResponse(json.dumps(d), content_type='application/json')
 
+def getfile(request):
+    try:
+        path = request["path"]
+        f = file(path, "rb")
+        s = f.read()
+        return HttpResponse(json.dumps({'data': s}), content_type='application/json')
+    except:
+        d = {}
+        d["error"] = str(traceback.format_exc())
+        print d["error"]
+        return HttpResponse(json.dumps(d), content_type='application/json')

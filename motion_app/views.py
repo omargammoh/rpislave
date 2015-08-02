@@ -11,6 +11,7 @@ from motion_app.models import EventFile
 from bson import json_util
 import datetime
 import pytz
+import base64
 
 info = {
     "label": "MOTION",
@@ -242,7 +243,9 @@ def getfile(request):
         path = request.GET["path"]
         f = file(path, "rb")
         s = f.read()
-        return HttpResponse(json.dumps({'data': s}), content_type='application/json')
+        b64 = base64.b64encode(s)
+
+        return HttpResponse(json.dumps({'data': b64}), content_type='application/json')
     except:
         d = {}
         d["error"] = str(traceback.format_exc())

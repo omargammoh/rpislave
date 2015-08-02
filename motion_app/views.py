@@ -239,7 +239,7 @@ def gantt_data(request):
 
 def getfile(request):
     try:
-        path = request["path"]
+        path = request.GET["path"]
         f = file(path, "rb")
         s = f.read()
         return HttpResponse(json.dumps({'data': s}), content_type='application/json')

@@ -19,7 +19,7 @@ def get_motion_config():
         "gap": 60,
         "pre_capture": 5,
         "post_capture": 20,
-        "ffmpeg_video_codec": "swf",
+        "ffmpeg_video_codec": "mpeg4",
         "movie_filename": "movie/%Y%m%d/%H%M%S",
         "webcam_port": 9002,
         "control_port": 9003,

@@ -184,11 +184,12 @@ def main(send_period=60*2, keep_period=60*60*24*7, app_list=None):
                 li_conf = db['latestinfo']
                 li_conf.update(
                    { "label": conf_label },
-                   {
-                      "label": conf_label,
-                      "dt": datetime.utcnow(),
-                      "send_period": send_period,
-                      "time_error": time_error
+                   { '$set': {
+                          "label": conf_label,
+                          "dt": datetime.utcnow(),
+                          "send_period": send_period,
+                          "time_error": time_error
+                       }
                    },
                    upsert = True
                 )

@@ -40,8 +40,9 @@ def get_motion_config():
         "on_movie_start": on_event("movie_start"),
         "on_movie_end": on_event("movie_end"),
         "on_camera_lost": "", #last_detection_cmd("camera_lost")
-        "width": 320,
-        "height": 240
+        "width": 320, #640 tested and working
+        "height": 240, #480 tested and working
+        "locate": "preview"
     }
     conf = _get_conf()
     motion_conf = conf['apps']['motion_app']
@@ -161,7 +162,7 @@ lines = ['daemon off',
  'ffmpeg_video_codec {ffmpeg_video_codec}',
  'ffmpeg_deinterlace off',
  'snapshot_interval {snapshot_interval}',
- 'locate off',
+ 'locate {preview}',
  'text_right %Y-%m-%d\\n%T-%q',
  '; text_left CAMERA %t',
  'text_changes off',

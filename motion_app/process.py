@@ -39,7 +39,9 @@ def get_motion_config():
         "on_area_detected": "", #last_detection_cmd("area_detected"),
         "on_movie_start": on_event("movie_start"),
         "on_movie_end": on_event("movie_end"),
-        "on_camera_lost": "" #last_detection_cmd("camera_lost")
+        "on_camera_lost": "", #last_detection_cmd("camera_lost")
+        "width": 320,
+        "height": 240
     }
     conf = _get_conf()
     motion_conf = conf['apps']['motion_app']
@@ -114,8 +116,8 @@ lines = ['daemon off',
  'norm 0',
  'frequency 0',
  'rotate 0',
- 'width 320',
- 'height 240',
+ 'width {width}',
+ 'height {height}',
  'framerate {framerate}',
  'minimum_frame_time 0',
  '; netcam_url value',

@@ -124,7 +124,12 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
             print traceback.format_exc()
 
         #handle the sent data(do not delete data from website because config is there)
-        meta = json_util.loads(ob.meta)
+
+        try:
+            meta = json_util.loads(ob.meta)
+        except:
+            meta = {'sent': "false"}
+            
         if (not ("nodelete" in model_mode)) and len(meta['sent']) == 4+2+2+2+2+2 and meta['sent'].isdigit():
             sentdate = datetime.strptime(meta['sent'], "%Y%m%d%H%M%S")
             now = datetime.utcnow()
@@ -201,7 +206,7 @@ def main(send_period=60*2, keep_period=60*60*24*7, app_list=None):
                 data_str = json_util.dumps(data_js)
 
                 full_url = base_url + perm + "&para=fwd_to_db&" + urllib.urlencode([('col_name', 'latestinfo'), ('data', data_str)])#http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
-                print ">> datasend: %s" %full_url
+                #print ">> datasend: %s" %full_url
                 resp = urllib2.urlopen(full_url, timeout=15).read().strip()
 
                 if not str(json_util.loads(resp)['data']).lower()=='true':

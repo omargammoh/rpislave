@@ -2,6 +2,6 @@
 cd /home/pi/rpislave
 sudo git checkout .
 sudo git pull
-sudo python manage.py migrate
+sudo python manage.py migrate --noinput
 tmux kill-session -t rpislave
 sudo reboot

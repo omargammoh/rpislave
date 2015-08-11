@@ -121,14 +121,15 @@ def restart_networking():
         execute('sudo /etc/init.d/networking stop')
         print '>> status: sudo /etc/init.d/networking start'
         execute('sudo /etc/init.d/networking start')
+        execute("sudo sed -i '1s/^/nameserver 8.8.8.8\n/' /etc/resolv.conf")
         time.sleep(3)
     except:
         pass
 
 def main(status_period=30):
+    restart_networking()
     while True:
         print ">> status: starting loop"
-
         #checking internet connectivity and trying to reconnect if not connected
         if True:
             internet_ison = check_internet()

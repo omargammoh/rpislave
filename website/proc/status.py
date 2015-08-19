@@ -13,7 +13,12 @@ import re
 conf = website.processing.get_conf()
 
 #tunneling
+REQUIRED_TUNNELS = ['9001', '9002', '22']
+
 def get_tunnels():
+    """
+    get a list of tunnels that are open now
+    """
     res = website.processing.execute(cmd="ps aux|grep 'sudo ssh'")
     dic = {}
     regex = re.compile(r'root(\s+)(?P<pid>\d+)(\s+)(.+):(?P<server_port>\d+):localhost:(?P<slave_port>\d+)(.+)@(?P<server_ip>[1-9.]+)')
@@ -41,8 +46,40 @@ def new_tunnel_para(slave_port):
     return js_resp
 
 def create_tunnel(slave_port, tunnel_para):
-    revssh_line = 'sudo ssh -i /home/pi/tunnelonly -R \*:%s:localhost:%s -N ubuntu@%s' % (tunnel_para['server_port'], slave_port, tunnel_para['server_ip'])
-    print ">> status: %s" %revssh_line
+    revssh_line = 'nohup sudo ssh -i /home/pi/tunnelonly -R \*:%s:localhost:%s -N ubuntu@%s &' % (tunnel_para['server_port'], slave_port, tunnel_para['server_ip'])
+    print ">> status: creating tunnel: %s" %revssh_line
+    website.processing.execute(revssh_line)
+
+def check_tunnels():
+    internet_ison = check_internet()
+    if not internet_ison:
+        print ">> status: internet is off, no point checking tunnels"
+        return None
+
+    tunnels = get_tunnels()
+    for port in REQUIRED_TUNNELS:
+        if port in tunnels:
+            print '>> status: tunnel %s is fine' %port
+        else:
+            print '>> status: fixing tunnel %s' %port
+            #TODO: now, whenever there is no tunnel, new tunnel_para are asked from server, slave should try with old parameters,
+            # and if it still doesnt work after 10 tries when internet is on, it would ask for new tunnel parameters
+            tunnel_para = new_tunnel_para(slave_port=port)
+            create_tunnel(slave_port=port, tunnel_para=tunnel_para)
+
+#networking
+def check_vlan(new_status):
+    #if vlan is not working, try to fix it
+    try:
+        if new_status.get('ip_vlan', "-") == "-":
+            print ">> status: no vlan, attempting to reconnect to vlan"
+            #print ">> status: ", execute("sudo /etc/init.d/nrservice.sh start").strip()
+            #TODO: here the neorouter parameters are hard coded, they should be taken from configuration!!!
+            with website.processing.Timeout(seconds=10):
+                #in the normal behaviour, timeout is reached, this is just a workaround to stop the process
+                website.processing.execute("sudo /usr/bin/nrclientcmd -d rpimaster -u pi -p raspberry")
+    except:
+        print ">> status: !! error while trying to fix the ip_vlan"
 
 def get_status():
     d = {}
@@ -143,8 +180,8 @@ def restart_networking():
     except:
         pass
 
+#main
 def main(status_period=30):
-    #restart_networking()
     while True:
         print ">> status: starting loop"
         #checking internet connectivity and trying to reconnect if not connected
@@ -168,9 +205,10 @@ def main(status_period=30):
                     print ">> status: could not connected to internet even after network restart"
 
         try:
+            #file where status is saved
             fp = '/home/pi/data/status'
 
-            #get previous ip
+            #get previous status
             prev_status = website.processing.read_json_file(fp=fp)
 
             if prev_status is None:
@@ -193,28 +231,22 @@ def main(status_period=30):
                 print ">> status: all params remain the same, ip_wan = %s" % prev_status.get("ip_wan","-")
                 pass
 
-            #if None or different
+            #status is None or different
             else:
+                #write it on disk
                 website.processing.write_json_file(js=new_status, fp=fp)
 
-                #write log
+                #write log to db
                 new_status["msg"] = "status update"
                 logline = Log(data=json.dumps(new_status), meta="")
                 logline.save()
                 print ">> status: wrote %s" % new_status
 
-            #if vlan is not working, try to fix it
-            try:
-                if new_status.get('ip_vlan', "-") == "-":
-                    print ">> status: no vlan, attempting to reconnect to vlan"
-                    #print ">> status: ", execute("sudo /etc/init.d/nrservice.sh start").strip()
-                    #TODO: here the neorouter parameters are hard coded, they should be taken from configuration!!!
-                    with website.processing.Timeout(seconds=10):
-                        #in the normal behaviour, timeout is reached, this is just a workaround to stop the process
-                        website.processing.execute("sudo /usr/bin/nrclientcmd -d rpimaster -u pi -p raspberry")
+                #checking vlan
+                check_vlan(status = new_status)
 
-            except:
-                print ">> status: !! error while trying to fix the ip_vlan"
+                #checking revssh
+                check_tunnels()
 
         except:
             print ">> status: !! error: %s" %traceback.format_exc()

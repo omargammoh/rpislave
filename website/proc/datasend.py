@@ -3,6 +3,7 @@ import traceback
 import dateutil.parser
 import pytz
 import urllib2
+from django.conf import settings
 
 from datetime import datetime
 from time import sleep, time
@@ -18,8 +19,6 @@ from django.db.models import get_app, get_models
 def _prepare_django():
     os.environ['DJANGO_SETTINGS_MODULE'] = 'website.settings'
     django.setup()
-
-base_url = "http://rpi-master.com/api/slave/?"
 
 def sanitize_colname(label):
     if label == "":
@@ -80,7 +79,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
                         #data = '{"Tamb-max": 0.0, "Tamb-min": 0.0, "timestamp": {"$date": 1439128980000}, "Tamb-avg": 0.0}'
                         #perm = "_perm=write&_slave=development+and+testing&_sig=b901abde"
                         #col_name='development_and_testing_2.datalog_app.Reading'
-                        full_url = base_url + perm + "&para=fwd_to_db&" + urllib.urlencode([('col_name', col_name), ('data', data)])#http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
+                        full_url = settings.BASE_URL + perm + "&para=fwd_to_db&" + urllib.urlencode([('col_name', col_name), ('data', data)])#http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
                         print ">> datasend: %s" %full_url
                         resp = urllib2.urlopen(full_url, timeout=15).read().strip()
 
@@ -205,7 +204,7 @@ def main(send_period=60*2, keep_period=60*60*24*7, app_list=None):
                        }
                 data_str = json_util.dumps(data_js)
 
-                full_url = base_url + perm + "&para=fwd_to_db&" + urllib.urlencode([('col_name', 'latestinfo'), ('data', data_str)])#http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
+                full_url = settings.BASE_URL + perm + "&para=fwd_to_db&" + urllib.urlencode([('col_name', 'latestinfo'), ('data', data_str)])#http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
                 #print ">> datasend: %s" %full_url
                 resp = urllib2.urlopen(full_url, timeout=15).read().strip()
 

@@ -108,8 +108,7 @@ def check_internet():
         _ = urllib2.urlopen('http://www.google.com', timeout=10)
         time_needed = (time.time() - t1)
         internet_ison = True
-        print ">> status: connected to internet needed %s sec to ping google" % time_needed
-    #if not connected
+        print ">> status: internet accessible, needed %s sec to ping google" % time_needed
     except:
         internet_ison = False
     return internet_ison

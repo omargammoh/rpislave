@@ -242,11 +242,11 @@ def main(status_period=30):
                 logline.save()
                 print ">> status: wrote %s" % new_status
 
-                #checking vlan
-                check_vlan(status = new_status)
+            #checking vlan
+            check_vlan(status = new_status)
 
-                #checking revssh
-                check_tunnels()
+            #checking revssh
+            check_tunnels()
 
         except:
             print ">> status: !! error: %s" %traceback.format_exc()

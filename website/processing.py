@@ -11,8 +11,12 @@ try:
 except:
     print "signal cannot be imported"
 
-def execute(cmd):
-    return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
+def execute(cmd, daemon=False):
+    if daemon:
+        _ = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        return None
+    else:
+        return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
 
 def read_json_file(fp):
     try:

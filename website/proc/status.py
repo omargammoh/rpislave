@@ -48,7 +48,7 @@ def new_tunnel_para(slave_port):
 def create_tunnel(slave_port, tunnel_para):
     revssh_line = 'nohup sudo ssh -i /home/pi/tunnelonly -R \*:%s:localhost:%s -N ubuntu@%s &' % (tunnel_para['server_port'], slave_port, tunnel_para['server_ip'])
     print ">> status: creating tunnel: %s" %revssh_line
-    website.processing.execute(revssh_line)
+    website.processing.execute(revssh_line, daemon=True)
 
 def check_tunnels():
     internet_ison = check_internet()

@@ -4,6 +4,42 @@ from website.models import Conf
 from time import time, sleep
 import inspect
 import subprocess
+import json
+
+try:
+    import signal
+except:
+    print "signal cannot be imported"
+
+def execute(cmd):
+    return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
+
+def read_json_file(fp):
+    try:
+        f = file(fp, "r")
+        s = f.read()
+        f.close()
+        js = json.loads(s)
+    except:
+        js = None
+    return js
+
+def write_json_file(js, fp):
+    f = file(fp, "w")
+    f.write(json.dumps(js))
+    f.close()
+
+class Timeout:
+    def __init__(self, seconds=1, error_message='Timeout'):
+        self.seconds = seconds
+        self.error_message = error_message
+    def handle_timeout(self, signum, frame):
+        raise BaseException(self.error_message)
+    def __enter__(self):
+        signal.signal(signal.SIGALRM, self.handle_timeout)
+        signal.alarm(self.seconds)
+    def __exit__(self, type, value, traceback):
+        signal.alarm(0)
 
 def filter_kwargs(func, kwargs_input):
     """
@@ -35,7 +71,7 @@ def get_pid(command):
     return pid
 
 
-def _get_conf():
+def get_conf():
     for ob in Conf.objects.all():
         try:
             js = json_util.loads(ob.data)
@@ -56,7 +92,7 @@ class MP():
         self.dic = {}
 
     def start(self):
-        app_conf = _get_conf()['apps'][self.name]
+        app_conf = get_conf()['apps'][self.name]
         p = multiprocessing.Process(name=self.name, target=self.target, kwargs=filter_kwargs(func=self.target, kwargs_input=app_conf))
         p.start()
 
@@ -103,7 +139,7 @@ class MP():
                 lis.append('process was not running')
 
         elif self.cmd == 'status':
-            self.dic["%s" %self.name] = _get_conf()['apps'][self.name]
+            self.dic["%s" %self.name] = get_conf()['apps'][self.name]
 
         else:
             lis.append("we didnt understand your cmd")

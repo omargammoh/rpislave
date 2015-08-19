@@ -1,4 +1,4 @@
-from website.processing import _get_conf
+from website.processing import get_conf
 from gpio_app.process import set_para, get_para, board_bmc, export, unexport
 import json
 from bson import json_util
@@ -16,7 +16,7 @@ info = {
 }
 
 def home(request, template_name='gpio_app/home.html'):
-    pins_ = _get_conf()['apps']['gpio_app']['pins']
+    pins_ = get_conf()['apps']['gpio_app']['pins']
     rev = {cf["pin"]: {"label": label, "desc": cf['desc']} for (label, cf) in pins_.iteritems()}
 
     gpio_list = []
@@ -41,7 +41,7 @@ def home(request, template_name='gpio_app/home.html'):
 def _control(request):
     t1 = time()
     try:
-        pins_ = _get_conf()['apps']['gpio_app']['pins']
+        pins_ = get_conf()['apps']['gpio_app']['pins']
         rev = {cf["pin"]: {"label": label, "desc": cf['desc']} for (label, cf) in pins_.iteritems()}
 
         pin = int(request.GET["pin"])

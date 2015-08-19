@@ -2,7 +2,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
 import website.settings
-from website.processing import _get_conf
+from website.processing import get_conf
 
 import website.views
 import traceback
@@ -25,7 +25,7 @@ patterns_tup = ('',
 
 #include apps e.g. url(r'^some_app/', include('some_app.urls')),
 try:
-    appnames = _get_conf()['apps'].keys()
+    appnames = get_conf()['apps'].keys()
 except:
     print "> urls: app names could not be loaded from conf"
     appnames = []

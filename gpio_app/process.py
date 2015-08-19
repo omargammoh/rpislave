@@ -1,4 +1,4 @@
-from website.processing import _get_conf
+from website.processing import get_conf
 import traceback
 import subprocess
 from time import sleep
@@ -37,7 +37,7 @@ def main(pins):
     for bcmpin in board_bmc.values():
         export(bcmpin)
 
-    pins = _get_conf()['apps']['gpio_app']['pins']
+    pins = get_conf()['apps']['gpio_app']['pins']
 
     for label, conf in pins.iteritems():
         try:

@@ -28,8 +28,8 @@ try:
         print 'no json config file was not found in folder %s' % conffolder
         print "attempting to get conf from sqlite db"
         try:
-            from website.processing import _get_conf
-            conf = _get_conf()
+            from website.processing import get_conf
+            conf = get_conf()
             conf_str = json.dumps(conf)
             print "got the conf from sqlite db, using it for the installation"
         except:

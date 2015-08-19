@@ -12,7 +12,7 @@ import urllib
 import os, django
 from bson import json_util
 
-from website.processing import _get_conf
+from website.processing import get_conf
 
 from django.db.models import get_app, get_models
 
@@ -171,7 +171,7 @@ def main(send_period=60*2, keep_period=60*60*24*7, app_list=None):
 
     _prepare_django()
 
-    conf = _get_conf()
+    conf = get_conf()
 
     if app_list is None:
         app_list = conf['apps'].keys()

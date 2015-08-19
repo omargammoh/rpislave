@@ -5,26 +5,44 @@ import json
 import time
 from website.models import Log
 import traceback
+from django.conf import settings
+import website.processing
+from bson import json_util
+import re
 
-try:
-    import signal
-except:
-    print "signal cannot be imported"
+conf = website.processing.get_conf()
 
-class timeout:
-    def __init__(self, seconds=1, error_message='Timeout'):
-        self.seconds = seconds
-        self.error_message = error_message
-    def handle_timeout(self, signum, frame):
-        raise BaseException(self.error_message)
-    def __enter__(self):
-        signal.signal(signal.SIGALRM, self.handle_timeout)
-        signal.alarm(self.seconds)
-    def __exit__(self, type, value, traceback):
-        signal.alarm(0)
+#tunneling
+def get_tunnels():
+    res = website.processing.execute(cmd="ps aux|grep 'sudo ssh'")
+    dic = {}
+    regex = re.compile(r'root(\s+)(?P<pid>\d+)(\s+)(.+):(?P<server_port>\d+):localhost:(?P<slave_port>\d+)(.+)@(?P<server_ip>[1-9.]+)')
+    #re.compile(r'root(\s+)(?P<pid>\d+)(\s+)(.+):(?P<server_port>\d+):localhost:(?P<slave_port>\d+)(.+)@(?P<server_ip>[1-9.]+)').match("root      9842  0.0  0.3   4592  2508 pts/2    S+   09:46   0:00 sudo ssh -i /home/pi/tunnelonly -R *:59995:localhost:9001 -N ubuntu@52.24.252.161").groupdict()
+    for ln in res.split('\n'):
+        if ln.strip() == "":
+            continue
+        d = {}
+        m = regex.match(ln)
+        if m:
+            # d is guaranteed to have port and pid as keys because it has matched
+            d.update(m.groupdict())
+            d['line'] = ln
+            dic[d['slave_port']] = d
+    return dic #OrderedDict([('59995', {'pid': '11601', 'port': '59995', 'line': 'tcp        0      0 0.0.0.0:59995           0.0.0.0:*               LISTEN      11601/sshd: ubuntu'})])
 
-def execute(cmd):
-    return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
+def new_tunnel_para(slave_port):
+    """
+    ask server to provide server_ip, server_port to connect reverse ssh to
+    """
+    full_url = settings.BASE_URL + conf['perm'] + "&para=new_tunnel&slave_port=%s" %slave_port #http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
+
+    resp = urllib2.urlopen(full_url, timeout=15).read().strip()
+    js_resp = json_util.loads(resp)
+    return js_resp
+
+def create_tunnel(slave_port, tunnel_para):
+    revssh_line = 'sudo ssh -i /home/pi/tunnelonly -R \*:%s:localhost:%s -N ubuntu@%s' % (tunnel_para['server_port'], slave_port, tunnel_para['server_ip'])
+    print ">> status: %s" %revssh_line
 
 def get_status():
     d = {}
@@ -50,14 +68,14 @@ def get_status():
 
     #CPU
     try:
-        resp = execute("cat /proc/cpuinfo")
+        resp = website.processing.execute("cat /proc/cpuinfo")
         d['serial'] = [x for x in resp.split("\n") if "Serial" in x][0].split()[-1]
     except:
         d['serial'] = "-"
         pass
 
     try:
-        resp = execute("cat /proc/cpuinfo")
+        resp = website.processing.execute("cat /proc/cpuinfo")
         d['revision'] = [x for x in resp.split("\n") if "Revision" in x][0].split()[-1]
     except:
         d['revision'] = "-"
@@ -65,15 +83,15 @@ def get_status():
 
     #GIT
     try:
-        d['git_rpislave'] = execute("cd /home/pi/rpislave&&git rev-parse HEAD").strip()
-        d['gitbranch_rpislave'] = execute("cd /home/pi/rpislave&&git rev-parse --abbrev-ref HEAD").strip()
+        d['git_rpislave'] = website.processing.execute("cd /home/pi/rpislave&&git rev-parse HEAD").strip()
+        d['gitbranch_rpislave'] = website.processing.execute("cd /home/pi/rpislave&&git rev-parse --abbrev-ref HEAD").strip()
     except:
         d['git_rpislave'] = '-'
         d['gitbranch_rpislave'] = '-'
 
     try:
-        d['git_rpislave_conf'] = execute("cd /home/pi/rpislave_conf&&git rev-parse HEAD").strip()
-        d['gitbranch_rpislave_conf'] = execute("cd /home/pi/rpislave_conf&&git rev-parse --abbrev-ref HEAD").strip()
+        d['git_rpislave_conf'] = website.processing.execute("cd /home/pi/rpislave_conf&&git rev-parse HEAD").strip()
+        d['gitbranch_rpislave_conf'] = website.processing.execute("cd /home/pi/rpislave_conf&&git rev-parse --abbrev-ref HEAD").strip()
     except:
         d['git_rpislave_conf'] = '-'
         d['gitbranch_rpislave_conf'] = '-'
@@ -81,14 +99,14 @@ def get_status():
 
     #IP
     try:
-        resp = execute("ip route get \"$(ip route show to 0/0 | grep -oP '(?<=via )\S+')\" | grep -oP '(?<=src )\S+'")
+        resp = website.processing.execute("ip route get \"$(ip route show to 0/0 | grep -oP '(?<=via )\S+')\" | grep -oP '(?<=src )\S+'")
         d['ip_lan'] = resp.strip()
     except:
         d['ip_lan'] = "-"
         pass
 
     try:
-        resp = execute("ip route")
+        resp = website.processing.execute("ip route")
         d['ip_vlan'] = [line for line in resp.split("\n") if "nrtap" in line][0].strip().split(' ')[-1].strip()
     except:
         d['ip_vlan'] = "-"
@@ -117,9 +135,9 @@ def restart_networking():
     try:
         print ">> status: not connected to internet, will attempt to restart network"
         print '>> status: sudo /etc/init.d/networking stop'
-        execute('sudo /etc/init.d/networking stop')
+        website.processing.execute('sudo /etc/init.d/networking stop')
         print '>> status: sudo /etc/init.d/networking start'
-        execute('sudo /etc/init.d/networking start')
+        website.processing.execute('sudo /etc/init.d/networking start')
         #execute("sudo sed -i '1s/^/nameserver 8.8.8.8\n/' /etc/resolv.conf")
         time.sleep(3)
     except:
@@ -152,14 +170,10 @@ def main(status_period=30):
         try:
             fp = '/home/pi/data/status'
 
-            #try get previous ip
-            try:
-                f = file(fp, "r")
-                s = f.read()
-                f.close()
-                prev_status = json.loads(s)
-            except:
-                prev_status = None
+            #get previous ip
+            prev_status = website.processing.read_json_file(fp=fp)
+
+            if prev_status is None:
                 print ">> status: previous status not loadable"
 
             #get new status
@@ -181,13 +195,10 @@ def main(status_period=30):
 
             #if None or different
             else:
-                #create status file
-                f = file(fp, "w")
-                f.write(json.dumps(new_status))
-                f.close()
-                new_status["msg"] = "status update"
+                website.processing.write_json_file(js=new_status, fp=fp)
 
                 #write log
+                new_status["msg"] = "status update"
                 logline = Log(data=json.dumps(new_status), meta="")
                 logline.save()
                 print ">> status: wrote %s" % new_status
@@ -198,9 +209,9 @@ def main(status_period=30):
                     print ">> status: no vlan, attempting to reconnect to vlan"
                     #print ">> status: ", execute("sudo /etc/init.d/nrservice.sh start").strip()
                     #TODO: here the neorouter parameters are hard coded, they should be taken from configuration!!!
-                    with timeout(seconds=10):
+                    with website.processing.Timeout(seconds=10):
                         #in the normal behaviour, timeout is reached, this is just a workaround to stop the process
-                        execute("sudo /usr/bin/nrclientcmd -d rpimaster -u pi -p raspberry")
+                        website.processing.execute("sudo /usr/bin/nrclientcmd -d rpimaster -u pi -p raspberry")
 
             except:
                 print ">> status: !! error while trying to fix the ip_vlan"
@@ -210,6 +221,8 @@ def main(status_period=30):
 
         print ">> status: ending loop"
         time.sleep(status_period)
+
+
 
 
 

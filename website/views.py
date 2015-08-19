@@ -8,13 +8,13 @@ import multiprocessing
 from datalog_app.models import Reading
 from datetime import datetime
 import traceback
-from website.processing import MP, _get_conf
+from website.processing import MP, get_conf
 import importlib
 import subprocess
 from website.templatetags.customfilters import conf
 
 def home(request, template_name='home.html'):
-    conf = _get_conf()
+    conf = get_conf()
     app_info = []
     for app in conf['apps'].keys():
         try:
@@ -43,7 +43,7 @@ def status(request):
         cmd = request.GET.get("cmd",None)
         dic = {}
         if cmd == "conf":
-            dic['conf'] = _get_conf()
+            dic['conf'] = get_conf()
         if cmd == "overview":
             dic['this process'] = multiprocessing.current_process().name
             dic['active child processes'] = [m.name for m in  multiprocessing.active_children()]

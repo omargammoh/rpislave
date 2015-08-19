@@ -1,5 +1,5 @@
 import subprocess
-from website.processing import _get_conf
+from website.processing import get_conf
 import traceback
 
 
@@ -44,7 +44,7 @@ def get_motion_config():
         "height": 240, #480 tested and working
         "locate": "preview"
     }
-    conf = _get_conf()
+    conf = get_conf()
     motion_conf = conf['apps']['motion_app']
 
     for k in motion_conf.keys():

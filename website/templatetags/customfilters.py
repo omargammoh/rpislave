@@ -2,7 +2,7 @@ from django import template
 from random import randint
 import re
 from django.core.urlresolvers import reverse
-from website.processing import _get_conf
+from website.processing import get_conf
 import subprocess
 
 register = template.Library()
@@ -22,7 +22,7 @@ except:
     confgitbranch = u'?'
 
 try:
-    conf = _get_conf()
+    conf = get_conf()
 except:
     conf = None
 
@@ -37,7 +37,7 @@ def rev(value):
 @register.simple_tag()
 def conflabel():
     try:
-        return _get_conf()['label']
+        return get_conf()['label']
     except:
         return '-'
 

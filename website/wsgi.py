@@ -1,5 +1,5 @@
 import os
-from website.processing import _get_conf, MP, filter_kwargs
+from website.processing import get_conf, MP, filter_kwargs
 import traceback
 import multiprocessing
 import importlib
@@ -8,7 +8,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 from django.conf import settings
 
 try:
-    conf = _get_conf()
+    conf = get_conf()
 except:
     conf = None
     print "> conf could not be loaded, starting without a conf"

@@ -151,4 +151,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     )
 
 LOGIN_EXEMPT_URLS = ("^motion_app/register_event/$", "^datalog_app/highresmcp3008/$")
-BASE_URL = "http://rpi-master.com/api/slave/?"
+#BASE_URL = "http://rpi-master.com/api/slave/?"
+BASE_URL = "http://52.24.252.161/api/slave/?"
+

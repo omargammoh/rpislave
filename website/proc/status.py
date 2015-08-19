@@ -68,10 +68,10 @@ def check_tunnels():
             create_tunnel(slave_port=port, tunnel_para=tunnel_para)
 
 #networking
-def check_vlan(new_status):
+def check_vlan(status):
     #if vlan is not working, try to fix it
     try:
-        if new_status.get('ip_vlan', "-") == "-":
+        if status.get('ip_vlan', "-") == "-":
             print ">> status: no vlan, attempting to reconnect to vlan"
             #print ">> status: ", execute("sudo /etc/init.d/nrservice.sh start").strip()
             #TODO: here the neorouter parameters are hard coded, they should be taken from configuration!!!
@@ -243,7 +243,7 @@ def main(status_period=30):
                 print ">> status: wrote %s" % new_status
 
             #checking vlan
-            check_vlan(status = new_status)
+            check_vlan(status=new_status)
 
             #checking revssh
             check_tunnels()

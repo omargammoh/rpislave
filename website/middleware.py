@@ -31,15 +31,24 @@ class LoginRequiredMiddleware:
         if conf is None:
             return render_to_response("confsetup.html", {}, context_instance=RequestContext(request))
 
+        #request coming directly from server connected to via rev ssh HTTP_HOST=127.0.0.1:47604
+        #request coming from slave itself 127.0.0.1:9001
+        if request.META.get('HTTP_HOST', '-').startswith('127.0.0.1'):
+            return None
+        #request coming directly from server connected to via vpn HTTP_HOST=10.0.0.*
+        if request.META.get('HTTP_HOST', '-').startswith('10.0.0'):
+            return None
+        #request coming from a client through server which is connected to via vpn HTTP_HOST=e.g. 52.24.168.465 (ip of server)
+        if request.META.get('HTTP_HOST', '-').startswith(''):
+            pass
+
         if request.user.is_authenticated():
             return None
         if any(m.match(request.path_info.lstrip('/')) for m in EXEMPT_URLS):
             return None
-        if request.META.get('REMOTE_ADDR', '-').startswith('10.0.0'):
-            return None
 
-        print ">> LoginRequiredMiddleware: redirecting to login, remote_addr = %s" %request.META.get('REMOTE_ADDR', '-')
-        return HttpResponseRedirect('%s?next=%s&your_address=%s' % (settings.LOGIN_URL, request.path, request.META.get('REMOTE_ADDR', '-')))
+        print ">> LoginRequiredMiddleware: redirecting to login, HTTP_HOST = %s" %request.META.get('HTTP_HOST', '-')
+        return HttpResponseRedirect('%s?next=%s&http_host=%s' % (settings.LOGIN_URL, request.path, request.META.get('HTTP_HOST', '-')))
 
 
 

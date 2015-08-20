@@ -5,7 +5,7 @@ import traceback
 
 def get_motion_config():
     def on_event(s):
-        return "wget --spider http://localhost:9001/motion_app/register_event/?label={0}\&path=%f".format(s)
+        return "wget --spider http://127.0.0.1:9001/motion_app/register_event/?label={0}\&path=%f".format(s)
 
     default_conf = {
         "control_localhost": "off",

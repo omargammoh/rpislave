@@ -35,10 +35,11 @@ class LoginRequiredMiddleware:
             return None
         if any(m.match(request.path_info.lstrip('/')) for m in EXEMPT_URLS):
             return None
-        if request.META.get('REMOTE_ADDR', '').startswith('10.0.0'):
+        if request.META.get('REMOTE_ADDR', '-').startswith('10.0.0'):
             return None
 
-        return HttpResponseRedirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
+        print ">> LoginRequiredMiddleware: redirecting to login, remote_addr = %s" %request.META.get('REMOTE_ADDR', '-')
+        return HttpResponseRedirect('%s?next=%s&your_address=%s' % (settings.LOGIN_URL, request.path, request.META.get('REMOTE_ADDR', '-')))
 
 
 

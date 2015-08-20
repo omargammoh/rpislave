@@ -13,7 +13,7 @@ import re
 conf = website.processing.get_conf()
 
 REQUIRED_TUNNELS = ['9001', '9005']
-if 'motion' in conf['apps']:
+if 'motion_app' in conf['apps']:
     REQUIRED_TUNNELS.append('9002')
 
 #tunneling

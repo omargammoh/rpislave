@@ -12,9 +12,11 @@ import re
 
 conf = website.processing.get_conf()
 
-#tunneling
-REQUIRED_TUNNELS = ['9001', '9002', '22']
+REQUIRED_TUNNELS = ['9001', '9005']
+if 'motion' in conf['apps']:
+    REQUIRED_TUNNELS.append('9002')
 
+#tunneling
 def get_tunnels():
     """
     get a list of tunnels that are open now

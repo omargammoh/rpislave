@@ -47,9 +47,10 @@ def new_tunnel_para(slave_port):
     js_resp = json_util.loads(resp)
     return js_resp
 
+
 def create_tunnel(slave_port, tunnel_para):
     website.processing.execute('sudo chmod 700 /home/pi/rpislave/tunnelonly')
-    revssh_line = 'export AUTOSSH_POLL=120&&sudo autossh -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=no -i /home/pi/rpislave/tunnelonly -R \*:%s:localhost:%s -N ubuntu@%s' % (tunnel_para['server_port'], slave_port, tunnel_para['server_ip'])
+    revssh_line = 'export AUTOSSH_POLL=120&&sudo autossh -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -o ServerAliveCountMax=2 -i /home/pi/rpislave/tunnelonly -R \*:%s:localhost:%s -N ubuntu@%s' % (tunnel_para['server_port'], slave_port, tunnel_para['server_ip'])
     print ">> status: creating tunnel: %s" %revssh_line
     website.processing.execute(revssh_line, daemon=True)
 

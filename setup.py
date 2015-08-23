@@ -250,7 +250,8 @@ def network_name():
 if __name__ == "__main__":
     t1 = time()
     _execute([
-         "sudo apt-get -y update" #update is needed for motion
+         "sudo apt-get -y update", #update is needed for motion
+         "sudo apt-get autossh"
     ])
     t2 = time()
     _execute([

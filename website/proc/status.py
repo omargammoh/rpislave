@@ -21,7 +21,7 @@ def get_tunnels():
     """
     get a list of tunnels that are open now
     """
-    res = website.processing.execute(cmd="ps aux|grep 'sudo ssh'")
+    res = website.processing.execute(cmd="ps aux|grep 'sudo autossh'")
     dic = {}
     regex = re.compile(r'root(\s+)(?P<pid>\d+)(\s+)(.+):(?P<server_port>\d+):localhost:(?P<slave_port>\d+)(.+)@(?P<server_ip>[1-9.]+)')
     #re.compile(r'root(\s+)(?P<pid>\d+)(\s+)(.+):(?P<server_port>\d+):localhost:(?P<slave_port>\d+)(.+)@(?P<server_ip>[1-9.]+)').match("root      9842  0.0  0.3   4592  2508 pts/2    S+   09:46   0:00 sudo ssh -i /home/pi/tunnelonly -R *:59995:localhost:9001 -N ubuntu@52.24.252.161").groupdict()
@@ -49,7 +49,7 @@ def new_tunnel_para(slave_port):
 
 def create_tunnel(slave_port, tunnel_para):
     website.processing.execute('sudo chmod 700 /home/pi/rpislave/tunnelonly')
-    revssh_line = 'sudo ssh -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=no -i /home/pi/rpislave/tunnelonly -R \*:%s:localhost:%s -N ubuntu@%s' % (tunnel_para['server_port'], slave_port, tunnel_para['server_ip'])
+    revssh_line = 'sudo autossh -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=no -i /home/pi/rpislave/tunnelonly -R \*:%s:localhost:%s -N ubuntu@%s' % (tunnel_para['server_port'], slave_port, tunnel_para['server_ip'])
     print ">> status: creating tunnel: %s" %revssh_line
     website.processing.execute(revssh_line, daemon=True)
 

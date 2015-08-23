@@ -242,7 +242,7 @@ def network_name():
     newname = sanitize_colname(conf['label'])
     _execute("sudo sed -i -- 's/raspberrypi/%s/g' /etc/hosts" %newname)
     _execute("sudo sed -i -- 's/raspberrypi/%s/g' /etc/hostname" %newname)
-    _execute("sudo /etc/init.d/hostname.sh")
+    _execute(". /etc/init.d/hostname.sh")
 
     print 'changed nework name to %s' %newname
     return None

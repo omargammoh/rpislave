@@ -41,6 +41,23 @@ try:
 except:
     raise
 
+
+def sanitize_colname(label):
+    if label == "":
+        return ""
+    if not(label[0].isalpha() or label[0] == "_"):
+        label = "_" + label
+    if label.startswith('system.') or label.startswith('objectlabs-system.'):
+        label = "_" + label
+
+    label = label.replace(' ', '_').lower()
+    label = "".join([l if (l.isdigit() or l.isalpha() or l in ['_', '-', '.']) else '_' for l in label])
+    if len(label)>50:
+        label=label[:50]
+    return label
+    #The name you choose must begin with a letter or underscore and must not begin with 'system.' or 'objectlabs-system.'
+    #. It also must have fewer than 80 characters and cannot have any spaces or special characters (hyphens, underscores and periods are OK) in it.
+
 def _execute(lis):
     if type(lis) == str:
         lis=[lis]
@@ -215,6 +232,20 @@ def change_sshport():
     else:
         print "change_sshport: !!strange behaviour"
 
+def network_name():
+    """
+    http://www.howtogeek.com/167195/how-to-change-your-raspberry-pi-or-other-linux-devices-hostname/
+    rename raspberrypi in 'sudo nano /etc/hosts'    and 'sudo nano /etc/hostname'
+    sudo /etc/init.d/hostname.sh
+
+    """
+    newname = sanitize_colname(conf['label'])
+    _execute("sudo sed -i -- 's/raspberrypi/%s/g' /etc/hosts" %newname)
+    _execute("sudo sed -i -- 's/raspberrypi/%s/g' /etc/hostname" %newname)
+    _execute("sudo /etc/init.d/hostname.sh")
+
+    print 'changed nework name to %s' %newname
+    return None
 
 if __name__ == "__main__":
     t1 = time()
@@ -257,6 +288,7 @@ if __name__ == "__main__":
     setup_db()
     create_datafolder()
     change_sshport()
+    network_name()
 
     t4 = time()
     print "took %0.2f sec=" % (t4 - t1)

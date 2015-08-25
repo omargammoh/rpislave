@@ -239,7 +239,7 @@ def network_name():
     sudo /etc/init.d/hostname.sh
 
     """
-    newname = sanitize_colname(conf['label'])
+    newname = sanitize_colname(conf['label']).replace('_', '-')#underscores are not allowed in hostnames
     _execute(["sudo sed -i -- 's/raspberrypi/%s/g' /etc/hosts" %newname
             ,"sudo sed -i -- 's/raspberrypi/%s/g' /etc/hostname" %newname
             ,"sudo /etc/init.d/hostname.sh"])

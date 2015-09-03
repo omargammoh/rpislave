@@ -140,18 +140,16 @@ def get_status():
 
     #IP
     try:
-        resp = website.processing.execute("ip route get \"$(ip route show to 0/0 | grep -oP '(?<=via )\S+')\" | grep -oP '(?<=src )\S+'")
-        d['ip_lan'] = resp.strip()
+        resp = website.processing.execute("ifconfig")
+        d['ip_lan'] = "192.168.{0[p3]}.{0[p4]}".format(re.compile(r'(.+)inet addr:192\.168\.(?P<p3>\d+)\.(?P<p4>\d+)(.+)', flags=re.DOTALL).match(resp).groupdict())
     except:
         d['ip_lan'] = "-"
-        pass
 
     try:
-        resp = website.processing.execute("ip route")
-        d['ip_vlan'] = [line for line in resp.split("\n") if "nrtap" in line][0].strip().split(' ')[-1].strip()
+        resp = website.processing.execute("ifconfig")
+        d['ip_vlan'] = "10.0.{0[p3]}.{0[p4]}".format(re.compile(r'(.+)inet addr:10\.0\.(?P<p3>\d+)\.(?P<p4>\d+)(.+)', flags=re.DOTALL).match(resp).groupdict())
     except:
         d['ip_vlan'] = "-"
-        pass
 
     #DT
     try:

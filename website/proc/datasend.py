@@ -196,18 +196,23 @@ def main(send_period=60*2, keep_period=60*60*24*7, app_list=None):
                 time_error = _get_time_error()
 
                 data_js = {
-                          "label": conf_label,
-                          "dt": datetime.utcnow(),
-                          "send_period": send_period,
+                          #"label": conf_label,
+                          #"dt": datetime.utcnow(),
+                          #"send_period": send_period,
                           "time_error": time_error
                        }
                 data_str = json_util.dumps(data_js)
 
+
+                #http://rpi-master.com/api/slave/
+                    # ?_perm=write&_slave=development+and+testing&_sig=b901abde
+                    # &para=fwd_to_db
+                    # &data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
                 full_url = settings.BASE_URL + perm + "&para=fwd_to_db&" + urllib.urlencode([('col_name', 'latestinfo'), ('data', data_str)])#http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
                 #print ">> datasend: %s" %full_url
                 resp = urllib2.urlopen(full_url, timeout=15).read().strip()
 
-                if not str(json_util.loads(resp)['data']).lower()=='true':
+                if not str(json_util.loads(resp)['data']).lower() == 'true':
                     print 'fail', resp
                     raise BaseException ('server did not return data:true')
 

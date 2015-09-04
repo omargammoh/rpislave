@@ -152,6 +152,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 #todo: this excempt url is just for debug, remove it later
 LOGIN_EXEMPT_URLS = ('rqst')
-#BASE_URL = "http://rpi-master.com/api/slave/?"
-BASE_URL = "http://52.24.252.161/api/slave/?"
+
+BASE_URL = "http://rpi-master.com/api/slave/?"
 

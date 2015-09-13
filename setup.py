@@ -251,7 +251,7 @@ if __name__ == "__main__":
     t1 = time()
     _execute([
          "sudo apt-get -y update", #update is needed for motion
-         "sudo apt-get autossh"
+         "sudo apt-get install autossh"
     ])
     t2 = time()
     _execute([

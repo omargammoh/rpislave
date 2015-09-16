@@ -28,6 +28,8 @@ class LoginRequiredMiddleware:
     """
     def process_request(self, request):
         assert hasattr(request, 'user'), "The Login Required middleware requires authentication middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.auth.middleware.AuthenticationMiddleware'. If that doesn't work, ensure your TEMPLATE_CONTEXT_PROCESSORS setting includes 'django.core.context_processors.auth'."
+        if request.META.get('PATH_INFO', '').startswith('/admin'):
+            return None
         if conf is None:
             return render_to_response("confsetup.html", {}, context_instance=RequestContext(request))
 

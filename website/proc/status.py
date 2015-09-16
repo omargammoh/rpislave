@@ -212,6 +212,8 @@ def main(status_period=30):
                 dicx = {"dt": datetime.datetime.utcnow(), 'restart': True}
                 logline = Log(data=json_util.dumps(dicx), meta="")
                 logline.save()
+                print ">> status: wrote restart %s" % dicx
+
 
             #file where status is saved
             fp = '/home/pi/data/status'

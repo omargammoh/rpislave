@@ -209,10 +209,10 @@ def main(status_period=30):
         try:
 
             if loop_counter == 0:
-                dicx = {"dt": datetime.datetime.utcnow(), 'restart': True}
+                dicx = {'start': datetime.datetime.utcnow()}
                 logline = Log(data=json_util.dumps(dicx), meta="")
                 logline.save()
-                print ">> status: wrote restart %s" % dicx
+                print ">> status: wrote start %s" % dicx
 
 
             #file where status is saved

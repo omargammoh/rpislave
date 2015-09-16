@@ -6,7 +6,7 @@ from time import time
 
 #get the configuration file
 try:
-    #priority is to use the conf.json file
+    #first priority is to use the conf.json file
     conffolder = '/home/pi/rpislave_conf'
     conffile = None
     if os.path.isdir(conffolder):
@@ -23,7 +23,7 @@ try:
         conf = json.loads(conf_str)
         print 'using the json file for the installation %s' % conffile
 
-    #then to check for a configuration in the sqlite database
+    #second priority is to check for a configuration in the sqlite database
     else:
         print 'no json config file was not found in folder %s' % conffolder
         print "attempting to get conf from sqlite db"
@@ -39,7 +39,7 @@ try:
             conf_str = None
             conf = None
 except:
-    raise
+    conf = None
 
 
 def sanitize_colname(label):
@@ -192,16 +192,6 @@ def setup_realtimeclock():
     else:
         raise BaseException('we do not know how to install this clock %s' %typ)
 
-def install_btsync():
-    if os.path.isfile('/home/pi/btsync'):
-        print "install_btsync: btsync already installed"
-    else:
-        _execute([
-            'cd /home/pi&&wget https://download-cdn.getsyncapp.com/stable/linux-arm/BitTorrent-Sync_arm.tar.gz'
-            ,'cd /home/pi&&tar -zxvf BitTorrent-Sync_arm.tar.gz'
-            ])
-        print "install_btsync: sucessful"
-
 def change_sshport():
     """
     changes the line Port 22 to Port 9005
@@ -239,13 +229,16 @@ def network_name():
     sudo /etc/init.d/hostname.sh
 
     """
-    newname = sanitize_colname(conf['label']).replace('_', '-')#underscores are not allowed in hostnames
-    _execute(["sudo sed -i -- 's/raspberrypi/%s/g' /etc/hosts" %newname
-            ,"sudo sed -i -- 's/raspberrypi/%s/g' /etc/hostname" %newname
-            ,"sudo /etc/init.d/hostname.sh"])
+    if conf is not None:
+        newname = sanitize_colname(conf['label']).replace('_', '-')#underscores are not allowed in hostnames
+        _execute(["sudo sed -i -- 's/raspberrypi/%s/g' /etc/hosts" %newname
+                ,"sudo sed -i -- 's/raspberrypi/%s/g' /etc/hostname" %newname
+                ,"sudo /etc/init.d/hostname.sh"])
 
-    print 'changed nework name to %s' %newname
-    return None
+        print 'changed nework name to %s' %newname
+        return None
+    else:
+        print "did not change network name"
 
 if __name__ == "__main__":
     t1 = time()
@@ -285,7 +278,6 @@ if __name__ == "__main__":
 
     setup_realtimeclock()
 
-    install_btsync()
     setup_db()
     create_datafolder()
     change_sshport()

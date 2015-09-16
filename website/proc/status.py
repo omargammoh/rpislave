@@ -151,12 +151,6 @@ def get_status():
     except:
         d['ip_vlan'] = "-"
 
-    #DT
-    try:
-        d['dt'] = datetime.datetime.utcnow().__str__()
-    except:
-        d['dt'] = "-"
-
     return d
 
 def check_internet():
@@ -182,8 +176,14 @@ def restart_networking():
     except:
         pass
 
+def round5(s):
+    try:
+        return round(float(s)/5)*5
+    except:
+        return None
 #main
 def main(status_period=30):
+    loop_counter = 0
     while True:
         print ">> status: starting loop"
         #checking internet connectivity and trying to reconnect if not connected
@@ -207,6 +207,12 @@ def main(status_period=30):
                     print ">> status: could not connected to internet even after network restart"
 
         try:
+
+            if loop_counter == 0:
+                dicx = {"dt": datetime.datetime.utcnow(), 'restart': True}
+                logline = Log(data=json_util.dumps(dicx), meta="")
+                logline.save()
+
             #file where status is saved
             fp = '/home/pi/data/status'
 
@@ -228,21 +234,33 @@ def main(status_period=30):
                             prev_status.get("git_rpislave", "") == new_status.get("git_rpislave", "") and \
                             prev_status.get("gitbranch_rpislave", "") == new_status.get("gitbranch_rpislave", "") and \
                             prev_status.get("git_rpislave_conf", "") == new_status.get("git_rpislave_conf", "") and \
-                            prev_status.get("gitbranch_rpislave_conf", "") == new_status.get("gitbranch_rpislave_conf", ""):
+                            prev_status.get("gitbranch_rpislave_conf", "") == new_status.get("gitbranch_rpislave_conf", "") and \
+                            round5(prev_status.get("time_error", "")) == round5(new_status.get("time_error", "")):
 
-                print ">> status: all params remain the same, ip_wan = %s" % prev_status.get("ip_wan","-")
+                print ">> status: all params remain the same"
                 pass
 
             #status is None or different
             else:
+                if prev_status is None:
+                    prev_status = {}
+                dic_diff = dict(set(new_status.items()) - set(prev_status.items()))
+
+                #if not much change in time-error
+                if round5(prev_status.get("time_error", "")) == round5(new_status.get("time_error", "")):
+                    if 'time_error' in dic_diff:
+                        # discard it
+                        dic_diff.pop('time_error')
+
                 #write it on disk
                 website.processing.write_json_file(js=new_status, fp=fp)
 
                 #write log to db
-                new_status["msg"] = "status update"
-                logline = Log(data=json.dumps(new_status), meta="")
+                dic_diff["msg"] = "status update"
+                dic_diff["dt"] = datetime.datetime.utcnow()
+                logline = Log(data=json_util.dumps(dic_diff), meta="")
                 logline.save()
-                print ">> status: wrote %s" % new_status
+                print ">> status: wrote changes %s" % dic_diff
 
             #checking vlan
             check_vlan(status=new_status)
@@ -255,8 +273,5 @@ def main(status_period=30):
 
         print ">> status: ending loop"
         time.sleep(status_period)
-
-
-
-
+        loop_counter += 1
 

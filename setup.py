@@ -135,16 +135,20 @@ def setup_db():
     django.setup()
 
     #adding a superuser
+    from django.contrib.auth.models import User
+    for u in User.objects.all():
+        u.delete()
+        print "setup_db: deleted old superuser"
+
     if conf is not None:
-        from django.contrib.auth.models import User
-        for u in User.objects.all():
-            u.delete()
-            print "setup_db: deleted old superuser"
         login = conf.get('super_user', {}).get('login', 'pi')
         password = conf.get('super_user', {}).get('password', 'raspberry')
-        u = User.objects.create_superuser(login, '', password)
-        u.save()
-        print "setup_db: created new superuser: %s, %s" % (login, password)
+    else:
+        login = "pi"
+        password = "raspberry"
+    u = User.objects.create_superuser(login, '', password)
+    u.save()
+    print "setup_db: created new superuser: %s, %s" % (login, password)
 
     #updating the conf in the sqlite db
     if conf_str is not None:

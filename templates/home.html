@@ -73,6 +73,8 @@
                 <tr>
                     <td><h4>linux info2</h4></td>
                     <td><button type="button" id="btn_status_listwifi">list wifi</button></td>
+                    <td><button type="button" id="btn_status_ifconfig">ifconfig</button></td>
+                    <td><button type="button" id="btn_status_interfaces">interfaces</button></td>
                 </tr>
             </table>
         </div>
@@ -168,7 +170,9 @@ $("#btn_status_df").click(make_cmd_function("{% url "website.views.cmd" %}", {"c
 $("#btn_status_pstree").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"pstree -p -l"}))
 $("#btn_status_psaux").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"ps aux"}))
 
-$("#btn_status_listwifi ").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"sudo iwlist wlan0 scan"}))
+$("#btn_status_listwifi").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"sudo iwlist wlan0 scan"}))
+$("#btn_status_ifconfig").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"ifconfig"}))
+$("#btn_status_interfaces").click(make_cmd_function("{% url "website.views.cmd" %}", {"cmd":"cat /etc/network/interfaces"}))
 
 {% with cmd_list='start stop status' %}
     {% for app in app_info %}

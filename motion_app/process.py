@@ -12,8 +12,9 @@ def get_motion_config():
         "webcam_localhost": "off",
         "target_dir": "/home/pi/data/motion_app", #where videos and pictures are stored
         "webcam_maxrate": 30,# limiting speed 0..100
-        "framerate": 100, # 2..100
+        "framerate": 5, # 2..100
         "webcam_motion": "on",# if set to 'on' Motion sends slows down the webcam stream to 1 picture per second when no motion is detected. When motion is detected the stream runs as defined by webcam_maxrate. When 'off' the webcam stream always runs as defined by webcam_maxrate.
+        "text_changes": "on",#show the number of pixel changes
         "threshold": 300,
         "minimum_motion_frames": 1,
         "gap": 60,
@@ -40,8 +41,8 @@ def get_motion_config():
         "on_movie_start": on_event("movie_start"),
         "on_movie_end": on_event("movie_end"),
         "on_camera_lost": "", #last_detection_cmd("camera_lost")
-        "width": 320, #640 tested and working
-        "height": 240, #480 tested and working
+        "width": 640, #tested and working also:320, 240
+        "height": 480, #
         "locate": "preview"
     }
     conf = get_conf()
@@ -165,7 +166,7 @@ lines = ['daemon off',
  'locate {locate}',
  'text_right %Y-%m-%d\\n%T-%q',
  '; text_left CAMERA %t',
- 'text_changes off',
+ 'text_changes {text_changes}',
  'text_event %Y%m%d%H%M%S',
  'text_double off',
  'target_dir {target_dir}',

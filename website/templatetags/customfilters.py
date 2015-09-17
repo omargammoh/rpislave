@@ -17,8 +17,8 @@ def gitcmd(cmd):
         return r
 
 try:
-    gitversion = gitcmd("cd /home/pi/rpislave&&git rev-parse HEAD",shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    gitbranch = gitcmd("cd /home/pi/rpislave&&git rev-parse --abbrev-ref HEAD",shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    gitversion = gitcmd("cd /home/pi/rpislave&&git rev-parse HEAD")
+    gitbranch = gitcmd("cd /home/pi/rpislave&&git rev-parse --abbrev-ref HEAD")
 except:
     gitversion = u'?'
     gitbranch = u'?'

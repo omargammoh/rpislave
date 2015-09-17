@@ -86,6 +86,14 @@ def check_vlan(status):
         print ">> status: !! error while trying to fix the ip_vlan"
 
 def get_status():
+    def gitcmd(cmd):
+        r = website.processing.execute(cmd).strip()
+            #"/bin/sh: 1: cd: can't cd to /home/pi/rpislave_conf\n"
+            #'fatal: Not a git repository (or any of the parent directories): .git\n'
+        if ("cd to " in r) or ("Not a git" in r):
+            return '-'
+        else:
+            return r
     d = {}
 
     #TIME ERROR
@@ -124,15 +132,16 @@ def get_status():
 
     #GIT
     try:
-        d['git_rpislave'] = website.processing.execute("cd /home/pi/rpislave&&git rev-parse HEAD").strip()
-        d['gitbranch_rpislave'] = website.processing.execute("cd /home/pi/rpislave&&git rev-parse --abbrev-ref HEAD").strip()
+        d['git_rpislave'] = gitcmd("cd /home/pi/rpislave&&git rev-parse HEAD")
+        d['gitbranch_rpislave'] = gitcmd("cd /home/pi/rpislave&&git rev-parse --abbrev-ref HEAD")
     except:
         d['git_rpislave'] = '-'
         d['gitbranch_rpislave'] = '-'
 
+
     try:
-        d['git_rpislave_conf'] = website.processing.execute("cd /home/pi/rpislave_conf&&git rev-parse HEAD").strip()
-        d['gitbranch_rpislave_conf'] = website.processing.execute("cd /home/pi/rpislave_conf&&git rev-parse --abbrev-ref HEAD").strip()
+        d['git_rpislave_conf'] = gitcmd("cd /home/pi/rpislave_conf&&git rev-parse HEAD")
+        d['gitbranch_rpislave_conf'] = gitcmd("cd /home/pi/rpislave_conf&&git rev-parse --abbrev-ref HEAD")
     except:
         d['git_rpislave_conf'] = '-'
         d['gitbranch_rpislave_conf'] = '-'

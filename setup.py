@@ -28,6 +28,13 @@ try:
         print 'no json config file was not found in folder %s' % conffolder
         print "attempting to get conf from sqlite db"
         try:
+            #prepare django
+            import os
+            import django
+            os.environ['DJANGO_SETTINGS_MODULE'] = 'website.settings'
+            django.setup()
+
+            #get conf
             from website.processing import get_conf
             conf = get_conf()
             conf_str = json.dumps(conf)

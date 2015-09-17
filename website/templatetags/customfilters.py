@@ -7,16 +7,25 @@ import subprocess
 
 register = template.Library()
 
+def gitcmd(cmd):
+    r = subprocess.Popen(cmd,shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.readline().strip()
+        #"/bin/sh: 1: cd: can't cd to /home/pi/rpislave_conf\n"
+        #'fatal: Not a git repository (or any of the parent directories): .git\n'
+    if ("cd to " in r) or ("Not a git" in r):
+        return '-'
+    else:
+        return r
+
 try:
-    gitversion = subprocess.Popen("cd /home/pi/rpislave&&git rev-parse HEAD",shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.readline().strip()
-    gitbranch = subprocess.Popen("cd /home/pi/rpislave&&git rev-parse --abbrev-ref HEAD",shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.readline().strip()
+    gitversion = gitcmd("cd /home/pi/rpislave&&git rev-parse HEAD",shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    gitbranch = gitcmd("cd /home/pi/rpislave&&git rev-parse --abbrev-ref HEAD",shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 except:
     gitversion = u'?'
     gitbranch = u'?'
 
 try:
-    confgitversion = subprocess.Popen("cd /home/pi/rpislave_conf&&git rev-parse HEAD", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.readline().strip()
-    confgitbranch = subprocess.Popen("cd /home/pi/rpislave_conf&&git rev-parse --abbrev-ref HEAD", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.readline().strip()
+    confgitversion = gitcmd("cd /home/pi/rpislave_conf&&git rev-parse HEAD", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    confgitbranch = gitcmd("cd /home/pi/rpislave_conf&&git rev-parse --abbrev-ref HEAD", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 except:
     confgitversion = u'?'
     confgitbranch = u'?'

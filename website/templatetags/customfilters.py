@@ -24,8 +24,8 @@ except:
     gitbranch = u'?'
 
 try:
-    confgitversion = gitcmd("cd /home/pi/rpislave_conf&&git rev-parse HEAD", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    confgitbranch = gitcmd("cd /home/pi/rpislave_conf&&git rev-parse --abbrev-ref HEAD", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    confgitversion = gitcmd("cd /home/pi/rpislave_conf&&git rev-parse HEAD")
+    confgitbranch = gitcmd("cd /home/pi/rpislave_conf&&git rev-parse --abbrev-ref HEAD")
 except:
     confgitversion = u'?'
     confgitbranch = u'?'

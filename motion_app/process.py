@@ -41,7 +41,7 @@ def get_motion_config():
         "on_movie_start": on_event("movie_start"),
         "on_movie_end": on_event("movie_end"),
         "on_camera_lost": "", #last_detection_cmd("camera_lost")
-        "width": 640, #tested and working also:320, 240
+        "width": 640, #tested and working also:small(320, 240), widescreen(1280, 720)
         "height": 480, #
         "locate": "preview"
     }

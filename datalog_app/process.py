@@ -91,13 +91,13 @@ def _get_point(mb_client, spi_client, sensors_conf):
                     #read
                     reg = mb_client.read_input_registers(conf['register'],unit=conf['address'])
                     #process number
-                    value = reg.registers[0]# * conf['m'] + conf['c']
+                    value = float(reg.registers[0])# * conf['m'] + conf['c']
                     dic[label] = value
                 elif conf['type'] == "mcp3008":
                     raw = _read_spi(spi=spi_client, channel=conf['channel']) #this number is between 0 and 1023
                     #voltageatpin = float(raw) /1023.0 * conf['Vref']
                     #value = voltageatpin * conf['m'] + conf['c']
-                    dic[label] = raw
+                    dic[label] = float(raw)
                 else:
                     raise BaseException("unknown sensor type %s" %conf['type'])
 

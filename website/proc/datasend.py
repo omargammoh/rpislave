@@ -148,7 +148,8 @@ def _send_app_data(app_name, keep_period, db, conf_label, perm):
         try:
             _send_model_data(model=model, keep_period=keep_period, db=db, conf_label=conf_label, app_name=app_name, perm=perm)
         except:
-            print '>> datasend: !!model %s failed' %model.__name__
+            print '>> datasend: !!model %s failed %s' %(model.__name__, traceback.format_exc())
+
 def _get_time_error():
     try:
         resp = urllib2.urlopen('http://www.timeapi.org/utc/now', timeout=15).read().strip()

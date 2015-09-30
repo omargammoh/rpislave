@@ -110,7 +110,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
                     ob.meta = json_util.dumps(meta)
                     ob.save()
                     cnt['error'] += 1
-                    print '>> datasent: !!one object failed to be sent'
+                    print '>> datasend: !!model %s object id %s sending failed ' %(model_name, ob.id)
 
 
             #else if sent already,

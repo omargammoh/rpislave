@@ -104,7 +104,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
                 #expection in sending the data or saving the meta
                 except:
                     #mark it as not sent
-                    meta['sent'] = False
+                    meta['sent'] = "false"
                     meta['error'] = str(traceback.format_exc())
                     meta['dt_error'] = datetime.utcnow().strftime('%Y%m%d%H%M%S')
                     ob.meta = json_util.dumps(meta)

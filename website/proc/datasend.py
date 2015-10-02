@@ -127,8 +127,9 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
             meta = json_util.loads(ob.meta)
         except:
             meta = {'sent': "false"}
-            
-        if (not ("nodelete" in model_mode)) and len(meta['sent']) == 4+2+2+2+2+2 and meta['sent'].isdigit():
+
+        # the part (type(meta['sent']) is str) is needed because previously there was meta['send'] = False
+        if (not ("nodelete" in model_mode)) and (type(meta['sent']) is str) and len(meta['sent']) == 4+2+2+2+2+2 and meta['sent'].isdigit():
             sentdate = datetime.strptime(meta['sent'], "%Y%m%d%H%M%S")
             now = datetime.utcnow()
             #if this data point has been there for a short time, keep it

@@ -66,6 +66,7 @@ def write_motion_conf(motion_conf):
     f = file(fp,"w+")
 
     f.write("\n".join(newlines))
+    f.close()
     print "successfully written %s" %fp
 
 def interrupt_process():

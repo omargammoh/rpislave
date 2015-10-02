@@ -244,7 +244,7 @@ def getfile(request):
         f = file(path, "rb")
         s = f.read()
         b64 = base64.b64encode(s)
-
+        f.close()
         return HttpResponse(json.dumps({'data': b64}), content_type='application/json')
     except:
         d = {}

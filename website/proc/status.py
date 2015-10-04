@@ -71,20 +71,6 @@ def check_tunnels():
             tunnel_para = new_tunnel_para(slave_port=port)
             create_tunnel(slave_port=port, tunnel_para=tunnel_para)
 
-#networking
-def check_vlan(status):
-    #if vlan is not working, try to fix it
-    try:
-        if status.get('ip_vlan', "-") == "-":
-            print ">> status: no vlan, attempting to reconnect to vlan"
-            #print ">> status: ", execute("sudo /etc/init.d/nrservice.sh start").strip()
-            #TODO: here the neorouter parameters are hard coded, they should be taken from configuration!!!
-            with website.processing.Timeout(seconds=10):
-                #in the normal behaviour, timeout is reached, this is just a workaround to stop the process
-                website.processing.execute("sudo /usr/bin/nrclientcmd -d rpimaster -u pi -p raspberry")
-    except:
-        print ">> status: !! error while trying to fix the ip_vlan"
-
 def get_status():
     def gitcmd(cmd):
         r = website.processing.execute(cmd).strip()
@@ -272,9 +258,6 @@ def main(status_period=30):
                 logline = Log(data=json_util.dumps(dic_diff), meta="")
                 logline.save()
                 print ">> status: wrote changes %s" % dic_diff
-
-            #checking vlan
-            check_vlan(status=new_status)
 
             #checking revssh
             check_tunnels()

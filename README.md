@@ -2,9 +2,7 @@
 
 ## How to install on a raspberry pi##
 * Install the raspberian image on the raspberry pi
-
-* ssh into the the raspberry pi and execute`rpislave_url=https://github.com/omargammoh/rpislave.git&&rpislave_branch=master&&echo "-------clonning rpislave-------"&&sleep 5&&cd&&sudo git clone -b $rpislave_branch $rpislave_url ~/rpislave&&sudo python ~/rpislave/setup.py`
-
+* ssh into the the raspberry pi and execute `rpislave_url=https://github.com/omargammoh/rpislave.git&&rpislave_branch=master&&cd&&sudo git clone -b $rpislave_branch $rpislave_url ~/rpislave&&sudo python ~/rpislave/setup.py`
 * `sudo raspi-config`
   * Expand filesystem
   * Enable camera
@@ -12,13 +10,15 @@
 * Reboot, The server will start automatically after the reboot
   * `sudo reboot`
 * Surf to the page `<raspi_ip>:9001` hosted by the rpi
-
+* Add the configuration json file
+* ssh into the raspberry pi and run the setup.py
+  * `sudo python ~/rpislave/setup.py` 
 * To access it from outside your network, you need to forward the following ports:
-  * 9001 for the main website
-  * 9002 for motion's video streaming
-  * 9003 for morion's configuration
-  * 9004 for BTSync server
-  * 9005 for ssh server
+  * `9001` for the main website
+  * `9002` for motion's video streaming
+  * `9003` for morion's configuration
+  * `9004` for BTSync server
+  * `9005` for ssh server
 
 # Current apps #
   * <b>gpio_app</b>: Control and observe the GPIO (input output) pins of your rpi slave

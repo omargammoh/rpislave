@@ -25,3 +25,5 @@
   * <b>motion_app</b>: Record videos, take pictures, create timelapse files and stream videos using a camera (runs another software called [motion](http://www.lavrsen.dk/foswiki/bin/view/Motion/WebHome))
   * <b>datalog_app</b>: Record data from RS485 devices and signals connected to MCP3008 chip 
 
+# direct connection to pi #
+  * add `ip=169.254.0.2` to `sudo nano /boot/cmdline.txt` https://pihw.wordpress.com/guides/direct-network-connection/in-a-nut-shell-direct-network-connection/

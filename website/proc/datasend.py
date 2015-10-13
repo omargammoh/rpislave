@@ -20,6 +20,20 @@ def _prepare_django():
     os.environ['DJANGO_SETTINGS_MODULE'] = 'website.settings'
     django.setup()
 
+def check_internet():
+    """
+    this is a duplicate from status.py
+    """
+    try:
+        t1 = time.time()
+        _ = urllib2.urlopen('http://www.google.com', timeout=10)
+        time_needed = (time.time() - t1)
+        internet_ison = True
+        print ">> datasend: internet accessible, needed %s sec to ping google" % time_needed
+    except:
+        internet_ison = False
+    return internet_ison
+
 def sanitize_colname(label):
     if label == "":
         return ""
@@ -185,7 +199,6 @@ def main(send_period=60*2, keep_period=60*60*24*7, app_list=None):
     if (mongo_address is None) and (perm is None):
         return None
 
-    connected = False
     sleep(10)
     i = 0
 
@@ -193,123 +206,49 @@ def main(send_period=60*2, keep_period=60*60*24*7, app_list=None):
         while True:
             print ">> datasend: loop, i=%s" % i
 
-            #update the latestinfo collection
-            try:
-                time_error = _get_time_error()
+            internet_ison = check_internet()
 
-                data_js = {
-                          #"label": conf_label,
-                          #"dt": datetime.utcnow(),
-                          #"send_period": send_period,
-                          "time_error": time_error
-                       }
-                data_str = json_util.dumps(data_js)
-
-
-                #http://rpi-master.com/api/slave/
-                    # ?_perm=write&_slave=development+and+testing&_sig=b901abde
-                    # &para=fwd_to_db
-                    # &data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
-                full_url = settings.BASE_URL + perm + "&para=fwd_to_db&" + urllib.urlencode([('col_name', 'latestinfo'), ('data', data_str)])#http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
-                #print ">> datasend: %s" %full_url
-                resp = urllib2.urlopen(full_url, timeout=15).read().strip()
-
-                if not str(json_util.loads(resp)['data']).lower() == 'true':
-                    print 'fail', resp
-                    raise BaseException ('server did not return data:true')
-
-
-                print ">> datasend: sent latest info"
-            except:
-                print ">> !!datasend: error sending latest info %s" %traceback.format_exc()
-
-            # send the data of the apps
-            for app_name in app_list:
-                try:
-                    print ">> datasend: working on app %s (perm)" % app_name
-                    _send_app_data(app_name=app_name, keep_period=keep_period, db=None, conf_label=conf_label, perm=perm)
-                except:
-                    print '>> datasend: !! _send_app_data for %s failed' % app_name
-                    print traceback.format_exc()
-
-
-            i += 1
-            #waiting for next sending time
-            print ">> datasend: next iteration is after %s sec" %send_period
-            sleep(send_period)
-
-    else:
-        while True:
-            print ">> datasend: loop, i=%s" % i
-            #waiting to have a connection
-            t1 = time()
-            j = 0
-
-            try:
-                connected = client.alive()
-            except:
-                connected = False
-
-            while not connected:
-                try:
-                    client = pymongo.MongoClient(mongo_address)
-                    db = client.get_default_database()
-                except:
-                    pass
-
-                try:
-                    connected = client.alive()
-                except:
-                    connected = False
-
-                if not connected:
-                    #keep trying
-                    retryin = min(20 * (j + 1), 60*10)
-                    print ">> datasend: !!couldnt connect at j=%s, retrying in %s" % (j, retryin)
-                    sleep(retryin)
-                j += 1
-            t2 = time()
-            print '>> datasend:    connected to mongo, took %s sec, and %s trials to connect' % (round(t2 - t1, 3), j)
-
-
-            #when the connection is good
-            if connected:
+            if internet_ison:
                 #update the latestinfo collection
                 try:
                     time_error = _get_time_error()
 
-                    if perm is not None:
-                        pass
+                    data_js = {
+                              #"label": conf_label,
+                              #"dt": datetime.utcnow(),
+                              #"send_period": send_period,
+                              "time_error": time_error
+                           }
+                    data_str = json_util.dumps(data_js)
 
-                    else:
-                        li_conf = db['latestinfo']
-                        li_conf.update(
-                           { "label": conf_label },
-                           { '$set': {
-                                  "label": conf_label,
-                                  "dt": datetime.utcnow(),
-                                  "send_period": send_period,
-                                  "time_error": time_error
-                               }
-                           },
-                           upsert = True
-                        )
-                        print ">> datasend: sent latest info"
+
+                    #http://rpi-master.com/api/slave/
+                        # ?_perm=write&_slave=development+and+testing&_sig=b901abde
+                        # &para=fwd_to_db
+                        # &data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
+                    full_url = settings.BASE_URL + perm + "&para=fwd_to_db&" + urllib.urlencode([('col_name', 'latestinfo'), ('data', data_str)])#http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
+                    #print ">> datasend: %s" %full_url
+                    resp = urllib2.urlopen(full_url, timeout=15).read().strip()
+
+                    if not str(json_util.loads(resp)['data']).lower() == 'true':
+                        print 'fail', resp
+                        raise BaseException ('server did not return data:true')
+
+
+                    print ">> datasend: sent latest info"
                 except:
-                    print ">> !!datasend: error sending latest info"
+                    print ">> !!datasend: error sending latest info %s" %traceback.format_exc()
 
-
-            #when connection is good
-            if connected:
                 # send the data of the apps
                 for app_name in app_list:
                     try:
-                        print ">> datasend: working on app %s" % app_name
-                        _send_app_data(app_name=app_name, keep_period=keep_period, db=db, conf_label=conf_label, perm=perm)
+                        print ">> datasend: working on app %s (perm)" % app_name
+                        _send_app_data(app_name=app_name, keep_period=keep_period, db=None, conf_label=conf_label, perm=perm)
                     except:
                         print '>> datasend: !! _send_app_data for %s failed' % app_name
                         print traceback.format_exc()
-
+            else:
+                print ">> datasend: internet is off"
 
             i += 1
             #waiting for next sending time

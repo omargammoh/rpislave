@@ -232,7 +232,7 @@ def main(status_period=30):
                             prev_status.get("gitbranch_rpislave", "") == new_status.get("gitbranch_rpislave", "") and \
                             prev_status.get("git_rpislave_conf", "") == new_status.get("git_rpislave_conf", "") and \
                             prev_status.get("gitbranch_rpislave_conf", "") == new_status.get("gitbranch_rpislave_conf", "") and \
-                            round5(prev_status.get("time_error", "")) == round5(new_status.get("time_error", "")):
+                            (new_status.get("time_error", "-") == "-" or round5(prev_status.get("time_error", "")) == round5(new_status.get("time_error", "")) or ):
 
                 print ">> status: all params remain the same"
                 pass

@@ -1,4 +1,3 @@
-import pymongo
 import traceback
 import dateutil.parser
 import pytz
@@ -25,9 +24,9 @@ def check_internet():
     this is a duplicate from status.py
     """
     try:
-        t1 = time.time()
+        t1 = time()
         _ = urllib2.urlopen('http://www.google.com', timeout=10)
-        time_needed = (time.time() - t1)
+        time_needed = (time() - t1)
         internet_ison = True
         print ">> datasend: internet accessible, needed %s sec to ping google" % time_needed
     except:

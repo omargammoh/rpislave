@@ -3,10 +3,13 @@ from datetime import datetime, timedelta
 import numpy as np
 import itertools
 import sys
+from website.processing import Timeout
+
 
 import os, django
 from bson import json_util
 import traceback
+import re
 
 try:
     from pymodbus.client.sync import ModbusSerialClient as MSC
@@ -34,6 +37,19 @@ def _read_spi(spi, channel):
             break
     data = np.average(lis_v)
     return data
+
+def _read_ds18b20(id):
+    with Timeout(seconds=1.1):
+        base_dir = '/sys/bus/w1/devices'
+        device_folder = base_dir + '/' + id
+        reading_file = device_folder + '/' + 'w1_slave'
+        f = open(reading_file, 'r')
+        text = f.read()#text = 'd5 01 55 00 7f ff 0c 10 11 : crc=11 YES\nd5 01 55 00 7f ff 0c 10 11 t=29312\n'
+        if not ("YES" in text):
+            raise BaseException('YES is not in text')
+        f.close()
+        raw = re.compile(r'(.+)t=(?P<raw>[-+]?\d+)(.+)', flags=re.DOTALL).match(text).groupdict()['raw']
+        return float(raw)/1000. #this number is in celsuis, could be positive or negative
 
 def _pretty_time_delta(seconds):
     seconds = int(seconds)
@@ -84,7 +100,9 @@ def _get_mb_client(rs485):
 
 def _get_point(mb_client, spi_client, sensors_conf):
     dic = {}
-    for label,conf in sensors_conf.iteritems():
+
+    #for each sensor
+    for label, conf in sensors_conf.iteritems():
         try:
             if conf['active']:
                 if conf['type'] == "rs485":
@@ -94,9 +112,10 @@ def _get_point(mb_client, spi_client, sensors_conf):
                     value = float(reg.registers[0])# * conf['m'] + conf['c']
                     dic[label] = value
                 elif conf['type'] == "mcp3008":
-                    raw = _read_spi(spi=spi_client, channel=conf['channel']) #this number is between 0 and 1023
-                    #voltageatpin = float(raw) /1023.0 * conf['Vref']
-                    #value = voltageatpin * conf['m'] + conf['c']
+                    raw = _read_spi(spi=spi_client, channel=conf['channel']) #this number is between 0 and 1023#voltageatpin = float(raw) /1023.0 * conf['Vref']#value = voltageatpin * conf['m'] + conf['c']
+                    dic[label] = float(raw)
+                elif conf['type'].lower() == "ds18b20":
+                    raw = _read_ds18b20(id)
                     dic[label] = float(raw)
                 else:
                     raise BaseException("unknown sensor type %s" %conf['type'])
@@ -168,13 +187,9 @@ def main(sample_period, data_period, sensors, rs485=None):
     _prepare_django()
     import datalog_app.models
 
-    def stamp_quality(dic_samples):
-        return None #return float(len([v for v in dic_samples.values() if v is not None]))/len(dic_samples)
-
-
 
     #check if a modbus client is needed and create it
-    rs485_present = any([(sensor['active'] and sensor['type'] == "rs485") for (_,sensor) in sensors.iteritems()])
+    rs485_present = any([(sensor['active'] and sensor['type'].lower() == "rs485") for (_,sensor) in sensors.iteritems()])
     if rs485_present:
         try:
             mb_client = _get_mb_client(rs485)
@@ -185,7 +200,7 @@ def main(sample_period, data_period, sensors, rs485=None):
         mb_client = None
 
     #check if a spi client is needed and create it
-    mcp3008_present = any([(sensor['active'] and sensor['type'] == "mcp3008") for (_,sensor) in sensors.iteritems()])
+    mcp3008_present = any([(sensor['active'] and sensor['type'].lower() == "mcp3008") for (_,sensor) in sensors.iteritems()])
     if mcp3008_present:
         try:
             spi_client = spidev.SpiDev()
@@ -195,6 +210,11 @@ def main(sample_period, data_period, sensors, rs485=None):
     else:
         spi_client = None
 
+    #check if 1-wire sensor is installed, and import required libraries if it is needed
+    onewire_present = any([(sensor['active'] and (sensor['type'].lower() == ["ds18b20", "you can add here more one wire sensor types"])) for (_,sensor) in sensors.iteritems()])
+    if onewire_present:
+        os.system('modprobe w1-gpio')
+        os.system('modprobe w1-therm')
 
     #decide on start
     now = datetime.utcnow()

@@ -284,8 +284,10 @@ def main(sample_period, data_period, sensors, rs485=None):
                 sleep(retryin)
             j += 1
 
-        print ">>> datalog_app:    mb_client_ok %s, spi_ok %s, at j=%s, took %s sec" %(mb_client_ok,spi_ok,j,round(t2-t1,4))
-
+        try:
+            print ">>> datalog_app:    mb_client_ok %s, spi_ok %s, at j=%s, took %s sec" %(mb_client_ok,spi_ok,j,round(t2-t1,4))
+        except:
+            print ">>> datalog_app:    mb or spi not needed"
 
         #calculate the time for stamp and waiting period, and skip if this stamp is already passed
         stamp = starton + timedelta(seconds = i * data_period)#beginning ts

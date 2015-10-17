@@ -62,7 +62,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
         model_mode = ""
 
     conf_label_san = sanitize_colname(conf_label)
-    cnt = {'del': 0, 'send': 0, 'error': 0, 'pass':0}
+    cnt = {'del': 0, 'send': 0, 'error': 0, 'pass': 0}
 
     #loop over each datapoint
     for ob in model.objects.all():
@@ -128,6 +128,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
 
             #else if sent already,
             else:
+                cnt['pass'] += 1
                 #do nothing
                 pass
         #if exception in handeling unsent data
@@ -155,7 +156,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
                 cnt['del'] += 1
 
         #print some info every while
-        if sum(cnt.values())%30 == 0:
+        if sum(cnt['del']+cnt['send']+cnt['error']) %30 == 0:
             print ">> datasend: still processing the model %s, %s" %(model_name, cnt)
 
 

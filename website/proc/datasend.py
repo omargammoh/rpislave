@@ -62,7 +62,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
         model_mode = ""
 
     conf_label_san = sanitize_colname(conf_label)
-    cnt = {'del': 0, 'send': 0, 'error': 0, 'pass': 0}
+    cnt = {'send-ok': 0, 'send-already': 0, 'send-fail': 0, 'del-nodel':0, 'del-ok':0, 'del-notyet':0, 'x': 0}
 
     #loop over each datapoint
     for ob in model.objects.all():
@@ -112,7 +112,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
                     meta['sent'] = datetime.utcnow().strftime('%Y%m%d%H%M%S')
                     ob.meta = json_util.dumps(meta)
                     ob.save()
-                    cnt['send'] += 1
+                    cnt['send-ok'] += 1
 
                 #expection in sending the data or saving the meta
                 except:
@@ -122,19 +122,20 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
                     meta['dt_error'] = datetime.utcnow().strftime('%Y%m%d%H%M%S')
                     ob.meta = json_util.dumps(meta)
                     ob.save()
-                    cnt['error'] += 1
+                    cnt['send-fail'] += 1
                     print '>> datasend: !!model %s object id %s sending failed ' %(model_name, ob.id)
 
 
             #else if sent already,
             else:
-                cnt['pass'] += 1
+                cnt['send-already'] += 1
                 #do nothing
                 pass
         #if exception in handeling unsent data
         except:
             print '>> datasend: !!sending data failed'
             print traceback.format_exc()
+            cnt['x'] += 1
 
         #handle the sent data(do not delete data from website because config is there)
         try:
@@ -148,15 +149,17 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
             now = datetime.utcnow()
             #if this data point has been there for a short time, keep it
             if (now - sentdate).total_seconds() < keep_period:
-                cnt['pass'] += 1
+                cnt['del-notyet'] += 1
 
             #if this data point has been there for a long time, delete it
             else:
                 ob.delete()
-                cnt['del'] += 1
+                cnt['del-ok'] += 1
+        else:
+            cnt['del-nodel'] += 1
 
         #print some info every while
-        if (cnt['del']+cnt['send']+cnt['error'] + 1) %30 == 0: # +1  so that it doesnt print when zero
+        if (cnt['send-ok']+cnt['send-fail']+cnt['del-ok']+cnt['x'] + 1) %30 == 0: # +1  so that it doesnt print when zero
             print ">> datasend: still processing the model %s, %s" %(model_name, cnt)
 
 

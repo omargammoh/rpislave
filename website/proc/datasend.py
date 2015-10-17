@@ -62,7 +62,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
         model_mode = ""
 
     conf_label_san = sanitize_colname(conf_label)
-    cnt = {'send-ok': 0, 'send-already': 0, 'send-fail': 0, 'del-nodel':0, 'del-ok':0, 'del-notyet':0, 'x': 0}
+    cnt = {'send-ok': 0, 'send-already': 0, 'send-fail': 0, 'del-nodel':0, 'del-ok':0, 'del-notyet':0, 'del-fail':0, 'x': 0}
 
     #loop over each datapoint
     for ob in model.objects.all():
@@ -143,24 +143,28 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
         except:
             meta = {'sent': "false"}
 
-        # the part (type(meta['sent']) is str) is needed because previously there was meta['send'] = False
-        if (not ("nodelete" in model_mode)) and (type(meta['sent']) is str) and len(meta['sent']) == 4+2+2+2+2+2 and meta['sent'].isdigit():
-            sentdate = datetime.strptime(meta['sent'], "%Y%m%d%H%M%S")
-            now = datetime.utcnow()
-            #if this data point has been there for a short time, keep it
-            if (now - sentdate).total_seconds() < keep_period:
-                cnt['del-notyet'] += 1
 
-            #if this data point has been there for a long time, delete it
+        try:
+            # the part (type(meta['sent']) is str) is needed because previously there was meta['send'] = False
+            if (not ("nodelete" in model_mode)) and (type(meta['sent']) is str) and len(meta['sent']) == 4+2+2+2+2+2 and meta['sent'].isdigit():
+                sentdate = datetime.strptime(meta['sent'], "%Y%m%d%H%M%S")
+                now = datetime.utcnow()
+                #if this data point has been there for a short time, keep it
+                if (now - sentdate).total_seconds() < keep_period:
+                    cnt['del-notyet'] += 1
+
+                #if this data point has been there for a long time, delete it
+                else:
+                    ob.delete()
+                    cnt['del-ok'] += 1
             else:
-                ob.delete()
-                cnt['del-ok'] += 1
-        else:
-            cnt['del-nodel'] += 1
+                cnt['del-nodel'] += 1
+        except:
+            cnt['del-fail'] += 1
 
         #print some info every while
-        if (cnt['send-ok']+cnt['send-fail']+cnt['del-ok']+cnt['x'] + 1) %30 == 0: # +1  so that it doesnt print when zero
-            print ">> datasend: still processing the model %s, %s" %(model_name, cnt)
+        if (cnt['send-ok']+cnt['send-fail']+cnt['del-ok']+cnt['x']+cnt['del-fail'] + 1) %30 == 0: # +1  so that it doesnt print when zero
+            print ">> datasend: still working on model %s, %s" %(model_name, cnt)
 
 
     t2 = time()

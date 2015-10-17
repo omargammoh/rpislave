@@ -54,6 +54,8 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
     model: the actual model object
     """
     t1 = time()
+    tm = time()
+
     model_name = model.__name__
 
     if hasattr(model, "mode"):
@@ -162,7 +164,8 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
             cnt['del-fail'] += 1
 
         #print some info every while
-        if (cnt['send-ok']+cnt['send-fail']+cnt['del-ok']+cnt['x']+cnt['del-fail'] + 1) %30 == 0: # +1  so that it doesnt print when zero
+        if time() - tm > 10.:
+            tm = time()
             print ">> datasend: still working on model %s, %s" %(model_name, cnt)
 
 

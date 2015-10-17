@@ -156,7 +156,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
                 cnt['del'] += 1
 
         #print some info every while
-        if (cnt['del']+cnt['send']+cnt['error']) %30 == 0:
+        if (cnt['del']+cnt['send']+cnt['error'] + 1) %30 == 0: # +1  so that it doesnt print when zero
             print ">> datasend: still processing the model %s, %s" %(model_name, cnt)
 
 

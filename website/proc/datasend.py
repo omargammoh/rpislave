@@ -181,7 +181,7 @@ def _get_time_error():
         pass
     return time_error
 
-def main(send_period=60*2, keep_period=60*60*24*7, app_list=None):
+def main(send_period=60*2, keep_period=60*60*12, app_list=None):
     '''
     take data from db and send it to mongodb, if successfull, mark data as successfull and delete after a while (except for the website app)
 

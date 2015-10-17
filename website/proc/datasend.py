@@ -62,7 +62,7 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
         model_mode = ""
 
     conf_label_san = sanitize_colname(conf_label)
-    cnt = {'del': 0, 'send': 0, 'error': 0}
+    cnt = {'del': 0, 'send': 0, 'error': 0, 'pass':0}
 
     #loop over each datapoint
     for ob in model.objects.all():
@@ -130,12 +130,12 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
             else:
                 #do nothing
                 pass
+        #if exception in handeling unsent data
         except:
             print '>> datasend: !!sending data failed'
             print traceback.format_exc()
 
         #handle the sent data(do not delete data from website because config is there)
-
         try:
             meta = json_util.loads(ob.meta)
         except:
@@ -147,11 +147,18 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
             now = datetime.utcnow()
             #if this data point has been there for a short time, keep it
             if (now - sentdate).total_seconds() < keep_period:
-                pass
+                cnt['pass'] += 1
+
             #if this data point has been there for a long time, delete it
             else:
                 ob.delete()
                 cnt['del'] += 1
+
+        #print some info every while
+        if sum(cnt.values())%30 == 0:
+            print ">> datasend: still processing the model %s, %s" %(model_name, cnt)
+
+
     t2 = time()
     print '>> datasend: model %s done, took %s sec, %s, mode %s' % (model_name, round(t2 - t1, 3), cnt, model_mode)
 

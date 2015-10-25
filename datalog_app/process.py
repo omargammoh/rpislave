@@ -38,6 +38,22 @@ def _read_spi(spi, channel):
     data = np.average(lis_v)
     return data
 
+def _read_spi_ct(spi, channel):
+    """
+    ct (current transformer connected to spi), takes into account the zero values at negative currents, and measures rms
+    """
+    t0 = time()
+    lis_v = []
+    while True:
+        v = __read_spi(spi, channel)
+        lis_v.append(v)
+        if time() - t0 > 0.1: #0.1 sec represents 5 cycles at 50Hz and 6 cycles at 60 Hz
+            break
+    #remove the lower 50% quantile because it represents the time on the sinewave cycle
+    #calculate the root mean square
+    data = np.sqrt(np.mean(map(lambda x:x*x, sorted(lis_v)[len(lis_v)/2:])))
+    return data
+
 def _read_ds18b20(id):
     with Timeout(seconds=1.1):
         base_dir = '/sys/bus/w1/devices'
@@ -111,11 +127,14 @@ def _get_point(mb_client, spi_client, sensors_conf):
                     #process number
                     value = float(reg.registers[0])# * conf['m'] + conf['c']
                     dic[label] = value
-                elif conf['type'] == "mcp3008":
+                elif conf['type'] == "spi" or conf['type'] == "mcp3008": #remove the or mcp3008 in the future, until configs are all ok
+                    raw = _read_spi(spi=spi_client, channel=conf['channel']) #this number is between 0 and 1023#voltageatpin = float(raw) /1023.0 * conf['Vref']#value = voltageatpin * conf['m'] + conf['c']
+                    dic[label] = float(raw)
+                elif conf['type'] == "spi-ct":
                     raw = _read_spi(spi=spi_client, channel=conf['channel']) #this number is between 0 and 1023#voltageatpin = float(raw) /1023.0 * conf['Vref']#value = voltageatpin * conf['m'] + conf['c']
                     dic[label] = float(raw)
                 elif conf['type'].lower() == "ds18b20":
-                    raw = _read_ds18b20(id = conf['id'])
+                    raw = _read_ds18b20(id = conf['id'])#the number here comes readily in Celcuis
                     dic[label] = float(raw)
                 else:
                     raise BaseException("unknown sensor type %s" %conf['type'])

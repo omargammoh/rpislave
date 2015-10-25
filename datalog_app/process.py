@@ -219,7 +219,7 @@ def main(sample_period, data_period, sensors, rs485=None):
         mb_client = None
 
     #check if a spi client is needed and create it
-    mcp3008_present = any([(sensor['active'] and sensor['type'].lower() == "mcp3008") for (_,sensor) in sensors.iteritems()])
+    mcp3008_present = any([(sensor['active'] and sensor['type'].lower() in ["mcp3008", "spi", "spi-ct"]) for (_,sensor) in sensors.iteritems()])
     if mcp3008_present:
         try:
             spi_client = spidev.SpiDev()

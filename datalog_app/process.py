@@ -131,7 +131,7 @@ def _get_point(mb_client, spi_client, sensors_conf):
                     raw = _read_spi(spi=spi_client, channel=conf['channel']) #this number is between 0 and 1023#voltageatpin = float(raw) /1023.0 * conf['Vref']#value = voltageatpin * conf['m'] + conf['c']
                     dic[label] = float(raw)
                 elif conf['type'] == "spi-ct":
-                    raw = _read_spi(spi=spi_client, channel=conf['channel']) #this number is between 0 and 1023#voltageatpin = float(raw) /1023.0 * conf['Vref']#value = voltageatpin * conf['m'] + conf['c']
+                    raw = _read_spi_ct(spi=spi_client, channel=conf['channel']) #this number is between 0 and 1023#voltageatpin = float(raw) /1023.0 * conf['Vref']#value = voltageatpin * conf['m'] + conf['c']
                     dic[label] = float(raw)
                 elif conf['type'].lower() == "ds18b20":
                     raw = _read_ds18b20(id = conf['id'])#the number here comes readily in Celcuis

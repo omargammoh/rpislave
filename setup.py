@@ -181,28 +181,50 @@ def create_datafolder():
         f.close()
 
 def setup_realtimeclock():
-    print "not ready for this yet"
     return None
     if conf is None:
         return None
     typ = conf['rtc'].get('type','rasclock')
+
     if typ == "rasclock":
-        _execute("wget http://afterthoughtsoftware.com/files/linux-image-3.6.11-atsw-rtc_1.0_armhf.deb&&sudo dpkg -i linux-image-3.6.11-atsw-rtc_1.0_armhf.deb&&sudo cp /boot/vmlinuz-3.6.11-atsw-rtc+ /boot/kernel.img")
+        #http://www.modmypi.com/blog/installing-the-rasclock-raspberry-pi-real-time-clock
+        #_execute("sudo apt-get -y upgrade")
+        _execute("wget http://afterthoughtsoftware.com/files/linux-image-3.6.11-atsw-rtc_1.0_armhf.deb")
+        _execute("sudo dpkg -i linux-image-3.6.11-atsw-rtc_1.0_armhf.deb")
+        _execute("sudo cp /boot/vmlinuz-3.6.11-atsw-rtc+ /boot/kernel.img")
 
+        #changing /etc/modules
         filepath = "/etc/modules"
-        toappend = [
-            "i2c-bcm2708"
-            ,"rtc-pcf2127a"
-            ]
+        toappend = "\ni2c-bcm2708\nrtc-pcf2127a"
 
+        f = file(filepath, "r")
+        s = f.read()
+        f.close()
+        if toappend in s:
+            print "RTC: %s already done: already done" %filepath
+        else:
+            f = file(filepath, "w+")
+            s = f.writelines(s + toappend)
+            f.close()
+            print "RTC: changed %s" %filepath
+
+
+        #changing /etc/rc.local
         filepath = "/etc/rc.local"
+        toappend = "\necho pcf2127a 0x51 > /sys/class/i2c-adapter/i2c-1/new_device\n( sleep 2; hwclock -s ) &"
 
-        toappend = [ #just before exit 0
-             "echo pcf2127a 0x51 > /sys/class/i2c-adapter/i2c-1/new_device"
-            ,"( sleep 2; hwclock -s ) &"
-             ]
+        f = file(filepath, "r")
+        s = f.read()
+        f.close()
+        if toappend in s:
+            print "RTC: %s already done: already done" %filepath
+        else:
+            f = file(filepath, "w+")
+            s = f.writelines(s.replace('exit 0', '') + toappend + "\nexit 0")
+            f.close()
+            print "RTC: changed %s" %filepath
     else:
-        raise BaseException('we do not know how to install this clock %s' %typ)
+        print "!!! dont know how to deal with this rtc"
 
 def change_sshport():
     """

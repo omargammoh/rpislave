@@ -230,7 +230,7 @@ def main(sample_period, data_period, sensors, rs485=None):
         spi_client = None
 
     #check if 1-wire sensor is installed, and import required libraries if it is needed
-    onewire_present = any([(sensor['active'] and (sensor['type'].lower() == ["ds18b20", "you can add here more one wire sensor types"])) for (_,sensor) in sensors.iteritems()])
+    onewire_present = any([(sensor['active'] and (sensor['type'].lower() in ["ds18b20", "you can add here more one wire sensor types"])) for (_,sensor) in sensors.iteritems()])
     if onewire_present:
         os.system('modprobe w1-gpio')
         os.system('modprobe w1-therm')

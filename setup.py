@@ -274,6 +274,25 @@ def network_name():
     else:
         print "did not change network name"
 
+def support_onewire():
+    """
+    this has to be done for one wire to be usable, see
+    http://www.raspberrypi-spy.co.uk/2013/03/raspberry-pi-1-wire-digital-thermometer-sensor/
+    """
+    filepath = "/boot/config.txt"
+    toappend = "\ndtoverlay=w1-gpio,gpiopin=4"
+    f = file(filepath, "r")
+    s = f.read()
+    f.close()
+    if toappend in s:
+        print "support_onewire: %s already done" %filepath
+    else:
+        f = file(filepath, "w+")
+        s = f.writelines(s + toappend)
+        f.close()
+        print "RTC: changed %s" %filepath
+
+
 if __name__ == "__main__":
     t1 = time()
     _execute([
@@ -315,6 +334,7 @@ if __name__ == "__main__":
     create_datafolder()
     change_sshport()
     network_name()
+    support_onewire()
 
     t4 = time()
     print "took %0.2f sec=" % (t4 - t1)

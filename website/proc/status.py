@@ -9,6 +9,7 @@ from django.conf import settings
 import website.processing
 from bson import json_util
 import re
+from website.processing import Timeout
 
 conf = website.processing.get_conf()
 
@@ -49,10 +50,11 @@ def new_tunnel_para(slave_port):
 
 
 def create_tunnel(slave_port, tunnel_para):
-    website.processing.execute('sudo chmod 700 /home/pi/rpislave/tunnelonly')
-    revssh_line = 'sudo ssh -o TCPKeepAlive=no -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -o ServerAliveCountMax=2 -i /home/pi/rpislave/tunnelonly -R \*:%s:localhost:%s -N ubuntu@%s' % (tunnel_para['server_port'], slave_port, tunnel_para['server_ip'])
-    print ">> status: creating tunnel: %s" %revssh_line
-    website.processing.execute(revssh_line, daemon=True)
+    with Timeout(seconds=30):
+        website.processing.execute('sudo chmod 700 /home/pi/rpislave/tunnelonly')
+        revssh_line = 'sudo ssh -o TCPKeepAlive=no -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -o ServerAliveCountMax=2 -i /home/pi/rpislave/tunnelonly -R \*:%s:localhost:%s -N ubuntu@%s' % (tunnel_para['server_port'], slave_port, tunnel_para['server_ip'])
+        print ">> status: creating tunnel: %s" %revssh_line
+        website.processing.execute(revssh_line, daemon=True)
 
 def check_tunnels():
     internet_ison = check_internet()
@@ -103,31 +105,35 @@ def get_status():
 
     #CPU
     try:
-        resp = website.processing.execute("cat /proc/cpuinfo")
-        d['serial'] = [x for x in resp.split("\n") if "Serial" in x][0].split()[-1]
+        with Timeout(seconds=10):
+            resp = website.processing.execute("cat /proc/cpuinfo")
+            d['serial'] = [x for x in resp.split("\n") if "Serial" in x][0].split()[-1]
     except:
         d['serial'] = "-"
         pass
 
     try:
-        resp = website.processing.execute("cat /proc/cpuinfo")
-        d['revision'] = [x for x in resp.split("\n") if "Revision" in x][0].split()[-1]
+        with Timeout(seconds=30):
+            resp = website.processing.execute("cat /proc/cpuinfo")
+            d['revision'] = [x for x in resp.split("\n") if "Revision" in x][0].split()[-1]
     except:
         d['revision'] = "-"
         pass
 
     #GIT
     try:
-        d['git_rpislave'] = gitcmd("cd /home/pi/rpislave&&git rev-parse HEAD")
-        d['gitbranch_rpislave'] = gitcmd("cd /home/pi/rpislave&&git rev-parse --abbrev-ref HEAD")
+        with Timeout(seconds=30):
+            d['git_rpislave'] = gitcmd("cd /home/pi/rpislave&&git rev-parse HEAD")
+            d['gitbranch_rpislave'] = gitcmd("cd /home/pi/rpislave&&git rev-parse --abbrev-ref HEAD")
     except:
         d['git_rpislave'] = '-'
         d['gitbranch_rpislave'] = '-'
 
 
     try:
-        d['git_rpislave_conf'] = gitcmd("cd /home/pi/rpislave_conf&&git rev-parse HEAD")
-        d['gitbranch_rpislave_conf'] = gitcmd("cd /home/pi/rpislave_conf&&git rev-parse --abbrev-ref HEAD")
+        with Timeout(seconds=30):
+            d['git_rpislave_conf'] = gitcmd("cd /home/pi/rpislave_conf&&git rev-parse HEAD")
+            d['gitbranch_rpislave_conf'] = gitcmd("cd /home/pi/rpislave_conf&&git rev-parse --abbrev-ref HEAD")
     except:
         d['git_rpislave_conf'] = '-'
         d['gitbranch_rpislave_conf'] = '-'
@@ -135,14 +141,16 @@ def get_status():
 
     #IP
     try:
-        resp = website.processing.execute("ifconfig")
-        d['ip_lan'] = "192.168.{0[p3]}.{0[p4]}".format(re.compile(r'(.+)inet addr:192\.168\.(?P<p3>\d+)\.(?P<p4>\d+)(.+)', flags=re.DOTALL).match(resp).groupdict())
+        with Timeout(seconds=30):
+            resp = website.processing.execute("ifconfig")
+            d['ip_lan'] = "192.168.{0[p3]}.{0[p4]}".format(re.compile(r'(.+)inet addr:192\.168\.(?P<p3>\d+)\.(?P<p4>\d+)(.+)', flags=re.DOTALL).match(resp).groupdict())
     except:
         d['ip_lan'] = "-"
 
     try:
-        resp = website.processing.execute("ifconfig")
-        d['ip_vlan'] = "10.0.{0[p3]}.{0[p4]}".format(re.compile(r'(.+)inet addr:10\.0\.(?P<p3>\d+)\.(?P<p4>\d+)(.+)', flags=re.DOTALL).match(resp).groupdict())
+        with Timeout(seconds=30):
+            resp = website.processing.execute("ifconfig")
+            d['ip_vlan'] = "10.0.{0[p3]}.{0[p4]}".format(re.compile(r'(.+)inet addr:10\.0\.(?P<p3>\d+)\.(?P<p4>\d+)(.+)', flags=re.DOTALL).match(resp).groupdict())
     except:
         d['ip_vlan'] = "-"
 
@@ -161,13 +169,14 @@ def check_internet():
 
 def restart_networking():
     try:
-        print ">> status: not connected to internet, will attempt to restart network"
-        print '>> status: sudo /etc/init.d/networking stop'
-        website.processing.execute('sudo /etc/init.d/networking stop')
-        print '>> status: sudo /etc/init.d/networking start'
-        website.processing.execute('sudo /etc/init.d/networking start')
-        #execute("sudo sed -i '1s/^/nameserver 8.8.8.8\n/' /etc/resolv.conf")
-        time.sleep(3)
+        with Timeout(seconds=30):
+            print ">> status: not connected to internet, will attempt to restart network"
+            print '>> status: sudo /etc/init.d/networking stop'
+            website.processing.execute('sudo /etc/init.d/networking stop')
+            print '>> status: sudo /etc/init.d/networking start'
+            website.processing.execute('sudo /etc/init.d/networking start')
+            #execute("sudo sed -i '1s/^/nameserver 8.8.8.8\n/' /etc/resolv.conf")
+            time.sleep(3)
     except:
         pass
 

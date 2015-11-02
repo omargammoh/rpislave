@@ -49,7 +49,7 @@ def _read_spi_ct(spi, channel):
         lis_v.append(v)
         if time() - t0 > 0.1: #0.1 sec represents 5 cycles at 50Hz and 6 cycles at 60 Hz
             break
-    #remove the lower 50% quantile because it represents the time on the sinewave cycle
+    #remove the lower 50% quantile because it represents the -ve time on the sinewave cycle, which is measured as zero
     #calculate the root mean square
     data = np.sqrt(np.mean(map(lambda x:x*x, sorted(lis_v)[len(lis_v)/2:])))
     return data

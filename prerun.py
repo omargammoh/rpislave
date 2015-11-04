@@ -92,6 +92,7 @@ def setup_networkinterfaces():
 
     network = conf.get("network_interfaces", ["### loopback ###","auto lo","iface lo inet loopback","### ethernet ###","iface eth0 inet dhcp"])
     contents = "\n".join(network)
+
     f = file("/etc/network/interfaces", "w+")
     f.write(contents)
     f.close()
@@ -136,10 +137,23 @@ def network_name():
 
     """
     if conf is not None:
+        # read and edit /etc/hosts
         newname = _sanitize_colname(conf['label']).replace('_', '-')#underscores are not allowed in hostnames
-        _execute(["sudo sed -i -- 's/raspberrypi/%s/g' /etc/hosts" %newname
-                ,"sudo sed -i -- 's/raspberrypi/%s/g' /etc/hostname" %newname
-                ,"sudo /etc/init.d/hostname.sh"])
+        f = file('/etc/hosts')
+        lines = [('127.0.1.1\t%s\n' %newname if ln.startswith('127.0.1.1') else ln) for ln in f.readlines()]
+        f.close()
+
+        #overwrite /etc/hosts
+        f = file('/etc/hosts', 'w+')
+        f.writelines(lines)
+        f.close()
+
+        #overwrite /etc/hostname
+        f = file('/etc/hostname', 'w+')
+        f.write(newname)
+        f.close()
+
+        _execute(["sudo /etc/init.d/hostname.sh"])
 
         print 'changed network name to %s' %newname
         return None

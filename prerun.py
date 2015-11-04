@@ -74,6 +74,7 @@ def _getconf():
                 conf = None
     except:
         conf = None
+        conf_str = None
 
     #if conf_str is not None:
     #    #write the conf file in the datafolder

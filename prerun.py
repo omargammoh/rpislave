@@ -100,7 +100,9 @@ def setup_db():
     import django
     sys.path.append(os.path.dirname(__file__))
     os.environ['DJANGO_SETTINGS_MODULE'] = 'website.settings'
-    _execute("sudo python /home/pi/rpislave/manage.py migrate")
+
+    if not os.path.isfile('/home/pi/rpislave/db.sqlite3'):
+        _execute("sudo python /home/pi/rpislave/manage.py migrate")
 
     django.setup()
 
@@ -108,7 +110,6 @@ def setup_db():
     from django.contrib.auth.models import User
     for u in User.objects.all():
         u.delete()
-        print "setup_db: deleted old superuser"
 
     if conf is not None:
         login = conf.get('super_user', {}).get('login', 'pi')
@@ -118,8 +119,6 @@ def setup_db():
         password = "raspberry"
     u = User.objects.create_superuser(login, '', password)
     u.save()
-    print "setup_db: created new superuser: %s, %s" % (login, password)
-
     #updating the conf in the sqlite db
     if conf_str is not None:
         from website.models import Conf
@@ -127,8 +126,6 @@ def setup_db():
             c.delete()
         newconf = Conf(data=conf_str, meta="")
         newconf.save()
-        print "setup_db: deleted old confs and wrote the new one"
-    print "setup_db: successful"
 
 def network_name():
     """

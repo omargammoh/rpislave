@@ -17,9 +17,9 @@
                 <tr>
 
                     <td><h3>{% if app.label %} {{ app.label }} {% else %} {{ app.name }}{% endif %} </h3></td>
-                    <td><button type="button" onclick="make_cmd_function('{% url 'website.views.appmanage' %}', {'app':'{{app.name}}', 'cmd':'start'})">Start</button></td>
-                    <td><button type="button" onclick="make_cmd_function('{% url 'website.views.appmanage' %}', {'app':'{{app.name}}', 'cmd':'stop'})">Stop</button></td>
-                    <td><button type="button" onclick="make_cmd_function('{% url 'website.views.appmanage' %}', {'app':'{{app.name}}', 'cmd':'status'})" id="btn_{{app.name}}_status">Status</button></td>
+                    <td><button type="button" onclick="cmd_func('{% url 'website.views.appmanage' %}', {'app':'{{app.name}}', 'cmd':'start'})">Start</button></td>
+                    <td><button type="button" onclick="cmd_func('{% url 'website.views.appmanage' %}', {'app':'{{app.name}}', 'cmd':'stop'})">Stop</button></td>
+                    <td><button type="button" onclick="cmd_func('{% url 'website.views.appmanage' %}', {'app':'{{app.name}}', 'cmd':'status'})" id="btn_{{app.name}}_status">Status</button></td>
                     <td><a href="/{{app.name}}/"><button type="button">Home</button></a></td>
                     <td>{% if app.desc %} {{ app.desc }} {% else %} - no description available - {% endif %} </td>
                 </tr>
@@ -37,7 +37,7 @@
                 <col width="80%">
                 <col width="20%">
                 <tr>
-                    <td><button type="button" id="btn_status_conf" onclick="make_cmd_function('{% url 'website.views.status' %}', {'cmd':'conf'})">View</button></td>
+                    <td><button type="button" id="btn_status_conf" onclick="cmd_func('{% url 'website.views.status' %}', {'cmd':'conf'})">View</button></td>
                 </tr>
             </table>
             <br>
@@ -53,29 +53,29 @@
                 <col width="10%">
                 <tr>
                     <td><h4>rpislave info</h4></td>
-                    <td><button type="button" id="btn_status_overview" onclick="make_cmd_function('{% url 'website.views.status' %}', {'cmd':'overview'})">Processes</button></td>
-                    <td><button type="button" id="btn_status_commitsbehind" onclick="make_cmd_function('{% url 'website.views.commits_behind' %}')">commits behind</button></td>
+                    <td><button type="button" id="btn_status_overview" onclick="cmd_func('{% url 'website.views.status' %}', {'cmd':'overview'})">Processes</button></td>
+                    <td><button type="button" id="btn_status_commitsbehind" onclick="cmd_func('{% url 'website.views.commits_behind' %}')">commits behind</button></td>
                 </tr>
                 <tr>
                     <td><h4>rpislave actions</h4></td>
-                    <td><button type="button" id="btn_status_update" onclick="make_cmd_function('{% url 'website.views.cmd' %}', {'cmd':'. /home/pi/rpislave/update.sh'})" style="color: red">Update</button></td>
-                    <td><button type="button" id="btn_status_restart" onclick="make_cmd_function('{% url 'website.views.cmd' %}', {'cmd':'. /home/pi/rpislave/restart.sh'})" style="color: red">Restart</button></td>
-                    <td><button type="button" id="btn_status_setup" onclick="make_cmd_function('{% url 'website.views.cmd' %}', {'cmd':'sudo python /home/pi/rpislave/setup.py'})" style="color: red">Setup</button></td>
-                    <td><button type="button" id="btn_status_blink" onclick="make_cmd_function('{% url 'website.views.blink_led' %}', {})">Blink</button></td>
+                    <td><button type="button" id="btn_status_update" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'. /home/pi/rpislave/update.sh'})" style="color: red">Update</button></td>
+                    <td><button type="button" id="btn_status_restart" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'. /home/pi/rpislave/restart.sh'})" style="color: red">Restart</button></td>
+                    <td><button type="button" id="btn_status_setup" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'sudo python /home/pi/rpislave/setup.py'})" style="color: red">Setup</button></td>
+                    <td><button type="button" id="btn_status_blink" onclick="cmd_func('{% url 'website.views.blink_led' %}', {})">Blink</button></td>
                 </tr>
                 <tr>
                     <td><h4>linux info</h4></td>
-                    <td><button type="button" id="btn_status_temp" onclick="make_cmd_function('{% url 'website.views.cmd' %}', {'cmd':'/opt/vc/bin/vcgencmd measure_temp'})">temp</button></td>
-                    <td><button type="button" id="btn_status_df" onclick="make_cmd_function('{% url 'website.views.cmd' %}', {'cmd':'df -h'})">df</button></td>
-                    <td><button type="button" id="btn_status_pstree" onclick="make_cmd_function('{% url 'website.views.cmd' %}', {'cmd':'pstree -p -l'})">pstree</button></td>
-                    <td><button type="button" id="btn_status_psaux" onclick="make_cmd_function('{% url 'website.views.cmd' %}', {'cmd':'ps aux'})">ps aux</button></td>
+                    <td><button type="button" id="btn_status_temp" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'/opt/vc/bin/vcgencmd measure_temp'})">temp</button></td>
+                    <td><button type="button" id="btn_status_df" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'df -h'})">df</button></td>
+                    <td><button type="button" id="btn_status_pstree" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'pstree -p -l'})">pstree</button></td>
+                    <td><button type="button" id="btn_status_psaux" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'ps aux'})">ps aux</button></td>
                 </tr>
                 <tr>
                     <td><h4>linux info2</h4></td>
-                    <td><button type="button" id="btn_status_listwifi" onclick="make_cmd_function('{% url 'website.views.cmd' %}', {'cmd':'sudo iwlist wlan0 scan'})">list wifi</button></td>
-                    <td><button type="button" id="btn_status_ifconfig" onclick="make_cmd_function('{% url 'website.views.cmd' %}', {'cmd':'ifconfig'})">ifconfig</button></td>
-                    <td><button type="button" id="btn_status_interfaces" onclick="make_cmd_function('{% url 'website.views.cmd' %}', {'cmd':'cat /etc/network/interfaces'})">interfaces</button></td>
-                    <td><button type="button" id="btn_status_tunnels" onclick="make_cmd_function('{% url 'website.views.cmd' %}', {'cmd':'ps aux|grep 'sudo ssh' |grep 900'})">tunnels</button></td>
+                    <td><button type="button" id="btn_status_listwifi" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'sudo iwlist wlan0 scan'})">list wifi</button></td>
+                    <td><button type="button" id="btn_status_ifconfig" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'ifconfig'})">ifconfig</button></td>
+                    <td><button type="button" id="btn_status_interfaces" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'cat /etc/network/interfaces'})">interfaces</button></td>
+                    <td><button type="button" id="btn_status_tunnels" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'ps aux|grep 'sudo ssh' |grep 900'})">tunnels</button></td>
                 </tr>
             </table>
         </div>
@@ -115,45 +115,42 @@ function syntaxHighlight(json) {
     });
 }
 
-function make_cmd_function(url, sdata){
-    function func(){
-        var btn =  $(this)
-        btn.prop('disabled', true);
+function cmd_func(url, sdata){
+    var btn =  $(this)
+    btn.prop('disabled', true);
 
-        $.ajax({
-            url: url,
-            data: sdata,
-            success: function (data, textStatus, jqXHR) {
-                if ('error' in data) {
-                    alert("server error for " + url + data['error'])
-                }
-                d = data
-                var p_update = $('#p_jsresponse')
-                var s = JSON.stringify(data, undefined, 4).replace(/(?: )/g, '&nbsp;').replace(/(?:\r\n|\r|\n)/g, '<br />');
-                p_update.html("<pre><code>" + s + "</code></pre>")
-                btn.prop('disabled', false);
-
-                if ("conf" == sdata["cmd"]){}
-                else if ("r" == sdata["cmd"]){}
-                else if (data['ison'] == true) {
-                    btn.parent().parent().find('h3').css('color', 'lightgreen');
-                }
-                else if (data['ison'] == false) {
-                    btn.parent().parent().find('h3').css('color', 'red');
-                }
-                else {
-                    btn.parent().parent().find('h3').css('color', 'black')
-                }
-            },
-            error: function (err) {
-                e = err
-                alert("ajax error for " + url + " error = " + err)
-                btn.prop('disabled', false);
+    $.ajax({
+        url: url,
+        data: sdata,
+        success: function (data, textStatus, jqXHR) {
+            if ('error' in data) {
+                alert("server error for " + url + data['error'])
             }
+            d = data
+            var p_update = $('#p_jsresponse')
+            var s = JSON.stringify(data, undefined, 4).replace(/(?: )/g, '&nbsp;').replace(/(?:\r\n|\r|\n)/g, '<br />');
+            p_update.html("<pre><code>" + s + "</code></pre>")
+            btn.prop('disabled', false);
 
-        });
-    }
-    return func
+            if ("conf" == sdata["cmd"]){}
+            else if ("r" == sdata["cmd"]){}
+            else if (data['ison'] == true) {
+                btn.parent().parent().find('h3').css('color', 'lightgreen');
+            }
+            else if (data['ison'] == false) {
+                btn.parent().parent().find('h3').css('color', 'red');
+            }
+            else {
+                btn.parent().parent().find('h3').css('color', 'black')
+            }
+        },
+        error: function (err) {
+            e = err
+            alert("ajax error for " + url + " error = " + err)
+            btn.prop('disabled', false);
+        }
+
+    });
 }
 
 {% for app in app_info %}

@@ -16,10 +16,12 @@ else
 		echo "Error: cannot start session from within tmux."
 		exit
 	fi
+    echo "  -> sudo python /home/pi/rpislave/prerun.py"
+	sudo python /home/pi/rpislave/prerun.py
 	tmux new-session -d -s $session_name
 	tmux split-window -d -t $session_name -h
-	tmux send-keys -t $session_name 'sudo python /home/pi/rpislave/manage.py runserver 0.0.0.0:9001' enter C-l
     echo "  -> sudo python /home/pi/rpislave/manage.py runserver 0.0.0.0:9001"
+	tmux send-keys -t $session_name 'sudo python /home/pi/rpislave/manage.py runserver 0.0.0.0:9001' enter C-l
     echo "  -> session started sucessfully"
 fi
 

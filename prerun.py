@@ -34,26 +34,17 @@ def _execute(lis):
 def _getconf():
     #get the configuration file
     try:
-        #first priority is to use the conf.json file
-        conffolder = '/home/pi/rpislave_conf'
-        conffile = None
-        if os.path.isdir(conffolder):
-            for path, subdirs, files in os.walk(conffolder ):
-                if not ".git" in path:
-                    for name in files:
-                        if name.endswith(".json"):
-                            conffile = os.path.join(path, name)
-
-        if conffile is not None:
-            fl = file(conffile, "r")
+        #first priority is to use /home/pi/rpislave/conf.json is existing
+        conffilepath = '/home/pi/rpislave/conf.json'
+        if os.path.isfile(conffilepath):
+            fl = file(conffilepath, "r")
             conf_str = fl.read()
             fl.close()
             conf = json.loads(conf_str)
-            print 'using the json file for the installation %s' % conffile
+            print 'using the json file for the installation %s' % conffilepath
 
         #second priority is to check for a configuration in the sqlite database
         else:
-            print 'no json config file was not found in folder %s' % conffolder
             print "attempting to get conf from sqlite db"
             try:
                 #prepare django
@@ -76,12 +67,6 @@ def _getconf():
         print traceback.format_exc()
         conf = None
         conf_str = None
-
-    #if conf_str is not None:
-    #    #write the conf file in the datafolder
-     #   f = file(os.path.join(pth, "conf"), "w")
-      #  f.write(conf_str)
-       # f.close()
 
     return conf, conf_str
 
@@ -121,8 +106,9 @@ def setup_db():
         password = "raspberry"
     u = User.objects.create_superuser(login, '', password)
     u.save()
-    #updating the conf in the sqlite db
-    if conf_str is not None:
+
+    #updating the conf in the sqlite db only if there is a conf.json file
+    if conf_str is not None and os.path.isfile('/home/pi/rpislave/conf.json'):
         from website.models import Conf
         for c in Conf.objects.all():
             c.delete()

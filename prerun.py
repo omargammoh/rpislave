@@ -2,6 +2,7 @@ import json
 import subprocess
 import os
 import sys
+import traceback
 
 def _sanitize_colname(label):
     if label == "":
@@ -56,7 +57,6 @@ def _getconf():
             print "attempting to get conf from sqlite db"
             try:
                 #prepare django
-                import os
                 import django
                 os.environ['DJANGO_SETTINGS_MODULE'] = 'website.settings'
                 django.setup()
@@ -73,6 +73,7 @@ def _getconf():
                 conf_str = None
                 conf = None
     except:
+        print traceback.format_exc()
         conf = None
         conf_str = None
 

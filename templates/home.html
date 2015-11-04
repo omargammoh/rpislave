@@ -15,11 +15,10 @@
                 <col width="10%">
                 <col width="50%">
                 <tr>
-
                     <td><h3>{% if app.label %} {{ app.label }} {% else %} {{ app.name }}{% endif %} </h3></td>
                     <td><button type="button" onclick="cmd_func('{% url 'website.views.appmanage' %}', {'app':'{{app.name}}', 'cmd':'start'}, this)">Start</button></td>
                     <td><button type="button" onclick="cmd_func('{% url 'website.views.appmanage' %}', {'app':'{{app.name}}', 'cmd':'stop'}, this)">Stop</button></td>
-                    <td><button type="button" onclick="cmd_func('{% url 'website.views.appmanage' %}', {'app':'{{app.name}}', 'cmd':'status', this})" id="btn_{{app.name}}_status">Status</button></td>
+                    <td><button type="button" onclick="cmd_func('{% url 'website.views.appmanage' %}', {'app':'{{app.name}}', 'cmd':'status'}, this)" id="btn_{{app.name}}_status">Status</button></td>
                     <td><a href="/{{app.name}}/"><button type="button">Home</button></a></td>
                     <td>{% if app.desc %} {{ app.desc }} {% else %} - no description available - {% endif %} </td>
                 </tr>

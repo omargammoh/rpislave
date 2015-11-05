@@ -67,14 +67,14 @@
                     <td><button type="button" id="btn_status_temp" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'/opt/vc/bin/vcgencmd measure_temp'}, this)">temp</button></td>
                     <td><button type="button" id="btn_status_df" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'df -h'}, this)">df</button></td>
                     <td><button type="button" id="btn_status_pstree" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'pstree -p -l'}, this)">pstree</button></td>
-                    <td><button type="button" id="btn_status_psaux" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'ps aux', this})">ps aux</button></td>
+                    <td><button type="button" id="btn_status_psaux" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'ps aux'}, this)">ps aux</button></td>
                 </tr>
                 <tr>
                     <td><h4>linux info2</h4></td>
                     <td><button type="button" id="btn_status_listwifi" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'sudo iwlist wlan0 scan'}, this)">list wifi</button></td>
                     <td><button type="button" id="btn_status_ifconfig" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'ifconfig'}, this)">ifconfig</button></td>
                     <td><button type="button" id="btn_status_interfaces" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'cat /etc/network/interfaces'}, this)">interfaces</button></td>
-                    <td><button type="button" id="btn_status_tunnels" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'ps aux|grep 'sudo ssh' |grep 900'}, this)">tunnels</button></td>
+                    <td><button type="button" id="btn_status_tunnels" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'ps aux|grep \'sudo ssh\' |grep 900'}, this)">tunnels</button></td>
                 </tr>
             </table>
         </div>

@@ -53,7 +53,7 @@
                 <tr>
                     <td><h4>rpislave info</h4></td>
                     <td><button type="button" id="btn_status_overview" onclick="cmd_func('{% url 'website.views.status' %}', {'cmd':'overview'}, this)">Processes</button></td>
-                    <td><button type="button" id="btn_status_commitsbehind" onclick="cmd_func('{% url 'website.views.commits_behind' %}', this)">commits behind</button></td>
+                    <td><button type="button" id="btn_status_commitsbehind" onclick="cmd_func('{% url 'website.views.commits_behind' %}',{}, this)">commits behind</button></td>
                 </tr>
                 <tr>
                     <td><h4>rpislave actions</h4></td>

@@ -5,6 +5,7 @@ import time
 from website.models import Log
 import json
 import datetime
+import traceback
 
 def execute(cmd):
     return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
@@ -27,7 +28,6 @@ def delete_oldest_day():
 def main():
     while True:
         try:
-            print ">> clear: starting loop"
             r = get_usage_ratio()
             if r > 0.95:
                 path = delete_oldest_day()
@@ -41,8 +41,7 @@ def main():
             else:
                 print ">> clear: usage ratio is still small (%s)" %r
         except:
-
-            print ">> clear: error"
             pass
-        print ">> clear: ending loop"
+            print ">> !!! clear: error %s" %traceback.format_exc()
+
         time.sleep(60)

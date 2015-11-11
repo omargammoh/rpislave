@@ -17,11 +17,11 @@ else
 		exit
 	fi
     echo "  -> sudo python /home/pi/rpislave/prerun.py"
-	sudo python /home/pi/rpislave/prerun.py
 	tmux new-session -d -s $session_name
 	tmux split-window -d -t $session_name -h
+	sudo python /home/pi/rpislave/prerun.py
     echo "  -> sudo /usr/local/bin/uwsgi --ini /home/pi/rpislave/uwsgi.ini --http :9001 --static-map /static=/home/pi/static"
-	tmux send-keys -t $session_name 'sudo /usr/local/bin/uwsgi --ini /home/pi/rpislave/uwsgi.ini --http :9001 --static-map /static=/home/pi/static' enter C-l
+    tmux send-keys -t $session_name 'sudo /usr/local/bin/uwsgi --ini /home/pi/rpislave/uwsgi.ini --http :9001 --static-map /static=/home/pi/static' enter C-l
     echo "  -> session started sucessfully"
 fi
 

@@ -147,8 +147,8 @@ def network_name():
         print "did not change network name"
 
 if __name__== '__main__':
-    _execute("sudo python /home/pi/rpislave/manage.py collectstatic --noinput --settings=website.settings")
     conf, conf_str = _getconf()
-    setup_networkinterfaces()
     setup_db()
+    _execute("sudo python /home/pi/rpislave/manage.py collectstatic --noinput --settings=website.settings")
+    setup_networkinterfaces()
     network_name()

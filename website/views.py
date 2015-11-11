@@ -46,7 +46,7 @@ def status(request):
             dic['conf'] = get_conf()
         if cmd == "overview":
             dic['this process'] = multiprocessing.current_process().name
-            dic['active child processes'] = [m.name for m in  multiprocessing.active_children()]
+            dic['active child processes'] = [(m.name, m.pid) for m in  multiprocessing.active_children()]
             dic['utc time'] = str(datetime.utcnow())
 
         if cmd == "recentdata":

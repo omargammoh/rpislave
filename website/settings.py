@@ -47,7 +47,7 @@ except:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 TEMPLATE_DEBUG = False
 
@@ -129,12 +129,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 #oga
-STATIC_ROOT = ''
+STATIC_ROOT = '/home/pi/static'
 
 #oga
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-    '/var/www/static/',
+    os.path.join(BASE_DIR, "static")
 )
 
 #oga

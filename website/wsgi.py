@@ -1,10 +1,10 @@
 import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 from website.processing import get_conf, MP, filter_kwargs
 import traceback
 import multiprocessing
 import importlib
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 from django.conf import settings
 
 try:

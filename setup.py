@@ -168,6 +168,7 @@ if __name__ == "__main__":
     t2 = time()
     _execute([
          'sudo apt-get install -y python-dev' #needed by uwsgi and other things
+        ,'sudo apt-get install libpcre3 libpcre3-dev'#neeeded by uwsgi, this needs to run beforre installling uwsgi
         ,'sudo apt-get install -y python-pip'
         ,"sudo pip install uwsgi"
         ,'sudo apt-get install tmux'

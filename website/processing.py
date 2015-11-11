@@ -106,10 +106,11 @@ class MP():
         if len(ac) == 0:
             return False
         else:
-            return ac[0].is_alive()
+            #return ac[0].is_alive() #this line does not work when switching to uwsgi and gives the error: can only test a child process, this is due to the fact that uwsgi has many workers
+            return True
 
     def stop(self):
-        ac = [m for m in  multiprocessing.active_children() if self.name == m.name][0]
+        ac = [m for m in multiprocessing.active_children() if self.name == m.name][0]
         if ac:
             if ac.pid:
                 print "stopping process in in the good way"

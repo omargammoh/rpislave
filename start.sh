@@ -20,8 +20,8 @@ else
 	sudo python /home/pi/rpislave/prerun.py
 	tmux new-session -d -s $session_name
 	tmux split-window -d -t $session_name -h
-    echo "  -> sudo python /home/pi/rpislave/manage.py runserver 0.0.0.0:9001"
-	tmux send-keys -t $session_name 'sudo python /home/pi/rpislave/manage.py runserver 0.0.0.0:9001' enter C-l
+    echo "  -> sudo /usr/local/bin/uwsgi --ini /home/pi/rpislave/uwsgi.ini --http :9001 --static-map /static=/home/pi/static"
+	tmux send-keys -t $session_name 'sudo /usr/local/bin/uwsgi --ini /home/pi/rpislave/uwsgi.ini --http :9001 --static-map /static=/home/pi/static' enter C-l
     echo "  -> session started sucessfully"
 fi
 

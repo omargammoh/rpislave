@@ -163,18 +163,20 @@ def support_onewire():
 if __name__ == "__main__":
     t1 = time()
     _execute([
-         "sudo apt-get -y update", #update is needed for motion
+        "sudo apt-get -y update" #needed for motion
     ])
     t2 = time()
     _execute([
-         'sudo apt-get install -y python-dev'
+         'sudo apt-get install -y python-dev' #needed by uwsgi and other things
         ,'sudo apt-get install -y python-pip'
+        ,"sudo pip install uwsgi"
         ,'sudo apt-get install tmux'
         ,'sudo pip install django==1.7'
         ,'sudo pip install pymongo==2.8'
         ,'sudo pip install pytz'
         ,'sudo pip install requests'
         ,'sudo pip install python-dateutil'
+
         ])
     t3 = time()
 
@@ -199,8 +201,8 @@ if __name__ == "__main__":
 
     t4 = time()
     print "took %0.2f sec=" % (t4 - t1)
-    print "    %0.2f sec" % (t2 - t1)
-    print "    %0.2f sec" % (t3 - t2)
-    print "    %0.2f sec" % (t4 - t3)
+    print "    %0.2f sec for update" % (t2 - t1)
+    print "    %0.2f sec for basic libraries" % (t3 - t2)
+    print "    %0.2f sec for app related libraries" % (t4 - t3)
 
 

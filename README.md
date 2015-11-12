@@ -7,10 +7,11 @@
   * Expand filesystem
   * Enable camera
   * Enable SPI
+  * Enable i2c
 * Reboot, The server will start automatically after the reboot
   * `sudo reboot`
 * Surf to the page `<raspi_ip>:9001` hosted by the rpi
-* Add the configuration json file
+* Add the configuration json file in the admin page `<ip-address>:9001/admin/website/conf/`
 * ssh into the raspberry pi and run the setup.py
   * `sudo python ~/rpislave/setup.py` 
 * To access it from outside your network, you need to forward the following ports:
@@ -20,7 +21,7 @@
   * `9004` for BTSync server
   * `9005` for ssh server
 
-# Current apps #
+# Available apps #
   * <b>gpio_app</b>: Control and observe the GPIO (input output) pins of your rpi slave
   * <b>motion_app</b>: Record videos, take pictures, create timelapse files and stream videos using a camera (runs another software called [motion](http://www.lavrsen.dk/foswiki/bin/view/Motion/WebHome))
   * <b>datalog_app</b>: Record data from RS485 devices and signals connected to MCP3008 chip 

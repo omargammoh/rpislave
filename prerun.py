@@ -84,8 +84,6 @@ def setup_networkinterfaces():
     print "setup_networkinterfaces: interfaces successful"
 
 def setup_db():
-    if not os.path.isfile('/home/pi/rpislave/db.sqlite3'):
-        _execute("sudo python /home/pi/rpislave/manage.py migrate")
 
     import django
     sys.path.append(os.path.dirname(__file__))
@@ -147,6 +145,8 @@ def network_name():
         print "did not change network name"
 
 if __name__== '__main__':
+    if not os.path.isfile('/home/pi/rpislave/db.sqlite3'):
+        _execute("sudo python /home/pi/rpislave/manage.py migrate")
     conf, conf_str = _getconf()
     setup_db()
     _execute("sudo python /home/pi/rpislave/manage.py collectstatic --noinput --settings=website.settings")

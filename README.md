@@ -33,3 +33,6 @@
   * add `ip=169.254.0.2` to `sudo nano /boot/cmdline.txt` (see https://pihw.wordpress.com/guides/direct-network-connection/in-a-nut-shell-direct-network-connection/). reboot, connect ethernet cable to rpi and computer then ssh into `ip=169.254.0.2`. if computer is not connected, the rpi will take longer time to boot, and yu cannot connect to the internet via ethernet
 * Installing real time clock:
   * under development...
+* Switch to another git branch, eg: master
+  * `cd /home/pi/rpislave&&sudo git checkout master`
+ 

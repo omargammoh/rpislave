@@ -48,7 +48,6 @@ def new_tunnel_para(slave_port):
     js_resp = json_util.loads(resp)
     return js_resp
 
-
 def create_tunnel(slave_port, tunnel_para):
     with Timeout(seconds=30):
         website.processing.execute('sudo chmod 700 /home/pi/rpislave/tunnelonly')
@@ -130,14 +129,6 @@ def get_status():
         d['gitbranch_rpislave'] = '-'
 
 
-    try:
-        with Timeout(seconds=30):
-            d['git_rpislave_conf'] = gitcmd("cd /home/pi/rpislave_conf&&git rev-parse HEAD")
-            d['gitbranch_rpislave_conf'] = gitcmd("cd /home/pi/rpislave_conf&&git rev-parse --abbrev-ref HEAD")
-    except:
-        d['git_rpislave_conf'] = '-'
-        d['gitbranch_rpislave_conf'] = '-'
-
 
     #IP
     try:
@@ -185,6 +176,14 @@ def round5(s):
         return round(float(s)/5)*5
     except:
         return None
+
+def mark_loop():
+    try:
+        f = file('/home/pi/data/laststatusloop','w')
+        f.write(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S'))
+        f.close()
+    except:
+        print ">> status: !!! failed to mark loop"
 #main
 def main(status_period=30):
     loop_counter = 0
@@ -202,7 +201,7 @@ def main(status_period=30):
                 #try to restart the networking
                 restart_networking()
 
-                #now see if the internet is connected after that we have corrected it is restarted
+                # see if the internet is connected after that we have corrected it is restarted
                 internet_ison = check_internet()
 
                 if internet_ison:
@@ -239,8 +238,6 @@ def main(status_period=30):
                             prev_status.get("serial", "") == new_status.get("serial", "") and \
                             prev_status.get("git_rpislave", "") == new_status.get("git_rpislave", "") and \
                             prev_status.get("gitbranch_rpislave", "") == new_status.get("gitbranch_rpislave", "") and \
-                            prev_status.get("git_rpislave_conf", "") == new_status.get("git_rpislave_conf", "") and \
-                            prev_status.get("gitbranch_rpislave_conf", "") == new_status.get("gitbranch_rpislave_conf", "") and \
                             (new_status.get("time_error", "-") == "-" or round5(prev_status.get("time_error", "")) == round5(new_status.get("time_error", ""))):
 
                 print ">> status: all params remain the same"
@@ -270,6 +267,9 @@ def main(status_period=30):
 
             #checking revssh
             check_tunnels()
+
+            #mark loop
+            mark_loop()
 
         except:
             print ">> status: !! error: %s" %traceback.format_exc()

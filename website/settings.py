@@ -67,7 +67,8 @@ RPI_APPS = (
 RPI_PROC = ('btsync',
             'clear',
             'datasend',
-            'status',)
+            'status',
+            'rebooter',)
 
 INSTALLED_APPS = (
     'django.contrib.admin',

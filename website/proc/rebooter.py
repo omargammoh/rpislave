@@ -22,11 +22,11 @@ def main():
             if dt is not None:
                 now = datetime.datetime.utcnow()
                 sec = (now - dt).total_seconds()
-                if sec > 60: #600
+                if sec > 180:
                     print ">> rebooter: deviation counter +1"
                     deviation_counter += 1
 
-                if deviation_counter >= 4:
+                if deviation_counter >= 3:
                     print ">> rebooter: will reboot the device because the status process doesnt seem to have run in a while"
                     f = file('/home/pi/data/reboooter-' + now.strftime('%Y%m%d%H%M%S'),'w')
                     f.write('we have rebooted on %s' %str(now))
@@ -38,4 +38,4 @@ def main():
             print ">> rebooter: !!! error"
             pass
 
-        time.sleep(30)#500
+        time.sleep(300)#500

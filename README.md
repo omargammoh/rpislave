@@ -36,3 +36,7 @@
 * Switch to another git branch, eg: master
   * `cd /home/pi/rpislave&&sudo git checkout master`
  
+## installation check-list ##
+* configuration is installed
+* file system is expanded, check with `df -h`
+* `ip=169.254.0.2` is removed from `sudo nano /boot/cmdline.txt`

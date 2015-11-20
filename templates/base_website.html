@@ -87,6 +87,66 @@
 
 {% block scripts %}
 {% endblock %}
+
+<script>
+
+function _ajax(btn, url, data, success, error){
+    btn = $(btn)
+    try {
+        v = btn[0].innerText
+        btn.text(v + "...")
+        btn.prop('disabled', true);
+    }
+    catch(err) {
+    }
+    $.ajax({
+        url: url,
+        data: data ,
+        success: function (data, textStatus, jqXHR) {
+            xxx = data
+            if ('alert' in data) {
+                alert(data.alert)
+            }
+            if ('msg' in data) {
+                $('#msg')[0].title=data.msg
+            }
+            if ('timing' in data) {
+                $('#timing')[0].title=data.timing
+            }
+            if ('timing_swimlanes' in data) {
+                timing_swimlanes = data.timing_swimlanes
+            }
+            if ('error' in data) {
+                alert("server error: " + data.error)
+                $('#error')[0].title=data.error
+            }
+            else {
+                try {
+                    btn.prop('disabled', false);
+                    btn.text(v)
+                }
+                catch(err) {
+                }
+                success(data, textStatus, jqXHR)
+
+            }
+        },
+        error: function (err) {
+            alert("ajax error")
+            btn.prop('disabled', false);
+            if (error != undefined){
+                error()
+            }
+            btn.prop('disabled', false);
+            btn.text(v);
+        }
+
+    });
+}
+
+</script>
+
+
 <style>
 button {
     width: 100%;

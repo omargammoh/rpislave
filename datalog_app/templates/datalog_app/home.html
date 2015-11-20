@@ -8,14 +8,42 @@
     <br>
     <hr>
     <p id="p_jsresponse">...</p>
+    <button class="btn" onclick="insert_chart(this, div_chart, '/datalog_app/highchart', {})">Load Chart</button>
+    <div class="col-lg-10" id="div_chart">
+    </div>
+
 </div>
 
 {% endblock %}
 
+
+
 {% block sidebar %}
 
 <script>
+//insert generic chart
+function insert_chart(btn, div, url, data){
+    $(div).html('')
+    _ajax(btn=btn, url=url, data=data
+        , success=function(data, textStatus, jqXHR){
+            var raw = data['data']
+            var evaluated = eval('(' + raw + ')')
+            if ("error" in evaluated){
+                alert("server error in creating the dataset ")
+            }
+            var wrapper= document.createElement('div');
+            wrapper.style.cssText = "min-width: 310px; height: 400px; margin: 0 auto";
+            $(div)[0].appendChild(wrapper)
+            $(wrapper).highcharts(evaluated);
 
+            var msg= document.createElement('p');
+            msg.innerHTML = '<font data-toggle="tooltip" data-placement="left" title="' + data['msg'] + 'sdf">details</font>'
+            btn = $(btn)
+            btn.parent()[0].appendChild(msg)
+            }
+        , error=undefined
+    )
+}
 
 function func(){
     var btn =  $(this)
@@ -47,6 +75,10 @@ function func(){
 
 $("#btn_recentdata").click(func)
 </script>
+
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+
 {%comment%}scripts put in the side bar block, but this is just a workaround to get the scripts working{%endcomment%}
 {% endblock %}
 

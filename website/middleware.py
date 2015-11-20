@@ -11,7 +11,7 @@ if hasattr(settings, 'LOGIN_EXEMPT_URLS'):
  
 class StandardExceptionMiddleware:
     def process_exception(self, request, exception):
-        print "xxxxxxxxxxxxxxxxxxxxxxxxxxx"*100
+        print "xxxxxxxxxxxxxxxxxxxxxxxxxxx"
         #return technical_500_response(request, *sys.exc_info())
         #if request.user.is_superuser or request.META.get('REMOTE_ADDR') in settings.INTERNAL_IPS:
         return None

@@ -155,10 +155,11 @@ def _highchart(start_id, end_id):
 
 def highchart(request):
     try:
-        return {'data': _highchart(start_id=request.GET.get('start_id'), end_id=request.GET.get('end_id'))}
+        jdic = json.dumps({'data': _highchart(start_id=request.GET.get('start_id'), end_id=request.GET.get('end_id'))})
     except:
         err = traceback.format_exc()
-        return json.dumps({"error": err})
+        jdic = json.dumps({"error": err})
+    return HttpResponse(jdic, content_type='application/json')
 
 def highresmcp3008(request):
     try:

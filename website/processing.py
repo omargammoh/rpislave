@@ -11,12 +11,20 @@ try:
 except:
     print "signal cannot be imported"
 
+
 def execute(cmd, daemon=False):
     if daemon:
         _ = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         return None
     else:
         return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read()
+
+def fix_corrupt_db():
+    conf = get_conf()
+    write_json_file(conf, "/home/pi/data/conf")
+    execute('sudo rm /home/pi/rpislave/db.sqlite3')
+    execute('sudo reboot')
+    return None
 
 def read_json_file(fp):
     try:
@@ -73,7 +81,6 @@ def get_pid(command):
     else:
         pid = matches[0][1]
     return pid
-
 
 def get_conf():
     for ob in Conf.objects.all():

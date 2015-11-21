@@ -135,8 +135,9 @@ def _highchart(start_id, end_id):
                 "zoomType": 'x',
                 "events": {
                     "load" : "$(function () {\
+                        var series = this.series[0];\
                         setInterval(function () {\
-                            highchart_update(this.series);\
+                            highchart_update(series);\
                         }, 1000);\
                     })$"
                 }

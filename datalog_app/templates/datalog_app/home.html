@@ -55,18 +55,20 @@ function highchart_update(series){
                 }
             else {
                 //$(chart.series).each(function(i, serie){console.log(serie.name)})
-                series.each(function(i, serie){
+                var serLength = series.length;
+                for (var i = 0; i < serLength; i++) {
+                    serie = series[i];
                     console.log(serie.name)
                     if (serie.name in data.data){
                         var lis = data.data[serie.name]
                         var arrayLength = lis.length;
-                            for (var i = 0; i < arrayLength; i++) {
-                                serie.addPoint(lis[i]);
+                            for (var j = 0; j < arrayLength; j++) {
+                                serie.addPoint(lis[j]);
                             }
                         }
                     else {
                         }
-                    })
+                    }
                 }
             }
 

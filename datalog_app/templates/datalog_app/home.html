@@ -39,10 +39,6 @@ function insert_chart(btn, div, url, data){
             $(div)[0].appendChild(wrapper)
             $(wrapper).highcharts(evaluated);
 
-            var msg= document.createElement('p');
-            msg.innerHTML = '<font data-toggle="tooltip" data-placement="left" title="' + data['msg'] + 'sdf">details</font>'
-            btn = $(btn)
-            btn.parent()[0].appendChild(msg)
             }
         , error=undefined
     )
@@ -99,7 +95,7 @@ function update_table(data){
     wrapper.style.marginLeft="-20px"
     wrapper.style.marginRight="-20px"
     wrapper.innerHTML = tbl
-    $('#div_chart')[0].appendChild(wrapper);
+    $('#div_table')[0].appendChild(wrapper);
 }
 
 </script>

@@ -26,6 +26,7 @@ function insert_chart(btn, div, url, data){
     _ajax(btn=btn, url=url, data=data
         , success=function(data, textStatus, jqXHR){
             xxx=data
+            latest_id=data['mx']
             raw = data['data']
             evaluated = eval('(' + raw + ')')
             if ("error" in evaluated){
@@ -40,6 +41,15 @@ function insert_chart(btn, div, url, data){
             msg.innerHTML = '<font data-toggle="tooltip" data-placement="left" title="' + data['msg'] + 'sdf">details</font>'
             btn = $(btn)
             btn.parent()[0].appendChild(msg)
+            }
+        , error=undefined
+    )
+}
+
+function highchart_update(){
+    _ajax(btn="", url='/datalog_app/highchart_update', data={"start_id":latest_id + 1}
+        , success=function(data, textStatus, jqXHR){
+            xxxx=data
             }
         , error=undefined
     )

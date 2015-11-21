@@ -6,5 +6,5 @@ urlpatterns = patterns('',
     url(r'^$', views.home),
     url(r'^highresmcp3008/$', views.highresmcp3008),
     url(r'^highchart/$', views.highchart),
-    url(r'^getdata_transformed/$', views.getdata_transformed),
+    url(r'^highchart_update/$', views.highchart_update),
     )

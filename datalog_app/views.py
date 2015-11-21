@@ -34,7 +34,7 @@ def _getdata(start_id=None, end_id=None):
         mn = -1
     return {'lis': [json_util.loads(ob.data) for ob in obs], 'mn':mn, 'mx':mx}
 
-def _getdata_transformed(data, start_id=None, end_id=None):
+def _transform(data):
     """
     data is the parsed list of jsons
     """
@@ -69,7 +69,7 @@ def _getdata_transformed(data, start_id=None, end_id=None):
 
 def getdata_transformed(request):
     try:
-        jdic = json.dumps({'data': _getdata_transformed(start_id=request.GET.get('start_id'), end_id=request.GET.get('end_id'))})
+        jdic = json.dumps({'data': _transform(start_id=request.GET.get('start_id'), end_id=request.GET.get('end_id'))})
     except:
         err = traceback.format_exc()
         jdic = json.dumps({"error": err})
@@ -77,15 +77,14 @@ def getdata_transformed(request):
 
 def _highchart(start_id, end_id):
     raw = _getdata(start_id=start_id, end_id=end_id)
+    lis_doc = _transform(data=raw['lis'], start_id=start_id, end_id=end_id)
 
     lis_para = []
     for p_name, p_dic in datalog_conf['sensors'].iteritems():
         for pp in p_dic.get('pp',[]):
             lis_para.append("%s-%s" %(p_name, pp))
 
-    lis_doc = _getdata_transformed(data=raw['lis'], start_id=start_id, end_id=end_id)
     dic_ser = {}
-
     if len(lis_doc):
         for doc in lis_doc :
             dt = doc["timestamp"]
@@ -185,6 +184,36 @@ def _highchart(start_id, end_id):
 def highchart(request):
     try:
         jdic = json.dumps(_highchart(start_id=request.GET.get('start_id'), end_id=request.GET.get('end_id')))
+    except:
+        err = traceback.format_exc()
+        jdic = json.dumps({"error": err})
+    return HttpResponse(jdic, content_type='application/json')
+
+def highchart_update(request):
+    raw = _getdata(start_id=request.GET.get('start_id'), end_id=request.GET.get('end_id'))
+    lis_doc = _transform(data=raw['lis'])
+
+    lis_para = []
+    for p_name, p_dic in datalog_conf['sensors'].iteritems():
+        for pp in p_dic.get('pp', []):
+            lis_para.append("%s-%s" %(p_name, pp))
+
+    dic_ser = {}
+    if len(lis_doc):
+        for doc in lis_doc :
+            dt = doc["timestamp"]
+            ### get things provided in the json
+            for k in lis_para:
+                v = doc.get(k)
+                if v is not None:
+                    #name = label + "-" + k
+                    name = k
+                    if not name in dic_ser:
+                        dic_ser[name]=[]
+                    dic_ser[name].append([dt, v])
+
+    try:
+        jdic = json.dumps({'data': dic_ser, "mn": raw['mn'], "mx": raw['mx']})
     except:
         err = traceback.format_exc()
         jdic = json.dumps({"error": err})

@@ -49,14 +49,13 @@ function insert_chart(btn, div, url, data){
 function highchart_update(series){
     _ajax(btn="", url='/datalog_app/highchart_update', data={"start_id":latest_id + 1}
         , success=function(data, textStatus, jqXHR){
-            xxxx = data
             if (data.mx > 0){
+                console.log("new data")
                 latest_id = data.mx
-                //$(chart.series).each(function(i, serie){console.log(serie.name)})
                 var serLength = series.length;
+                xxxx = data
                 for (var i = 0; i < serLength; i++) {
                     serie = series[i];
-                    console.log(serie.name)
                     if (serie.name in data.data){
                         var lis = data.data[serie.name]
                         var arrayLength = lis.length;
@@ -69,12 +68,15 @@ function highchart_update(series){
                     }
                 }
             else {
+                console.log("no new data")
                 }
             }
 
         , error=undefined
     )
 }
+
+
 
 </script>
 

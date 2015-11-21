@@ -77,7 +77,7 @@ def getdata_transformed(request):
 
 def _highchart(start_id, end_id):
     raw = _getdata(start_id=start_id, end_id=end_id)
-    lis_doc = _transform(data=raw['lis'], start_id=start_id, end_id=end_id)
+    lis_doc = _transform(data=raw['lis'])
 
     lis_para = []
     for p_name, p_dic in datalog_conf['sensors'].iteritems():
@@ -107,7 +107,7 @@ def _highchart(start_id, end_id):
     for k in sorted(dic_ser.keys()):
         v = dic_ser[k]
         dat = [["$Date.UTC(%s,%s,%s,%s,%s,%s)$" %(vv[0].year, vv[0].month-1, vv[0].day, vv[0].hour, vv[0].minute, vv[0].second), vv[1] if np.isfinite(vv[1]) else "$null$"] for vv in v]
-        s_dic = {"name" : k, "data": dat}
+        s_dic = {"name": k, "data": dat}
 
         para = '-'.join(k.split('-')[:-1])
 
@@ -135,11 +135,8 @@ def _highchart(start_id, end_id):
                 "zoomType": 'x',
                 "events": {
                     "load" : "$(function () {\
-                        var series = this.series[0];\
                         setInterval(function () {\
-                            var x = (new Date()).getTime(),\
-                                y = Math.round(Math.random() * 100);\
-                            series.addPoint([x, y], true, true);\
+                            highchart_update(this.series);\
                         }, 1000);\
                     })$"
                 }
@@ -210,7 +207,7 @@ def highchart_update(request):
                     name = k
                     if not name in dic_ser:
                         dic_ser[name]=[]
-                    dic_ser[name].append([dt, v])
+                    dic_ser[name].append(["Date.UTC(%s,%s,%s,%s,%s,%s)" %(dt.year, dt.month-1, dt.day, dt.hour, dt.minute, dt.second), v])
 
     try:
         jdic = json.dumps({'data': dic_ser, "mn": raw['mn'], "mx": raw['mx']})

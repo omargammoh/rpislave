@@ -63,7 +63,7 @@ function highchart_update(series){
                         var lis = data.data[serie.name]
                         var arrayLength = lis.length;
                             for (var j = 0; j < arrayLength; j++) {
-                                serie.addPoint(lis[j]);
+                                serie.addPoint([eval(lis[j][0]), lis[j][1]]);
                             }
                         }
                     else {

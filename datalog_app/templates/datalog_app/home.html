@@ -38,7 +38,7 @@ function insert_chart(btn, div, url, data){
             wrapper.style.cssText = "min-width: 310px; height: 400px; margin: 0 auto";
             $(div)[0].appendChild(wrapper)
             $(wrapper).highcharts(evaluated);
-
+            $(btn).remove()
             }
         , error=undefined
     )
@@ -76,7 +76,7 @@ function highchart_update(series){
 }
 
 function update_table(data){
-    $('#div_chart').html('')
+    $('#div_table').html('')
     tbl = ""
     tbl += "<table style='width:100%'>"
     tbl += "<tr>"

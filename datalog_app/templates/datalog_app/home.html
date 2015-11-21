@@ -25,6 +25,7 @@ function insert_chart(btn, div, url, data){
     $(div).html('')
     _ajax(btn=btn, url=url, data=data
         , success=function(data, textStatus, jqXHR){
+            xxx=data
             raw = data['data']
             evaluated = eval('(' + raw + ')')
             if ("error" in evaluated){

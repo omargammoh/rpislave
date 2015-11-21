@@ -25,11 +25,19 @@ def _getdata(start_id=None, end_id=None):
     """
     if start_id is None: start_id = 0
     if end_id is None: end_id = 999999999999999
-    return [json_util.loads(ob.data) for ob in Reading.objects.filter(id__range=(start_id, end_id))]
+    obs = Reading.objects.filter(id__range=(start_id, end_id))
+    if obs:
+        mx = max([ob.id for ob in obs])
+        mn = min([ob.id for ob in obs])
+    else:
+        mx = -1
+        mn = -1
+    return {'lis': [json_util.loads(ob.data) for ob in obs], 'mn':mn, 'mx':mx}
 
-def _getdata_transformed(start_id=None, end_id=None):
-    raw = _getdata(start_id=start_id, end_id=end_id)
-
+def _getdata_transformed(data, start_id=None, end_id=None):
+    """
+    data is the parsed list of jsons
+    """
     dic_trans_funs = {}
     for p_name, p_dic in datalog_conf['sensors'].iteritems():
         for pp in p_dic.get('pp',[]):
@@ -50,7 +58,7 @@ def _getdata_transformed(start_id=None, end_id=None):
 
     data_t = []
 
-    for dic in raw:
+    for dic in data:
         dic_t={}
         for k, v in dic.iteritems():
             #when this loops encounters the timestamp and cont , it leaves then as they are, thats why we have the get with default lambda x:x function
@@ -59,14 +67,23 @@ def _getdata_transformed(start_id=None, end_id=None):
 
     return data_t
 
+def getdata_transformed(request):
+    try:
+        jdic = json.dumps({'data': _getdata_transformed(start_id=request.GET.get('start_id'), end_id=request.GET.get('end_id'))})
+    except:
+        err = traceback.format_exc()
+        jdic = json.dumps({"error": err})
+    return HttpResponse(jdic, content_type='application/json')
+
 def _highchart(start_id, end_id):
+    raw = _getdata(start_id=start_id, end_id=end_id)
 
     lis_para = []
     for p_name, p_dic in datalog_conf['sensors'].iteritems():
         for pp in p_dic.get('pp',[]):
             lis_para.append("%s-%s" %(p_name, pp))
 
-    lis_doc = _getdata_transformed(start_id=start_id, end_id=end_id)
+    lis_doc = _getdata_transformed(data=raw['lis'], start_id=start_id, end_id=end_id)
     dic_ser = {}
 
     if len(lis_doc):
@@ -163,11 +180,11 @@ def _highchart(start_id, end_id):
 
     }
 
-    return json_util.dumps(js).replace('$"', "").replace('"$', "")
+    return {'data': json_util.dumps(js).replace('$"', "").replace('"$', ""), 'mn':raw['mn'], 'mx':raw['mx']}
 
 def highchart(request):
     try:
-        jdic = json.dumps({'data': _highchart(start_id=request.GET.get('start_id'), end_id=request.GET.get('end_id'))})
+        jdic = json.dumps(_highchart(start_id=request.GET.get('start_id'), end_id=request.GET.get('end_id')))
     except:
         err = traceback.format_exc()
         jdic = json.dumps({"error": err})

@@ -7,7 +7,6 @@
     </div>
     <br>
     <hr>
-    <p id="p_jsresponse">...</p>
     <button class="btn" onclick="insert_chart(this, div_chart, '/datalog_app/highchart', {})">Load Chart</button>
     <div class="col-lg-10" id="div_chart">
     </div>
@@ -26,8 +25,8 @@ function insert_chart(btn, div, url, data){
     $(div).html('')
     _ajax(btn=btn, url=url, data=data
         , success=function(data, textStatus, jqXHR){
-            var raw = data['data']
-            var evaluated = eval('(' + raw + ')')
+            raw = data['data']
+            evaluated = eval('(' + raw + ')')
             if ("error" in evaluated){
                 alert("server error in creating the dataset ")
             }

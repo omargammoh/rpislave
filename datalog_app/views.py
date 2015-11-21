@@ -6,10 +6,11 @@ from bson import json_util
 from datalog_app.models import Reading
 import traceback
 from website.processing import get_conf
+import numpy as np
 
 info = {
     "label": "DATA-LOG",
-    "desc": "Record data from RS485 devices and signals connected to MCP3008 chip"
+    "desc": "Record data from RS485, i2c or spi devices"
 }
 
 conf = get_conf()
@@ -111,10 +112,21 @@ def _highchart(start_id, end_id):
             s_dic["dashStyle"] = 'shortDot'
         lis_ser_hc.append(s_dic)
 
+
     js = {
             "chart": {
                 "type": 'line',
-                'zoomType': 'x'
+                "zoomType": 'x',
+                "events": {
+                    "load" : "$(function () {\
+                        var series = this.series[0];\
+                        setInterval(function () {\
+                            var x = (new Date()).getTime(),\
+                                y = Math.round(Math.random() * 100);\
+                            series.addPoint([x, y], true, true);\
+                        }, 1000);\
+                    })$"
+                }
             },
             "title": {
                 "text": ''

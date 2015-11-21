@@ -135,10 +135,10 @@ def _highchart(start_id, end_id):
                 "zoomType": 'x',
                 "events": {
                     "load" : "$(function () {\
-                        var series = this.series[0];\
+                        var series = this.series;\
                         setInterval(function () {\
                             highchart_update(series);\
-                        }, 1000);\
+                        }, 2000);\
                     })$"
                 }
             },

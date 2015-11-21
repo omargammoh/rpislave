@@ -10,6 +10,8 @@
     <button class="btn" onclick="insert_chart(this, div_chart, '/datalog_app/highchart', {})">Load Chart</button>
     <div class="col-lg-10" id="div_chart">
     </div>
+    <div class="col-lg-10" id="div_table">
+    </div>
 
 </div>
 
@@ -54,6 +56,7 @@ function highchart_update(series){
                 latest_id = data.mx
                 var serLength = series.length;
                 xxxx = data
+                update_table(data.data)
                 for (var i = 0; i < serLength; i++) {
                     serie = series[i];
                     if (serie.name in data.data){
@@ -76,7 +79,28 @@ function highchart_update(series){
     )
 }
 
-
+function update_table(data){
+    $('#div_chart').html('')
+    tbl = ""
+    tbl += "<table style='width:100%'>"
+    tbl += "<tr>"
+    for (var key in data) {
+        if (data.hasOwnProperty(key)) {
+            var v = data[key]
+            tbl += "<td><h3>"
+            tbl += key + "<br>"
+            tbl += v[0][1]
+            tbl += "</h3></td>"
+      }
+    }
+    tbl += "</tr>"
+    tbl += "</table>"
+    var wrapper = document.createElement('div');
+    wrapper.style.marginLeft="-20px"
+    wrapper.style.marginRight="-20px"
+    wrapper.innerHTML = tbl
+    $('#div_chart')[0].appendChild(wrapper);
+}
 
 </script>
 

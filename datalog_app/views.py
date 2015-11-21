@@ -32,7 +32,14 @@ def _getdata(start_id=None, end_id=None):
     else:
         mx = -1
         mn = -1
-    return {'lis': [json_util.loads(ob.data) for ob in obs], 'mn':mn, 'mx':mx}
+    lis = []
+    for ob in obs:
+        try:
+            js = json_util.loads(ob.data)
+            lis.append(js)
+        except:
+            pass
+    return {'lis': lis, 'mn': mn, 'mx': mx}
 
 def _transform(data):
     """

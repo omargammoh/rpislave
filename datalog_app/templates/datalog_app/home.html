@@ -41,6 +41,7 @@ function insert_chart(btn, div, url, data){
             $(btn).remove()
             }
         , error=undefined
+        , timeout=180000
     )
 }
 
@@ -72,6 +73,7 @@ function highchart_update(series){
                 }
             }
         , error=undefined
+        , timeout=15000
     )
 }
 

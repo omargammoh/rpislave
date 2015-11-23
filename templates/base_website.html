@@ -90,7 +90,10 @@
 
 <script>
 
-function _ajax(btn, url, data, success, error){
+function _ajax(btn, url, data, success, error, timeout){
+    if (timeout == undefined) {
+        timeout = 120000
+    }
     btn = $(btn)
     try {
         v = btn[0].innerText
@@ -142,7 +145,7 @@ function _ajax(btn, url, data, success, error){
                 btn.prop('disabled', false);
                 btn.text(v);
             },
-        timeout: 15000
+        timeout: timeout
 
     });
 }

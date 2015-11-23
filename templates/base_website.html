@@ -103,7 +103,7 @@ function _ajax(btn, url, data, success, error){
         url: url,
         data: data ,
         success: function (data, textStatus, jqXHR) {
-            xxx = data
+            //handling server side messages
             if ('alert' in data) {
                 alert(data.alert)
             }
@@ -117,7 +117,7 @@ function _ajax(btn, url, data, success, error){
                 timing_swimlanes = data.timing_swimlanes
             }
             if ('error' in data) {
-                alert("server error: " + data.error)
+                console.log("server error: " + data.error)
                 $('#error')[0].title=data.error
             }
             else {
@@ -128,18 +128,21 @@ function _ajax(btn, url, data, success, error){
                 catch(err) {
                 }
                 success(data, textStatus, jqXHR)
-
             }
         },
-        error: function (err) {
-            alert("ajax error")
-            btn.prop('disabled', false);
-            if (error != undefined){
-                error()
-            }
-            btn.prop('disabled', false);
-            btn.text(v);
-        }
+        error: function(x, t, m) {
+                if(t==="timeout") {
+                    console.log("ajax timeout" + $.now())
+                } else {
+                    console.log("ajax error" + $.now())
+                }
+                if (error != undefined){
+                    error()
+                }
+                btn.prop('disabled', false);
+                btn.text(v);
+            },
+        timeout: 20000
 
     });
 }

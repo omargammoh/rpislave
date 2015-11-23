@@ -145,7 +145,7 @@ def _highchart(start_id, end_id):
                         var series = this.series;\
                         setInterval(function () {\
                             highchart_update(series);\
-                        }, 2000);\
+                        }, 20000);\
                     })$"
                 }
             },

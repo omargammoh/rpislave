@@ -45,10 +45,11 @@ function insert_chart(btn, div, url, data){
 }
 
 function highchart_update(series){
+    console.log('ajax request...')
     _ajax(btn="", url='/datalog_app/highchart_update', data={"start_id":latest_id + 1}
         , success=function(data, textStatus, jqXHR){
             if (data.mx > 0){
-                console.log("new data")
+                console.log("new data " + data.mx)
                 latest_id = data.mx
                 var serLength = series.length;
                 xxxx = data
@@ -70,7 +71,6 @@ function highchart_update(series){
                 console.log("no new data")
                 }
             }
-
         , error=undefined
     )
 }
@@ -81,12 +81,15 @@ function update_table(data){
     tbl += "<table style='width:100%'>"
     tbl += "<tr>"
     for (var key in data) {
-        if (data.hasOwnProperty(key)) {
+        if (data.hasOwnProperty(key) && key.indexOf("-avg")!=-1)  {
             var v = data[key]
             tbl += "<td><h3>"
             tbl += key + "<br>"
-            tbl += v[0][1]
-            tbl += "</h3></td>"
+            //todo: take the last item instead of the first item
+            tbl += Math.round(v[0][1]*10000)/10000
+            tbl += "</h3>"
+            tbl += "<h5>" + v[0][0] + "</h5>"
+            tbl += "</td>"
       }
     }
     tbl += "</tr>"

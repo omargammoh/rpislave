@@ -131,7 +131,7 @@ function _ajax(btn, url, data, success, error){
             }
         },
         error: function(x, t, m) {
-                if(t==="timeout") {
+                if(t=="timeout") {
                     console.log("ajax timeout" + $.now())
                 } else {
                     console.log("ajax error" + $.now())
@@ -142,7 +142,7 @@ function _ajax(btn, url, data, success, error){
                 btn.prop('disabled', false);
                 btn.text(v);
             },
-        timeout: 20000
+        timeout: 15000
 
     });
 }

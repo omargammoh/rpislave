@@ -151,7 +151,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     )
 
 #todo: this excempt url is just for debug, remove it later
-LOGIN_EXEMPT_URLS = ('rqst')
+LOGIN_EXEMPT_URLS = ('rqst',
+                     'datalog_app/highchart_update' #when rpislave reboots user is not longer aauthenticated, but we want the auto update feature of datalog to continue to work,
+    )
 
 BASE_URL = "http://rpi-master.com/api/slave/?"
 

@@ -28,22 +28,23 @@ class LoginRequiredMiddleware:
     """
     def process_request(self, request):
         assert hasattr(request, 'user'), "The Login Required middleware requires authentication middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.auth.middleware.AuthenticationMiddleware'. If that doesn't work, ensure your TEMPLATE_CONTEXT_PROCESSORS setting includes 'django.core.context_processors.auth'."
+
+        #if the admin page, then send to admin page, the admin app will ass for authentication
         if request.META.get('PATH_INFO', '').startswith('/admin'):
             return None
+
+        #if conf is not there, give the no conf page
         if conf is None:
             return render_to_response("confsetup.html", {}, context_instance=RequestContext(request))
 
-        #request coming directly from server connected to via rev ssh HTTP_HOST=127.0.0.1:47604
-        #request coming from slave itself 127.0.0.1:9001
+        #request coming directly from server connected to via rev ssh eg 127.0.0.1:47604 & request coming from slave itself 127.0.0.1:9001
         if request.META.get('HTTP_HOST', '-').startswith('127.0.0.1'):
             return None
         #request coming directly from server connected to via vpn HTTP_HOST=10.0.0.*
         if request.META.get('HTTP_HOST', '-').startswith('10.0.0'):
             return None
-        #request coming from a client through server which is connected to via vpn HTTP_HOST=e.g. 52.24.168.465 (ip of server)
-        if request.META.get('HTTP_HOST', '-').startswith(''):
-            pass
 
+        #if user is authenticated, then carry on normally
         if request.user.is_authenticated():
             return None
         if any(m.match(request.path_info.lstrip('/')) for m in EXEMPT_URLS):

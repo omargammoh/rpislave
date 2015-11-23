@@ -50,7 +50,7 @@ function highchart_update(series){
     _ajax(btn="", url='/datalog_app/highchart_update', data={"start_id":latest_id + 1}
         , success=function(data, textStatus, jqXHR){
             if (data.mx > 0){
-                console.log("new data " + data.min + "->" + data.mx)
+                console.log("new data " + data.mn + "->" + data.mx)
                 latest_id = data.mx
                 var serLength = series.length;
                 xxxx = data

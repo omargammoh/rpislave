@@ -86,9 +86,9 @@ function update_table(data){
         if (data.hasOwnProperty(key) && key.indexOf("-avg")!=-1)  {
             var v = data[key]
             tbl += "<td align='center'>"
-            tbl += "<h3>" + key + "</h3>" + "<br>" + "<br>"
+            tbl += "<h3>" + key + "</h3>" + "<br>" + ""
             //todo: take the last item instead of the first item
-            tbl += "<h1>" + Math.round(v[0][1]*10000)/10000 +"</h1>" + "<br>"
+            tbl += "<h1>" + Math.round(v[0][1]*10000)/10000 +"</h1>"
             tbl += "<h6>" + v[0][0] + "</h6>"
             tbl += "</td>"
       }
@@ -104,8 +104,8 @@ function update_table(data){
 
 </script>
 
-<script src="http://code.highcharts.com/highcharts.js"></script>
-<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<script src="/static/js/highcharts.js"></script>
+<script src="/static/js/exporting.js"></script>
 
 {%comment%}scripts put in the side bar block, but this is just a workaround to get the scripts working{%endcomment%}
 {% endblock %}

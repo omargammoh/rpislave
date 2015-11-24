@@ -16,8 +16,8 @@
 * Reboot, The server will start automatically after the reboot
   * `sudo reboot`
 * Initiate slave on rpi-master:
-  * In the rpimaster database, in the latestinfo collection, add document with the orrect parameters:
-  * `{"label": "Development and testing", "data_db": "i-1", "fs_db": "fs-1"}`
+  * In the rpimaster database, in the latestinfo collection, add document with the orrect parameters:`{"label": "Development and testing", "data_db": "i-1", "fs_db": "fs-1"}`
+
 ## Ports ##
 * The following ports are used in he raspberry pi:
   * `9001` for the main website

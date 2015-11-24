@@ -80,17 +80,16 @@ function highchart_update(series){
 function update_table(data){
     $('#div_table').html('')
     tbl = ""
-    tbl += "<table style='width:100%'>"
+    tbl += "<table align='center' style='width:95%'>"
     tbl += "<tr>"
     for (var key in data) {
         if (data.hasOwnProperty(key) && key.indexOf("-avg")!=-1)  {
             var v = data[key]
-            tbl += "<td><h3>"
-            tbl += key + "<br>"
+            tbl += "<td align='center'>"
+            tbl += "<h3>" + key + "</h3>" + "<br>" + "<br>"
             //todo: take the last item instead of the first item
-            tbl += Math.round(v[0][1]*10000)/10000
-            tbl += "</h3>"
-            tbl += "<h5>" + v[0][0] + "</h5>"
+            tbl += "<h1>" + Math.round(v[0][1]*10000)/10000 +"</h1>" + "<br>"
+            tbl += "<h6>" + v[0][0] + "</h6>"
             tbl += "</td>"
       }
     }

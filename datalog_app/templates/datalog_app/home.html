@@ -45,16 +45,21 @@ function insert_chart(btn, div, url, data){
     )
 }
 
+loops_since_last_update = 0
+
 function highchart_update(series){
+    loops_since_last_update += 1
     console.log('ajax request...')
     _ajax(btn="", url='/datalog_app/highchart_update', data={"start_id":latest_id + 1}
         , success=function(data, textStatus, jqXHR){
             if (data.mx > 0){
+                loops_since_last_update = 0
                 console.log("new data " + data.mn + "->" + data.mx)
                 latest_id = data.mx
                 var serLength = series.length;
                 xxxx = data
                 update_table(data.data)
+                $("#div_table").css('opacity', 1)
                 for (var i = 0; i < serLength; i++) {
                     serie = series[i];
                     if (serie.name in data.data){
@@ -75,6 +80,8 @@ function highchart_update(series){
         , error=undefined
         , timeout=15000
     )
+    $("#div_table").css('opacity', Math.max(1 - loops_since_last_update/5, 0.1) )
+
 }
 
 function update_table(data){

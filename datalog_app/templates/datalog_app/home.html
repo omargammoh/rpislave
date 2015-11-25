@@ -7,7 +7,7 @@
     </div>
     <br>
     <hr>
-    <button class="btn" onclick="insert_chart(this, div_chart, '/datalog_app/highchart', {})">Load Chart</button>
+    <button class="btn" id="btn_insert_chart" onclick="insert_chart(this, div_chart, '/datalog_app/highchart', {})">Load Chart</button>
     <div class="col-lg-10" id="div_chart">
     </div>
     <div class="col-lg-10" id="div_table">
@@ -113,6 +113,10 @@ function update_table(data){
 
 <script src="/static/js/highcharts.js"></script>
 <script src="/static/js/exporting.js"></script>
+
+<script>
+$("#btn_insert_chart").click()
+</script>
 
 {%comment%}scripts put in the side bar block, but this is just a workaround to get the scripts working{%endcomment%}
 {% endblock %}

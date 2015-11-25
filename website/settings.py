@@ -45,7 +45,7 @@ except:
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -152,6 +152,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 #todo: this excempt url is just for debug, remove it later
 LOGIN_EXEMPT_URLS = ('rqst',
+                     'datalog_app', #this is for nrc imad asked to be able to access the datalog slave without login
                      'datalog_app/highchart_update' #when rpislave reboots user is not longer aauthenticated, but we want the auto update feature of datalog to continue to work,
     )
 

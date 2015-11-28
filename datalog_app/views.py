@@ -10,7 +10,7 @@ import numpy as np
 
 info = {
     "label": "DATA-LOG",
-    "desc": "Record data from RS485, i2c or spi devices"
+    "desc": "Record data through RS485, i2c or spi interfaces"
 }
 
 conf = get_conf()

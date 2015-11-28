@@ -3,7 +3,7 @@
 {% block content %}
 <div>
     <div>
-        <h1>{{ info.label }}</h1><i> {{ info.desc }} </i>
+        <h1>{{ info.label }}</h1><i><td>{% if datalog_conf.desc %}{{ datalog_conf.desc }}{% else %}{{ info.desc }}{% endif %}</i>
     </div>
     <br>
     <hr>
@@ -16,6 +16,9 @@
     <div>
         <h1>Measured Parameters</h1>
         <table align='center' style='width:95%'>
+            <col width="10%">
+            <col width="10%">
+            <col width="10%">
             <tr>
                 <td>name</td>
                 <td>unit</td>
@@ -26,7 +29,7 @@
             <tr>
                 <td>{{ key }}</td>
                 <td>{% if sensordic.unit %}{{ sensordic.unit }}{% else %}-{% endif %}</td>
-                <td>{% if sensordic.functions %}{{ sensordic.functions }}{% else %}-{% endif %}</td>
+                <td>{% if sensordic.pp %}{{ sensordic.pp }}{% else %}-{% endif %}</td>
                 <td>{% if sensordic.desc %}{{ sensordic.desc }}{% else %}-{% endif %}</td>
             </tr>
             {% endfor %}

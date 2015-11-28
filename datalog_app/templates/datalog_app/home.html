@@ -12,12 +12,26 @@
     </div>
     <div class="col-lg-10" id="div_table">
     </div>
-
+    <br>
     <div>
         <h1>Measured Parameters</h1>
-    {% for key, sensordic in datalog_conf.sensors.items %}
-        <p>{{ key }}: {% if sensordic.desc %}{{ sensordic.desc }}{% else %}- no description -{% endif %}</p>
-    {% endfor %}
+        <table align='center' style='width:95%'>
+            <tr>
+                <td>name</td>
+                <td>unit</td>
+                <td>functions</td>
+                <td>description</td>
+            </tr>
+            {% for key, sensordic in datalog_conf.sensors.items %}
+            <tr>
+                <td>{{ key }}</td>
+                <td>{% if sensordic.unit %}{{ sensordic.unit }}{% else %}-{% endif %}</td>
+                <td>{% if sensordic.functions %}{{ sensordic.functions }}{% else %}-{% endif %}</td>
+                <td>{% if sensordic.desc %}{{ sensordic.desc }}{% else %}-{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
     </div>
 
 

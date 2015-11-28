@@ -16,20 +16,17 @@
     <div>
         <h1>Measured Parameters</h1>
         <table align='center' style='width:95%'>
-            <col width="10%">
-            <col width="10%">
-            <col width="10%">
+            <col width="8%">
+            <col width="8%">
             <tr>
                 <td>name</td>
                 <td>unit</td>
-                <td>functions</td>
                 <td>description</td>
             </tr>
             {% for key, sensordic in datalog_conf.sensors.items %}
             <tr>
                 <td>{{ key }}</td>
                 <td>{% if sensordic.unit %}{{ sensordic.unit }}{% else %}-{% endif %}</td>
-                <td>{% if sensordic.pp %}{{ sensordic.pp }}{% else %}-{% endif %}</td>
                 <td>{% if sensordic.desc %}{{ sensordic.desc }}{% else %}-{% endif %}</td>
             </tr>
             {% endfor %}

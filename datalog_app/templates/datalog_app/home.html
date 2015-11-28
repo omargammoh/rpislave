@@ -13,6 +13,15 @@
     <div class="col-lg-10" id="div_table">
     </div>
 
+    <div>
+        <h1>Measured Parameters</h1>
+    {% for key, sensordic in datalog_conf.sensors.items %}
+        <p>{{ key }}: {% if sensordic.desc %}{{ sensordic.desc }}{% else %}- no description -{{ endif }}</p>
+    {% endfor %}
+    </div>
+
+
+
 </div>
 
 {% endblock %}

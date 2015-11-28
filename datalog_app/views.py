@@ -17,7 +17,7 @@ conf = get_conf()
 datalog_conf = conf['apps']['datalog_app']
 
 def home(request, template_name='datalog_app/home.html'):
-    return render_to_response(template_name, {"info": info}, context_instance=RequestContext(request))
+    return render_to_response(template_name, {"info": info, "datalog_conf": datalog_conf}, context_instance=RequestContext(request))
 
 def _getdata(start_id=None, end_id=None):
     """

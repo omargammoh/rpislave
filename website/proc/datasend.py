@@ -181,10 +181,12 @@ def _send_app_data(app_name, keep_period, db, conf_label, perm):
         except:
             #if dataabase is malformed, then try to fix it
             #
-            if "DatabaseError: database disk image is malformed" in traceback.format_exc():
+            tb = traceback.format_exc()
+            print '>> datasend: !!model %s failed %s' %(model.__name__, tb)
+
+            if "DatabaseError: database disk image is malformed" in str(tb):
                 print "datasend: !!!database is malformed for %s, trying to fix it" % model.__name__
                 fix_malformed_db()
-            print '>> datasend: !!model %s failed %s' %(model.__name__, traceback.format_exc())
 
 def _get_time_error():
     try:

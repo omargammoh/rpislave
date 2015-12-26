@@ -100,7 +100,7 @@ def fix_malformed_db():
 
         #save it on a text file
         print 'fix_malformed_db >> saving conf as text'
-        f = file('/home/pi/rpislave/conf.json')
+        f = file('/home/pi/rpislave/conf.json', 'w')
         f.write(json_util.dumps(conf_x))
         f.close()
 

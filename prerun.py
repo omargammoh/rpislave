@@ -113,6 +113,8 @@ def setup_db():
         newconf = Conf(data=conf_str, meta="")
         newconf.save()
 
+        os.remove('/home/pi/rpislave/conf.json')
+
 def network_name():
     """
     http://www.howtogeek.com/167195/how-to-change-your-raspberry-pi-or-other-linux-devices-hostname/

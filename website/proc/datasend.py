@@ -11,7 +11,7 @@ import urllib
 import os, django
 from bson import json_util
 
-from website.processing import get_conf
+from website.processing import get_conf, fix_malformed_db
 
 from django.db.models import get_app, get_models
 
@@ -179,6 +179,11 @@ def _send_app_data(app_name, keep_period, db, conf_label, perm):
         try:
             _send_model_data(model=model, keep_period=keep_period, db=db, conf_label=conf_label, app_name=app_name, perm=perm)
         except:
+            #if dataabase is malformed, then try to fix it
+            #
+            if "DatabaseError: database disk image is malformed" in traceback.format_exc():
+                print "datasend: !!!database is malformed for %s, trying to fix it" % model.__name__
+                fix_malformed_db()
             print '>> datasend: !!model %s failed %s' %(model.__name__, traceback.format_exc())
 
 def _get_time_error():

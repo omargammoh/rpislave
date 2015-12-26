@@ -92,6 +92,36 @@ def get_conf():
             pass
     raise BaseException('could not any parsable configuration')
 
+def fix_malformed_db():
+    try:
+        #get conf
+        print 'fix_malformed_db >> getting conf'
+        conf_x = get_conf()
+
+        #save it on a text file
+        print 'fix_malformed_db >> saving conf as text'
+        f = file('/home/pi/rpislave/conf.json')
+        f.write(json_util.dumps(conf_x))
+        f.close()
+
+        #remove db
+        import os
+        print 'fix_malformed_db >> deleting db'
+        os.remove('/home/pi/rpislave/db.sqlite3')
+
+        #keep a note as a file
+        print 'fix_malformed_db >> saving log as text'
+        from datetime import datetime
+        now = datetime.utcnow()
+        f = file('/home/pi/data/dbdelete-' + now.strftime('%Y%m%d%H%M%S'),'w')
+        f.write('we have taken a copy of conf, saved it on disk, deleted the database and restarted. %s' %str(now))
+        f.close()
+
+        #restart
+        print 'fix_malformed_db >> rebooting'
+        os.system('sudo reboot')
+    except:
+        print "error while trying to fix malformed db"
 
 class MP():
     def __init__(self, name, target, request, cmd=None):

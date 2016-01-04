@@ -3,8 +3,7 @@ from datetime import datetime, timedelta
 import numpy as np
 import itertools
 import sys
-from website.processing import Timeout
-
+from website.processing import Timeout, fix_malformed_db
 
 import os, django
 from bson import json_util
@@ -352,7 +351,15 @@ def main(sample_period, data_period, sensors, rs485=None):
                 print ">>> datalog_app:    data saved in db"
 
             except:
-                print traceback.format_exc()
+
+                tb = traceback.format_exc()
+
+                if "DatabaseError: database disk image is malformed" in str(tb):
+                    print "datasend: !!!database is malformed, fixing it"
+                    fix_malformed_db()
+
+
+                print tb
                 print '>>> datalog_app:    !!could not send data to local DB'
         else:
             print ">>> datalog_app:    no data saved in db"

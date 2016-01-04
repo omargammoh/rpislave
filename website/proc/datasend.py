@@ -135,7 +135,15 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
                 pass
         #if exception in handeling unsent data
         except:
-            print traceback.format_exc()
+
+
+            tb = traceback.format_exc()
+
+            if "DatabaseError: database disk image is malformed" in str(tb):
+                print "datasend: !!!database is malformed, fixing it"
+                fix_malformed_db()
+
+            print tb
             print '>> datasend: !!sending data failed'
             cnt['x'] += 1
 

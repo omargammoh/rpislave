@@ -214,6 +214,7 @@ def main(sample_period, data_period, sensors, rs485=None):
             mb_client = _get_mb_client(rs485)
         except:
             print traceback.format_exc()
+            print ">> datalog: unable to create mbclient"
             mb_client = None
     else:
         mb_client = None
@@ -225,6 +226,7 @@ def main(sample_period, data_period, sensors, rs485=None):
             spi_client = spidev.SpiDev()
         except:
             print traceback.format_exc()
+            print ">> datalog: unable to connect to create spiclient"
             spi_client = None
     else:
         spi_client = None
@@ -280,8 +282,8 @@ def main(sample_period, data_period, sensors, rs485=None):
                         spi_ok = True
                         print ">>> datalog: spi connected after recreating client"
                     except:
-                        print ">>> datalog: !!could not connect to spi even after recreating client"
                         print traceback.format_exc()
+                        print ">>> datalog: !!could not connect to spi even after recreating client"
                         spi_client = None
                         spi_ok = False
             else:
@@ -350,21 +352,13 @@ def main(sample_period, data_period, sensors, rs485=None):
                 print ">>> datalog_app:    data saved in db"
 
             except:
-                print '>>> datalog_app:    !!could not send data to local DB'
                 print traceback.format_exc()
+                print '>>> datalog_app:    !!could not send data to local DB'
         else:
             print ">>> datalog_app:    no data saved in db"
 
         print '>>> datalog_app: finished loop'
     return None
-
-
-
-
-
-
-
-
 
 
 

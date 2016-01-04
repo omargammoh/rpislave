@@ -135,8 +135,8 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
                 pass
         #if exception in handeling unsent data
         except:
-            print '>> datasend: !!sending data failed'
             print traceback.format_exc()
+            print '>> datasend: !!sending data failed'
             cnt['x'] += 1
 
         #handle the sent data(do not delete data from website because config is there)
@@ -182,7 +182,7 @@ def _send_app_data(app_name, keep_period, db, conf_label, perm):
             #if dataabase is malformed, then try to fix it
             #
             tb = traceback.format_exc()
-            print '>> datasend: !!model %s failed %s' %(model.__name__, tb)
+            print '%s>> datasend: !!model %s failed' %(tb, model.__name__)
 
             if "DatabaseError: database disk image is malformed" in str(tb):
                 print "datasend: !!!database is malformed for %s, trying to fix it" % model.__name__
@@ -260,7 +260,7 @@ def main(send_period=60*2, keep_period=60*60*12, app_list=None):
 
                     print ">> datasend: sent latest info"
                 except:
-                    print ">> !!datasend: error sending latest info %s" %traceback.format_exc()
+                    print "%s>> !!datasend: error sending latest info " %traceback.format_exc()
 
                 # send the data of the apps
                 for app_name in app_list:
@@ -268,8 +268,8 @@ def main(send_period=60*2, keep_period=60*60*12, app_list=None):
                         print ">> datasend: working on app %s (perm)" % app_name
                         _send_app_data(app_name=app_name, keep_period=keep_period, db=None, conf_label=conf_label, perm=perm)
                     except:
-                        print '>> datasend: !! _send_app_data for %s failed' % app_name
                         print traceback.format_exc()
+                        print '>> datasend: !! _send_app_data for %s failed' % app_name
             else:
                 print ">> datasend: internet is off"
 

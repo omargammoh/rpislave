@@ -156,5 +156,5 @@ LOGIN_EXEMPT_URLS = ('rqst',
                      'datalog_app/highchart_update' #when rpislave reboots user is not longer aauthenticated, but we want the auto update feature of datalog to continue to work,
     )
 
-BASE_URL = "http://rpi-master.com/api/slave/?"
+DEFAULT_MASTER_URL = "http://rpi-master.com/api/slave/?"
 

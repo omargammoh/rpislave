@@ -13,6 +13,8 @@ from website.processing import Timeout
 
 conf = website.processing.get_conf()
 
+master_url = conf.get('master_url', settings.DEFAULT_MASTER_URL)
+
 REQUIRED_TUNNELS = ['9001', '9005']
 if 'motion_app' in conf['apps']:
     REQUIRED_TUNNELS.append('9002')
@@ -42,7 +44,7 @@ def new_tunnel_para(slave_port):
     """
     ask server to provide server_ip, server_port to connect reverse ssh to
     """
-    full_url = settings.BASE_URL + conf['perm'] + "&para=new_tunnel&slave_port=%s" %slave_port #http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
+    full_url = master_url + conf['perm'] + "&para=new_tunnel&slave_port=%s" %slave_port #http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
 
     resp = urllib2.urlopen(full_url, timeout=15).read().strip()
     js_resp = json_util.loads(resp)

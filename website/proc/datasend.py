@@ -49,7 +49,7 @@ def sanitize_colname(label):
     #The name you choose must begin with a letter or underscore and must not begin with 'system.' or 'objectlabs-system.'
     #. It also must have fewer than 80 characters and cannot have any spaces or special characters (hyphens, underscores and periods are OK) in it.
 
-def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
+def _send_model_data(model, keep_period, db, conf_label, app_name, perm, master_url):
     """
     model: the actual model object
     """
@@ -94,12 +94,12 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
                         #data = '{"Tamb-max": 0.0, "Tamb-min": 0.0, "timestamp": {"$date": 1439128980000}, "Tamb-avg": 0.0}'
                         #perm = "_perm=write&_slave=development+and+testing&_sig=b901abde"
                         #col_name='development_and_testing_2.datalog_app.Reading'
-                        full_url = settings.BASE_URL + perm + "&para=fwd_to_db&" + urllib.urlencode([('col_name', col_name), ('data', data)])#http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
+                        full_url = master_url + perm + "&para=fwd_to_db&" + urllib.urlencode([('col_name', col_name), ('data', data)])#http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
                         resp = urllib2.urlopen(full_url, timeout=15).read().strip()
 
                         if not str(json_util.loads(resp)['data']).lower()=='true':
                             print 'fail'
-                            raise BaseException ('server did not return data:true thing')
+                            raise BaseException('server did not return data:true thing')
 
                     #or send it directly to db
                     elif db is not None:
@@ -180,12 +180,12 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm):
     t2 = time()
     print '>> datasend: model %s done, took %s sec, %s, mode %s' % (model_name, round(t2 - t1, 3), cnt, model_mode)
 
-def _send_app_data(app_name, keep_period, db, conf_label, perm):
+def _send_app_data(app_name, keep_period, db, conf_label, perm, master_url):
     app = get_app(app_name)
     for model in get_models(app):
         print ">> datasend: working on model %s" % model.__name__
         try:
-            _send_model_data(model=model, keep_period=keep_period, db=db, conf_label=conf_label, app_name=app_name, perm=perm)
+            _send_model_data(model=model, keep_period=keep_period, db=db, conf_label=conf_label, app_name=app_name, perm=perm, master_url=master_url)
         except:
             #if dataabase is malformed, then try to fix it
             #
@@ -226,6 +226,8 @@ def main(send_period=60*2, keep_period=60*60*12, app_list=None):
     mongo_address = conf.get('mongo_address')
     perm = conf.get('perm')#looks like this "_perm=write&_slave=development+and+testing&_sig=b901ande"
     conf_label = conf['label']
+    master_url = conf.get('master_url', settings.DEFAULT_MASTER_URL)
+
 
     if (mongo_address is None) and (perm is None):
         return None
@@ -257,7 +259,7 @@ def main(send_period=60*2, keep_period=60*60*12, app_list=None):
                         # ?_perm=write&_slave=development+and+testing&_sig=b901abde
                         # &para=fwd_to_db
                         # &data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
-                    full_url = settings.BASE_URL + perm + "&para=fwd_to_db&" + urllib.urlencode([('col_name', 'latestinfo'), ('data', data_str)])#http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
+                    full_url = master_url + perm + "&para=fwd_to_db&" + urllib.urlencode([('col_name', 'latestinfo'), ('data', data_str)])#http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
                     #print ">> datasend: %s" %full_url
                     resp = urllib2.urlopen(full_url, timeout=15).read().strip()
 
@@ -274,7 +276,7 @@ def main(send_period=60*2, keep_period=60*60*12, app_list=None):
                 for app_name in app_list:
                     try:
                         print ">> datasend: working on app %s (perm)" % app_name
-                        _send_app_data(app_name=app_name, keep_period=keep_period, db=None, conf_label=conf_label, perm=perm)
+                        _send_app_data(app_name=app_name, keep_period=keep_period, db=None, conf_label=conf_label, perm=perm, master_url=master_url)
                     except:
                         print traceback.format_exc()
                         print '>> datasend: !! _send_app_data for %s failed' % app_name

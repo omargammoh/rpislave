@@ -11,6 +11,7 @@ patterns_tup = ('',
     #website's urls
     url(r'^$', website.views.home, name='home'),
     url(r'^confsetup/$', website.views.confsetup),
+    url(r'^set_conf/$', website.views.set_conf),
     url(r'^status/$', website.views.status),
     url(r'^process/$', website.views.appmanage),
     url(r'^cmd/$', website.views.cmd),

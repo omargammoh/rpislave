@@ -12,6 +12,7 @@ from website.processing import MP, get_conf
 import importlib
 import subprocess
 from website.templatetags.customfilters import conf
+from website.models import Conf
 
 def home(request, template_name='home.html'):
     conf = get_conf()
@@ -143,12 +144,21 @@ def blink_led(request):
         d['error']=traceback.format_exc()
     return HttpResponse(json.dumps(d), content_type='application/json')
 
-def setup_conf(request):
+def set_conf(request):
     try:
         if conf is None:
             str_conf = request.GET['str_conf']
             try:
                 json_conf = json.loads(str_conf)
+                str_conf2 = json.dumps(json_conf)#concise version of the conf
+
+                for c in Conf.objects.all():
+                    if c.data == str_conf2:
+                        return HttpResponse(json.dumps({"alert": "the configuration remains the same!"}), content_type='application/json')
+                    c.delete()
+                newconf = Conf(data=str_conf2, meta="")
+                newconf.save()
+                return HttpResponse(json.dumps({"alert": "New configuration successfuly saved please restart to take new configuration into effect"}), content_type='application/json')
 
             except:
                 return HttpResponse(json.dumps({"error": "not able to parse the conf that you sent %s" % str_conf}), content_type='application/json')

@@ -30,6 +30,9 @@ def home(request, template_name='home.html'):
             print '!!could not add info from the app %s' % (app)
     return render_to_response(template_name, {"app_info": app_info, "desc": conf.get('desc', '-')}, context_instance=RequestContext(request))
 
+def confsetup(request, template_name='confsetup.html'):
+    return render_to_response(template_name, {}, context_instance=RequestContext(request))
+
 def test(request, template_name='test.html'):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
 

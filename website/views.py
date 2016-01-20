@@ -14,6 +14,7 @@ import subprocess
 from website.templatetags.customfilters import conf
 from website.models import Conf
 
+#pages
 def home(request, template_name='home.html'):
     conf = get_conf()
     app_info = []
@@ -32,7 +33,12 @@ def home(request, template_name='home.html'):
     return render_to_response(template_name, {"app_info": app_info, "desc": conf.get('desc', '-')}, context_instance=RequestContext(request))
 
 def confsetup(request, template_name='confsetup.html'):
-    return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    try:
+        conf = get_conf()
+    except:
+        conf = {}
+
+    return render_to_response(template_name, {"str_conf":json.dumps(conf)}, context_instance=RequestContext(request))
 
 def test(request, template_name='test.html'):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
@@ -42,6 +48,7 @@ def nourls(why):
         return render_to_response(template_name,{"why": why}, context_instance=RequestContext(request))
     return nourls
 
+#api
 def status(request):
     try:
         cmd = request.GET.get("cmd",None)
@@ -146,23 +153,20 @@ def blink_led(request):
 
 def set_conf(request):
     try:
-        if conf is None:
-            str_conf = request.GET['str_conf']
-            try:
-                json_conf = json.loads(str_conf)
-                str_conf2 = json.dumps(json_conf)#concise version of the conf
+        str_conf = request.GET['str_conf']
+        try:
+            json_conf = json.loads(str_conf)#making sure conf is parsable
+            str_conf2 = json.dumps(json_conf)#concise version of the conf
 
-                for c in Conf.objects.all():
-                    if c.data == str_conf2:
-                        return HttpResponse(json.dumps({"alert": "the configuration remains the same!"}), content_type='application/json')
-                    c.delete()
-                newconf = Conf(data=str_conf2, meta="")
-                newconf.save()
-                return HttpResponse(json.dumps({"alert": "New configuration successfuly saved please restart to take new configuration into effect"}), content_type='application/json')
+            for c in Conf.objects.all():
+                if c.data == str_conf2:
+                    return HttpResponse(json.dumps({"alert": "the configuration remains the same!"}), content_type='application/json')
+                c.delete()
+            newconf = Conf(data=str_conf2, meta="")
+            newconf.save()
+            return HttpResponse(json.dumps({"alert": "New configuration successfuly saved please restart to take new configuration into effect"}), content_type='application/json')
 
-            except:
-                return HttpResponse(json.dumps({"error": "not able to parse the conf that you sent %s" % str_conf}), content_type='application/json')
-        else:
-            return HttpResponse(json.dumps({"error": "conf is already installed, you may not overwrite it"}), content_type='application/json')
+        except:
+            return HttpResponse(json.dumps({"error": "not able to parse the conf that you sent %s" % str_conf}), content_type='application/json')
     except:
         return HttpResponse(json.dumps({"error": "%s" %traceback.format_exc()}), content_type='application/json')

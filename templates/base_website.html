@@ -104,20 +104,40 @@ function _ajax(btn, url, data, success, error, timeout){
         success: function (data, textStatus, jqXHR) {
             //handling server side messages
             if ('alert' in data) {
-                alert(data.alert)
+                try{
+                    alert(data.alert)
+                }
+                catch(err) {
+                }
             }
             if ('msg' in data) {
-                $('#msg')[0].title=data.msg
+                try{
+                    $('#msg')[0].title=data.msg
+                }
+                catch(err) {
+                }
             }
             if ('timing' in data) {
-                $('#timing')[0].title=data.timing
+                try{
+                    $('#timing')[0].title=data.timing
+                }
+                catch(err) {
+                }
             }
             if ('timing_swimlanes' in data) {
-                timing_swimlanes = data.timing_swimlanes
+                try{
+                    timing_swimlanes = data.timing_swimlanes
+                }
+                catch(err) {
+                }
             }
             if ('error' in data) {
-                console.log("server error: " + data.error)
-                $('#error')[0].title=data.error
+                try{
+                    console.log("server error: " + data.error)
+                    $('#error')[0].title=data.error
+                    }
+                catch(err) {
+                }
             }
             else {
                 try {

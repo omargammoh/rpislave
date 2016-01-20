@@ -38,7 +38,7 @@ def confsetup(request, template_name='confsetup.html'):
     except:
         conf = {}
 
-    return render_to_response(template_name, {"str_conf":json.dumps(conf)}, context_instance=RequestContext(request))
+    return render_to_response(template_name, {"str_conf":json.dumps(conf, indent=4)}, context_instance=RequestContext(request))
 
 def test(request, template_name='test.html'):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))

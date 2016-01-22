@@ -164,7 +164,7 @@ def set_conf(request):
                 c.delete()
             newconf = Conf(data=str_conf2, meta="")
             newconf.save()
-            return HttpResponse(json.dumps({"alert": "New configuration successfuly saved please restart to take new configuration into effect"}), content_type='application/json')
+            return HttpResponse(json.dumps({"alert": "New configuration successfuly saved please restart to take the new configuration into effect"}), content_type='application/json')
 
         except:
             return HttpResponse(json.dumps({"error": "not able to parse the conf that you sent %s" % str_conf}), content_type='application/json')

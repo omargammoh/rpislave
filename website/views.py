@@ -167,6 +167,6 @@ def set_conf(request):
             return HttpResponse(json.dumps({"alert": "New configuration successfuly saved please restart to take the new configuration into effect"}), content_type='application/json')
 
         except:
-            return HttpResponse(json.dumps({"error": "not able to parse the conf that you sent %s" % str_conf}), content_type='application/json')
+            return HttpResponse(json.dumps({"alert": "not able to parse the conf that you sent %s" % str_conf}), content_type='application/json')
     except:
-        return HttpResponse(json.dumps({"error": "%s" %traceback.format_exc()}), content_type='application/json')
+        return HttpResponse(json.dumps({"alert": "%s" %traceback.format_exc()}), content_type='application/json')

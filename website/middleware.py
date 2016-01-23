@@ -38,6 +38,8 @@ class LoginRequiredMiddleware:
             #if the admin page, then send to admin page, the admin app will ass for authentication
             if request.META.get('PATH_INFO', '').startswith('/set_conf'):
                 return None
+            if request.META.get('PATH_INFO', '').startswith('/cmd'):
+                return None
             return render_to_response("confsetup.html", {}, context_instance=RequestContext(request))
 
         #request coming directly from server connected to via rev ssh eg 127.0.0.1:47604 & request coming from slave itself 127.0.0.1:9001

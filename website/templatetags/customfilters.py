@@ -37,7 +37,7 @@ except:
 
 @register.simple_tag()
 def git_info():
-    return "rpis-%s-%s, conf-%s-%s" %(gitbranch, gitversion[:2], confgitbranch, confgitversion[:2])
+    return "rpis-%s-%s" %(gitbranch, gitversion[:2])
 
 @register.filter()
 def rev(value):

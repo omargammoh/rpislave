@@ -165,6 +165,45 @@ function _ajax(btn, url, data, success, error, timeout){
 
     });
 }
+
+function cmd_func(url, sdata, ths){
+    var btn =  $(ths)
+    btn.prop('disabled', true);
+
+    $.ajax({
+        url: url,
+        data: sdata,
+        success: function (data, textStatus, jqXHR) {
+            if ('error' in data) {
+                alert("server error for " + url + data['error'])
+            }
+            d = data
+            var p_update = $('#p_jsresponse')
+            var s = JSON.stringify(data, undefined, 4).replace(/(?: )/g, '&nbsp;').replace(/(?:\r\n|\r|\n)/g, '<br />');
+            p_update.html("<pre><code>" + s + "</code></pre>")
+            btn.prop('disabled', false);
+
+            if ("conf" == sdata["cmd"]){}
+            else if ("r" == sdata["cmd"]){}
+            else if (data['ison'] == true) {
+                btn.parent().parent().find('h3').css('color', 'lightgreen');
+            }
+            else if (data['ison'] == false) {
+                btn.parent().parent().find('h3').css('color', 'red');
+            }
+            else {
+                btn.parent().parent().find('h3').css('color', 'black')
+            }
+        },
+        error: function (err) {
+            e = err
+            alert("ajax error for " + url + " error = " + err)
+            btn.prop('disabled', false);
+        }
+
+    });
+}
+
 </script>
 
 <style>

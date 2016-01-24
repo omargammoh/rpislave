@@ -16,7 +16,7 @@ conf = website.processing.get_conf()
 master_url = conf.get('master_url', settings.DEFAULT_MASTER_URL)
 
 REQUIRED_TUNNELS = ['9001', '9005']
-if 'motion_app' in conf['apps']:
+if (conf is not None) and 'motion_app' in conf.get('apps', {}):
     REQUIRED_TUNNELS.append('9002')
 
 #tunneling

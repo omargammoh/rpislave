@@ -1,4 +1,3 @@
-import website.templatetags.customfilters
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse
@@ -11,14 +10,17 @@ import traceback
 from website.processing import MP, get_conf
 import importlib
 import subprocess
-from website.templatetags.customfilters import conf
 from website.models import Conf
 
 #pages
 def home(request, template_name='home.html'):
+    #get conf and redirect to conf setup if None
     conf = get_conf()
+    if conf is None:
+        return confsetup(request=request)
+
     app_info = []
-    for app in conf['apps'].keys():
+    for app in conf.get('apps', {}).keys():
         try:
             d = {"name": app}
             m = importlib.import_module("%s.views" %app)
@@ -157,6 +159,9 @@ def set_conf(request):
         try:
             json_conf = json.loads(str_conf)#making sure conf is parsable
             str_conf2 = json.dumps(json_conf)#concise version of the conf
+
+            if not "label" in json_conf:
+                return HttpResponse(json.dumps({"alert": "no label is defined in this configuration"}), content_type='application/json')
 
             for c in Conf.objects.all():
                 if c.data == str_conf2:

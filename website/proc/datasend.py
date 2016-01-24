@@ -220,7 +220,7 @@ def main(send_period=60*2, keep_period=60*60*12, app_list=None):
     conf = get_conf()
 
     if app_list is None:
-        app_list = conf['apps'].keys()
+        app_list = conf.get('apps', {}).keys()
     app_list.append("website")
 
     mongo_address = conf.get('mongo_address')

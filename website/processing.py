@@ -86,11 +86,13 @@ def get_conf():
     for ob in Conf.objects.all():
         try:
             js = json_util.loads(ob.data)
+            if not ("label" in js):
+                raise BaseException('no label in conf')
             return js
         except:
             print "!!was not able to parse and get label of a configuration row, skipping"
             pass
-    raise BaseException('could not any parsable configuration')
+    return None
 
 def fix_malformed_db():
     try:

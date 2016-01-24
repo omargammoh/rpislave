@@ -27,7 +27,7 @@ patterns_tup = ('',
 
 #include apps e.g. url(r'^some_app/', include('some_app.urls')),
 try:
-    appnames = get_conf()['apps'].keys()
+    appnames = get_conf().get('apps', {}).keys()
 except:
     print "> urls: app names could not be loaded from conf"
     appnames = []

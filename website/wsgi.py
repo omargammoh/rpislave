@@ -39,7 +39,7 @@ if conf is not None:
         ac = [m.name for m in multiprocessing.active_children()]
         print '> processes before: %s' % ac
 
-        for (ps_name, conf) in conf["apps"].iteritems():
+        for (ps_name, conf) in conf.get("apps", {}).iteritems():
             try:
                 if conf.get('autostart', True) == True:
                     m = importlib.import_module("%s.process" % ps_name)

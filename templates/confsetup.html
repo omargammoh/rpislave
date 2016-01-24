@@ -23,9 +23,9 @@
         <col width="33%">
         <col width="33%">
         <tr>
-            <td><button type="button" onclick="submitt_conf(this)" style="color: red">submitt configuration</button></td>
-            <td><button type="button" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'. /home/pi/rpislave/update.sh'}, this)" style="color: red">Update</button></td>
-            <td><button type="button" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'. /home/pi/rpislave/restart.sh'}, this)" style="color: red">Restart</button></td>
+            <td><button type="button" onclick="submitt_conf(this)" style="color: red">Submitt configuration</button></td>
+            <td><button type="button" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'. /home/pi/rpislave/update.sh'}, this)" style="color: red">Update rpi-slave</button></td>
+            <td><button type="button" onclick="cmd_func('{% url 'website.views.cmd' %}', {'cmd':'. /home/pi/rpislave/restart.sh'}, this)" style="color: red">Restart rpi-slave</button></td>
         </tr>
     </table>
     <hr>

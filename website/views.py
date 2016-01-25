@@ -164,6 +164,7 @@ def set_conf(request):
                 return HttpResponse(json.dumps({"alert": "no label is defined in this configuration"}), content_type='application/json')
 
             for c in Conf.objects.all():
+                #TODO: pasre c.data and dumps is before checking equality
                 if c.data == str_conf2:
                     return HttpResponse(json.dumps({"alert": "the configuration remains the same!"}), content_type='application/json')
                 c.delete()

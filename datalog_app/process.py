@@ -136,7 +136,7 @@ def _get_point(mb_client, spi_client, sensors_conf):
     #for each sensor
     for label, conf in sensors_conf.iteritems():
         try:
-            if conf['active']:
+            if conf.get('active',True):
                 if conf['type'] == "rs485":
                     #read
                     reg = mb_client.read_input_registers(conf['register'],unit=conf['address'])
@@ -227,7 +227,7 @@ def main(sample_period, data_period, sensors, rs485=None):
 
 
     #check if a modbus client is needed and create it
-    rs485_present = any([(sensor['active'] and sensor['type'].lower() == "rs485") for (_,sensor) in sensors.iteritems()])
+    rs485_present = any([(sensor.get('active', True) and sensor['type'].lower() == "rs485") for (_,sensor) in sensors.iteritems()])
     if rs485_present:
         try:
             mb_client = _get_mb_client(rs485)
@@ -239,7 +239,7 @@ def main(sample_period, data_period, sensors, rs485=None):
         mb_client = None
 
     #check if a spi client is needed and create it
-    mcp3008_present = any([(sensor['active'] and sensor['type'].lower() in ["mcp3008", "spi", "spi-ct"]) for (_,sensor) in sensors.iteritems()])
+    mcp3008_present = any([(sensor.get('active', True) and sensor['type'].lower() in ["mcp3008", "spi", "spi-ct"]) for (_,sensor) in sensors.iteritems()])
     if mcp3008_present:
         try:
             spi_client = spidev.SpiDev()

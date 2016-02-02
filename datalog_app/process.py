@@ -75,7 +75,7 @@ def _read_ds18b20(id):
 def _read_am2302(pin, para):
     #http://www.home-automation-community.com/temperature-and-humidity-from-am2302-dht22-sensor-displayed-as-chart/
     with Timeout(seconds=2.5):
-        humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin)
+        humidity, temperature = Adafruit_DHT.read(Adafruit_DHT.AM2302, pin)
         if para == 'temperature':
             return float(temperature)
         elif para == 'humidity':

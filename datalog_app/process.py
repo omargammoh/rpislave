@@ -77,9 +77,15 @@ def _read_am2302(pin, para):
     with Timeout(seconds=2.5):
         humidity, temperature = Adafruit_DHT.read(Adafruit_DHT.AM2302, pin)
         if para == 'temperature':
-            return float(temperature)
+            v = float(temperature)
+            if v > 150.:
+                raise BaseException('temperature is too high %s' %v)
+            return v
         elif para == 'humidity':
-            return float(humidity)
+            v = float(humidity)
+            if v > 100.:
+                raise BaseException('humidity is too high %s' %v)
+            return v
         else:
             raise BaseException('para should be either temperatue or humidity')
 

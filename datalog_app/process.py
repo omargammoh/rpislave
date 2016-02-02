@@ -21,6 +21,12 @@ try:
 except:
     print ">>> datalog_app: !!could not load spidev module"
 
+try:
+    import Adafruit_DHT
+except:
+    print ">>> datalog_app: !!could not load Adafruit_DHT module"
+
+
 def __read_spi(spi, channel):
     adc = spi.xfer2([1,(8+channel)<<4,0])
     data = ((adc[1]&3) << 8) + adc[2]
@@ -65,6 +71,17 @@ def _read_ds18b20(id):
         f.close()
         raw = re.compile(r'(.+)t=(?P<raw>[-+]?\d+)(.+)', flags=re.DOTALL).match(text).groupdict()['raw']
         return float(raw)/1000. #this number is in celsuis, could be positive or negative
+
+def _read_am2302(pin, para):
+    #http://www.home-automation-community.com/temperature-and-humidity-from-am2302-dht22-sensor-displayed-as-chart/
+    with Timeout(seconds=2.5):
+        humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin)
+        if para == 'temperature':
+            return float(temperature)
+        elif para == 'humidity':
+            return float(humidity)
+        else:
+            raise BaseException('para should be either temperatue or humidity')
 
 def _pretty_time_delta(seconds):
     seconds = int(seconds)
@@ -134,6 +151,9 @@ def _get_point(mb_client, spi_client, sensors_conf):
                     dic[label] = float(raw)
                 elif conf['type'].lower() == "ds18b20":
                     raw = _read_ds18b20(id = conf['id'])#the number here comes readily in Celcuis
+                    dic[label] = float(raw)
+                elif conf['type'].lower() == "am2302":
+                    raw = _read_am2302(pin = conf['pin'], para=conf['para'])
                     dic[label] = float(raw)
                 else:
                     raise BaseException("unknown sensor type %s" %conf['type'])

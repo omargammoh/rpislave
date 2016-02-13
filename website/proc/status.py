@@ -89,9 +89,15 @@ def get_status():
     try:
         import dateutil.parser
         import pytz
+        t1 = time.time()
         resp = urllib2.urlopen('http://www.timeapi.org/utc/now', timeout=15).read().strip()
+        t2 = time.time()
+        time_needed = (t2 - t1)
+
+        correction = time_needed/2.
+
         dt_internet = dateutil.parser.parse(resp).astimezone(pytz.utc)
-        seconds = (datetime.datetime.utcnow().replace(tzinfo=pytz.utc) - dt_internet).total_seconds()
+        seconds = (datetime.datetime.utcnow().replace(tzinfo=pytz.utc) - dt_internet).total_seconds() - correction
         d['time_error'] = seconds
     except:
         d['time_error'] = "-"

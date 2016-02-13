@@ -222,7 +222,7 @@ def _process_data(data, sensors_conf):
                 agg = np.std(lis)
             else:
                 print ">>> datalog_app: !!the function %s if unknown, choose between min,max,avg and std" %func
-                pass
+                continue
             res['%s-%s' %(key,func)] = round(agg,2)
 
     return res #{'Tamb-avg' : 5., 'Tamb-min' : 1., 'G-min' : 60.}

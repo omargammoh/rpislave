@@ -72,7 +72,7 @@ def _send_model_data(model, keep_period, conf_label, app_name, perm, master_url)
            'x': 0, 'no-idea': 0, 'exception': 0}
 
     bulk_sendlist = []
-    bulk_thres = 100
+    bulk_thres = 20
 
     #loop over each datapoint
     list_ob = model.objects.all()

@@ -49,12 +49,12 @@ def sanitize_colname(label):
     #The name you choose must begin with a letter or underscore and must not begin with 'system.' or 'objectlabs-system.'
     #. It also must have fewer than 80 characters and cannot have any spaces or special characters (hyphens, underscores and periods are OK) in it.
 
-def _send_model_data(model, keep_period, db, conf_label, app_name, perm, master_url):
+def _send_model_data(model, keep_period, conf_label, app_name, perm, master_url):
     """
     model: the actual model object
     """
-    t1 = time()
     tm = time()
+    t1 = time()
 
     model_name = model.__name__
 
@@ -64,10 +64,21 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm, master_
         model_mode = ""
 
     conf_label_san = sanitize_colname(conf_label)
-    cnt = {'send-ok': 0, 'send-already': 0, 'send-fail': 0, 'del-nodel':0, 'del-ok':0, 'del-notyet':0, 'del-fail':0, 'x': 0}
+
+    cnt = {'send-ok': 0, 'send-fail': 0, "send-markfail": 0, "send-cantloads": 0,
+           'dontdelyet-ok': 0,
+           'nodel-ok': 0,
+           'del-ok': 0, 'del-fail': 0,
+           'x': 0, 'no-idea': 0, 'exception': 0}
+
+    bulk_sendlist = []
+    bulk_thres = 100
 
     #loop over each datapoint
-    for ob in model.objects.all():
+    list_ob = model.objects.all()
+    len_total = len(list_ob)
+    t2 = time()
+    for i, ob in enumerate(list_ob):
 
         #if there is a meta data then that's great
         try:
@@ -75,49 +86,137 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm, master_
             sent = str(meta['sent']).lower()
         #else if no meta data, create them, dont save it yet
         except:
-            meta = {}
+            #default values when no meta is present
+            meta = {'sent': "false"}
             sent = 'false'
 
-        #handle the unsent data
+        #handle the datapoint
         try:
             #if not sent
             if sent == 'false':
+                #add to bulk to be sent later
+                bulk_sendlist.append(ob)
+
+            #elif sent
+            elif len(str(meta['sent'])) == 4+2+2+2+2+2 and str(meta['sent']).isdigit():
+                #nodelete
+                if "nodelete" in model_mode:
+                    cnt['nodel-ok'] += 1
+                #deletable
+                else:
+                    sentdate = datetime.strptime(meta['sent'], "%Y%m%d%H%M%S")
+                    now = datetime.utcnow()
+                    #if this data point has been there for a short time, keep it
+                    if (now - sentdate).total_seconds() < keep_period:
+                        cnt['dontdelyet-ok'] += 1
+
+                    #if this data point has been there for a long time, delete it
+                    else:
+                        try:
+                            ob.delete()
+                            cnt['del-ok'] += 1
+                        except:
+                            cnt['del-fail'] += 1
+
+            #no idea whats going on
+            else:
+                cnt['no-idea'] += 1
+
+        #if exception in handeling the datapoint write the exception in meta data
+        except:
+
+            tb = traceback.format_exc()
+            if "DatabaseError: database disk image is malformed" in str(tb):
+                print "datasend: !!!database is malformed, fixing it"
+                fix_malformed_db()
+            print tb
+            print '>> datasend: !!handling datapoint failed'
+            cnt['exception'] += 1
+
+            try:
+                #mark and save the error
+                print '>> datasend: !!model %s object id %s handling failed ' %(model_name, ob.id)
+                meta['error'] = str(tb)
+                meta['dt_error'] = datetime.utcnow().strftime('%Y%m%d%H%M%S')
+                ob.meta = json_util.dumps(meta)
+                ob.save()
+                cnt['exception'] += 1
+
+            #sending of bulk failed
+            except:
+                print ">> datasend: !!recording error failed"
+                pass
+
+
+        #bulk send threshold is reached  - or - last item, - then -  must send the bulk
+        if (len(bulk_sendlist) >= bulk_thres) \
+                or (i+1 == len_total and len(bulk_sendlist) != 0):
+
+            #try to send the bulk
+            try:
                 col_name = ".".join([conf_label_san, app_name, model_name])
                 #try to send the data and save in the meta that it is sent
-                try:
-                    #send it though rpi-master
-                    if perm is not None:
 
-                        # this is to make sure the string is bson string and to remove any unnecessary spaces such as the ones found in config
-                        data = json_util.dumps(json_util.loads(ob.data))
+                #send it though rpi-master
+                if perm is not None:
+                    good_data_points = []
+                    good_model_points = []
+                    for bulk_item in bulk_sendlist:
+                        #see if its a parsable point
+                        try:
+                            #check if data is loadable
+                            parsed_point = json_util.loads(bulk_item.data)
+                            #append
+                            good_data_points.append(parsed_point)
+                            good_model_points.append(bulk_item)
+                        #this is a bad point
+                        except:
+                            print ">> datasend: !! cant loads datapoint for sending"
+                            cnt['send-cantloads'] += 1
+                            pass
 
-                        #data = '{"Tamb-max": 0.0, "Tamb-min": 0.0, "timestamp": {"$date": 1439128980000}, "Tamb-avg": 0.0}'
-                        #perm = "_perm=write&_slave=development+and+testing&_sig=b901abde"
-                        #col_name='development_and_testing_2.datalog_app.Reading'
-                        full_url = master_url + perm + "&para=fwd_to_db&" + urllib.urlencode([('col_name', col_name), ('data', data)])#http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
-                        resp = urllib2.urlopen(full_url, timeout=15).read().strip()
+                    #get the data as string
+                    data = json_util.dumps(good_data_points)
 
-                        if not str(json_util.loads(resp)['data']).lower()=='true':
-                            print 'fail'
-                            raise BaseException('server did not return data:true thing')
+                    #data = '{"Tamb-max": 0.0, "Tamb-min": 0.0, "timestamp": {"$date": 1439128980000}, "Tamb-avg": 0.0}'
+                    #perm = "_perm=write&_slave=development+and+testing&_sig=b901abde"
+                    #col_name='development_and_testing_2.datalog_app.Reading'
+                    full_url = master_url + perm + "&para=fwd_to_db&" + urllib.urlencode([('col_name', col_name), ('data', data)])#http://rpi-master.com/api/slave/?_perm=write&_slave=development+and+testing&_sig=b901abde&para=fwd_to_db&data=%7B%22Tamb-max%22%3A+0.0%2C+%22Tamb-min%22%3A+0.0%2C+%22timestamp%22%3A+%7B%22%24date%22%3A+1439128980000%7D%2C+%22Tamb-avg%22%3A+0.0%7D
+                    print ">> datasend: sending %s datapoints..." %len(good_data_points)
+                    resp = urllib2.urlopen(full_url, timeout=60).read().strip()
 
-                    #or send it directly to db
-                    elif db is not None:
-                        col = db[col_name]
-                        jdata = json_util.loads(ob.data)
-                        col.insert(jdata)
-
+                    #server does not confirm everything is ok
+                    if not str(json_util.loads(resp)['data']).lower()=='true':
+                        print ">> datasend: !!failed sending group with %s items" %(len(good_data_points))
+                        raise BaseException('server did not return data:true thing')
+                    #server confirms everything is ok
                     else:
-                        raise BaseException ('dont know how to send this')
+                        print ">> datasend: successfully sent %s items" %(len(good_data_points))
+                        for ob in good_model_points:
+                            try:
+                                meta = json_util.loads(ob.meta)
+                            except:
+                                meta = {}
 
-                    #mark it as sent
-                    meta['sent'] = datetime.utcnow().strftime('%Y%m%d%H%M%S')
-                    ob.meta = json_util.dumps(meta)
-                    ob.save()
-                    cnt['send-ok'] += 1
+                            try:
+                                #mark it as sent
+                                meta['sent'] = datetime.utcnow().strftime('%Y%m%d%H%M%S')
+                                ob.meta = json_util.dumps(meta)
+                                ob.save()
+                                cnt['send-ok'] += 1
+                            except:
+                                cnt['send-markfail'] += 1
+                                print ">> datasend: !!!!failed to mark point as sent!, this might lead to duplicates in the remote db"
 
-                #expection in sending the data or saving the meta
-                except:
+                else:
+                    print ">> datasend: dont know how to send data"
+                    raise BaseException ('dont know how to send this')
+
+                print ">> datasend: bulk send of %s items" %(len(good_model_points))
+
+            #expection in sending the data or saving the meta
+            except:
+                try:
                     #mark it as not sent
                     meta['sent'] = "false"
                     meta['error'] = str(traceback.format_exc())
@@ -127,65 +226,28 @@ def _send_model_data(model, keep_period, db, conf_label, app_name, perm, master_
                     cnt['send-fail'] += 1
                     print '>> datasend: !!model %s object id %s sending failed ' %(model_name, ob.id)
 
+                #sending of bulk failed
+                except:
+                    pass
 
-            #else if sent already,
-            else:
-                cnt['send-already'] += 1
-                #do nothing
-                pass
-        #if exception in handeling unsent data
-        except:
-
-
-            tb = traceback.format_exc()
-
-            if "DatabaseError: database disk image is malformed" in str(tb):
-                print "datasend: !!!database is malformed, fixing it"
-                fix_malformed_db()
-
-            print tb
-            print '>> datasend: !!sending data failed'
-            cnt['x'] += 1
-
-        #handle the sent data(do not delete data from website because config is there)
-        try:
-            meta = json_util.loads(ob.meta)
-        except:
-            meta = {'sent': "false"}
-
-        try:
-            # the part (type(meta['sent']) is str) is needed because previously there was meta['send'] = False
-            if (not ("nodelete" in model_mode)) and len(str(meta['sent'])) == 4+2+2+2+2+2 and str(meta['sent']).isdigit():
-                sentdate = datetime.strptime(meta['sent'], "%Y%m%d%H%M%S")
-                now = datetime.utcnow()
-                #if this data point has been there for a short time, keep it
-                if (now - sentdate).total_seconds() < keep_period:
-                    cnt['del-notyet'] += 1
-
-                #if this data point has been there for a long time, delete it
-                else:
-                    ob.delete()
-                    cnt['del-ok'] += 1
-            else:
-                cnt['del-nodel'] += 1
-        except:
-            cnt['del-fail'] += 1
+            #resetting bulk sendliist
+            bulk_sendlist=[]
 
         #print some info every while
         if time() - tm > 10.:
             tm = time()
-            print ">> datasend: still working on model %s, %s" %(model_name, cnt)
+            print ">> datasend: still working on model %s, %s" %(model_name, {k:v for (k,v) in cnt.iteritems() if v != 0})
 
 
-    t2 = time()
-    print '>> datasend: model %s done, took %s sec, %s, mode %s' % (model_name, round(t2 - t1, 3), cnt, model_mode)
+    t3 = time()
+    print '>> datasend: model %s done, took %s+%s sec, mode %s, %s' % (model_name, round(t2 - t1, 3), round(t3 - t2, 3), model_mode, {k:v for (k,v) in cnt.iteritems() if v != 0})
 
-def _send_app_data(app_name, keep_period, db, conf_label, perm, master_url):
+def _send_app_data(app_name, keep_period, conf_label, perm, master_url):
     app = get_app(app_name)
     for model in get_models(app):
         print ">> datasend: working on model %s" % model.__name__
         try:
-            _send_model_data(model=model, keep_period=keep_period, db=db, conf_label=conf_label, app_name=app_name, perm=perm, master_url=master_url)
+            _send_model_data(model=model, keep_period=keep_period, conf_label=conf_label, app_name=app_name, perm=perm, master_url=master_url)
         except:
             #if dataabase is malformed, then try to fix it
             #
@@ -276,7 +338,7 @@ def main(send_period=60*2, keep_period=60*60*12, app_list=None):
                 for app_name in app_list:
                     try:
                         print ">> datasend: working on app %s (perm)" % app_name
-                        _send_app_data(app_name=app_name, keep_period=keep_period, db=None, conf_label=conf_label, perm=perm, master_url=master_url)
+                        _send_app_data(app_name=app_name, keep_period=keep_period, conf_label=conf_label, perm=perm, master_url=master_url)
                     except:
                         print traceback.format_exc()
                         print '>> datasend: !! _send_app_data for %s failed' % app_name

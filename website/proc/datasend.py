@@ -173,7 +173,7 @@ def _send_model_data(model, keep_period, conf_label, app_name, perm, master_url)
                         except:
                             print ">> datasend: !! cant loads datapoint for sending"
                             cnt['send-cantloads'] += 1
-                            pass
+                            #todo: save error
 
                     #get the data as string
                     data = json_util.dumps(good_data_points)
@@ -216,12 +216,11 @@ def _send_model_data(model, keep_period, conf_label, app_name, perm, master_url)
             except:
                 try:
                     #mark it as not sent
-                    meta['sent'] = "false"
-                    meta['error'] = str(traceback.format_exc())
-                    meta['dt_error'] = datetime.utcnow().strftime('%Y%m%d%H%M%S')
-                    ob.meta = json_util.dumps(meta)
-                    ob.save()
-                    cnt['send-fail'] += 1
+                    ex = str(traceback.format_exc())
+                    for ob in good_model_points:
+                        ob.meta = json_util.dumps({'sent': "false", 'error': ex, 'dt_error': datetime.utcnow().strftime('%Y%m%d%H%M%S')})
+                        ob.save()
+                        cnt['send-fail'] += 1
                     print '>> datasend: !!model %s object id %s sending failed ' %(model_name, ob.id)
 
                 #sending of bulk failed

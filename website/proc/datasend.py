@@ -212,8 +212,6 @@ def _send_model_data(model, keep_period, conf_label, app_name, perm, master_url)
                     print ">> datasend: dont know how to send data"
                     raise BaseException ('dont know how to send this')
 
-                print ">> datasend: bulk send of %s items" %(len(good_model_points))
-
             #expection in sending the data or saving the meta
             except:
                 try:

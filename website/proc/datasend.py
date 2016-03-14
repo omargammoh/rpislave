@@ -97,6 +97,18 @@ def _send_model_data(model, keep_period, conf_label, app_name, perm, master_url)
                 #add to bulk to be sent later
                 bulk_sendlist.append(ob)
 
+                #estimate the max number of datapoints that can be sent
+                if i==5: #5 so that doesnt happen on a normal operation when device is connected and sends one or 2 data points
+                    try:
+                        test_str = urllib.urlencode([('x', str(ob.data))])
+                        max_length = 32000. #max url length the server can take
+                        bulk_thres = min(500, int(max_length/len(test_str) * 0.5)) #0.5 is safety margin
+                        print ">> datasend: decided on bulk thresold of %s" %bulk_thres
+                    except:
+                        print ">> datasend: could not decide on bulk length"
+                        pass
+
+
             #elif sent
             elif len(str(meta['sent'])) == 4+2+2+2+2+2 and str(meta['sent']).isdigit():
                 #nodelete

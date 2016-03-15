@@ -179,9 +179,9 @@ def restart_networking():
     except:
         pass
 
-def round5(s):
+def round_time_error(s):
     try:
-        return round(float(s)/5)*5
+        return round(float(s)/10)*10
     except:
         return None
 
@@ -246,7 +246,7 @@ def main(status_period=30):
                             prev_status.get("serial", "") == new_status.get("serial", "") and \
                             prev_status.get("git_rpislave", "") == new_status.get("git_rpislave", "") and \
                             prev_status.get("gitbranch_rpislave", "") == new_status.get("gitbranch_rpislave", "") and \
-                            (new_status.get("time_error", "-") == "-" or round5(prev_status.get("time_error", "")) == round5(new_status.get("time_error", ""))):
+                            (new_status.get("time_error", "-") == "-" or round_time_error(prev_status.get("time_error", "")) == round_time_error(new_status.get("time_error", ""))):
 
                 print ">> status: all params remain the same"
                 pass
@@ -258,7 +258,7 @@ def main(status_period=30):
                 dic_diff = dict(set(new_status.items()) - set(prev_status.items()))
 
                 #if not much change in time-error
-                if round5(prev_status.get("time_error", "")) == round5(new_status.get("time_error", "")):
+                if round_time_error(prev_status.get("time_error", "")) == round_time_error(new_status.get("time_error", "")):
                     if 'time_error' in dic_diff:
                         # discard it
                         dic_diff.pop('time_error')

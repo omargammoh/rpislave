@@ -26,10 +26,10 @@ def main():
                     print ">> rebooter: deviation counter +1"
                     deviation_counter += 1
 
-                if deviation_counter >= 3:
+                if deviation_counter >= 6:
                     print ">> rebooter: will reboot the device because the status process doesnt seem to have run in a while"
                     f = file('/home/pi/data/reboooter-' + now.strftime('%Y%m%d%H%M%S'),'w')
-                    f.write('we have rebooted on %s' %str(now))
+                    f.write('we have rebooted on %s because the status loop does not seem to have run for a while, %s x %s sec' %(str(now), sec, deviation_counter))
                     f.close()
                     website.processing.execute(cmd="sudo reboot")
                 else:

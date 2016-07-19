@@ -107,25 +107,25 @@ def _read_hcsr04(pin_trig, pin_echo):
     GPIO.setmode(GPIO.BCM)
 
     #pin_trig = 23
-    #ECHO = 24
+    #pin_echo = 24
 
     GPIO.setup(pin_trig,GPIO.OUT)
     GPIO.setup(pin_echo,GPIO.IN)
 
     #sending the triger signal
     GPIO.output(pin_trig, False)
-    time.sleep(0.5) #wait for sensor to settle
+    sleep(0.5) #wait for sensor to settle
     GPIO.output(pin_trig, True)
-    time.sleep(0.00001)
+    sleep(0.00001)
     GPIO.output(pin_trig, False)
 
     #reading the echo signal
     while GPIO.input(pin_echo) == 0:
         pass
-    pulse_start = time.time()
+    pulse_start = time()
     while GPIO.input(pin_echo) == 1:
         pass
-    pulse_end = time.time()
+    pulse_end = time()
     pulse_duration = pulse_end - pulse_start
 
     #measuring distance

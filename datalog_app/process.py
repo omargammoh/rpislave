@@ -1,4 +1,4 @@
-from time import sleep,time
+from time import sleep, time
 from datetime import datetime, timedelta
 import numpy as np
 import itertools
@@ -10,23 +10,33 @@ from bson import json_util
 import traceback
 import re
 
+#importing pymodbus for modbus sensors
 try:
     from pymodbus.client.sync import ModbusSerialClient as MSC
     from pymodbus.transaction import ModbusRtuFramer
 except:
     print ">>> datalog_app: !!could not load pymodbus module"
 
+#importing spidev for reading the mcp3008 sensor throught the rpi interface
 try:
     import spidev
 except:
     print ">>> datalog_app: !!could not load spidev module"
 
+#importing for the DHT temperature and humidity sensor
 try:
     import Adafruit_DHT
 except:
     print ">>> datalog_app: !!could not load Adafruit_DHT module"
 
+#importing the RPi.GPIO for the distance measurement device hcsr04
+try:
+    import RPi.GPIO as GPIO
+except:
+    print ">>> datalog_app: !!could not load RPi.GPIO module"
 
+
+#functions for reading sensors
 def __read_spi(spi, channel):
     adc = spi.xfer2([1,(8+channel)<<4,0])
     data = ((adc[1]&3) << 8) + adc[2]
@@ -88,6 +98,45 @@ def _read_am2302(pin, para):
             return v
         else:
             raise BaseException('para should be either temperatue or humidity')
+
+def _read_hcsr04(pin_trig, pin_echo):
+    """
+    this is a sensor to measure distances
+    """
+
+    GPIO.setmode(GPIO.BCM)
+
+    #pin_trig = 23
+    #ECHO = 24
+
+    GPIO.setup(pin_trig,GPIO.OUT)
+    GPIO.setup(pin_echo,GPIO.IN)
+
+    #sending the triger signal
+    GPIO.output(pin_trig, False)
+    time.sleep(0.5) #wait for sensor to settle
+    GPIO.output(pin_trig, True)
+    time.sleep(0.00001)
+    GPIO.output(pin_trig, False)
+
+    #reading the echo signal
+    while GPIO.input(pin_echo) == 0:
+        pass
+    pulse_start = time.time()
+    while GPIO.input(pin_echo) == 1:
+        pass
+    pulse_end = time.time()
+    pulse_duration = pulse_end - pulse_start
+
+    #measuring distance
+    distance = pulse_duration * 17150
+    distance = round(distance, 2)
+    distance = distance - 0.5
+    if distance > 2 - 0.5 and distance < 400 -0.5:
+        return distance
+    else:
+        raise BaseException('distance is out of acceptable range %s' %distance)
+
 
 def _pretty_time_delta(seconds):
     seconds = int(seconds)
@@ -161,6 +210,9 @@ def _get_point(mb_client, spi_client, sensors_conf):
                 elif conf['type'].lower() == "am2302":
                     raw = _read_am2302(pin = conf['pin'], para=conf['para'])
                     dic[label] = float(raw)
+                elif conf['type'].lower() == "hcsr04":
+                    raw = _read_hcsr04(pin_trig=conf['pin_trig'], pin_echo=conf['pin_echo'])
+                    dic[label] = float(raw)
                 else:
                     raise BaseException("unknown sensor type %s" %conf['type'])
 
@@ -218,6 +270,8 @@ def _process_data(data, sensors_conf):
                 agg = np.min(lis)
             elif func=='max':
                 agg = np.max(lis)
+            elif func=='med':
+                agg = np.median(lis)
             elif func=='std':
                 agg = np.std(lis)
             else:
@@ -227,6 +281,7 @@ def _process_data(data, sensors_conf):
 
     return res #{'Tamb-avg' : 5., 'Tamb-min' : 1., 'G-min' : 60.}
 
+#main
 def main(sample_period, data_period, sensors, rs485=None):
     _prepare_django()
     import datalog_app.models

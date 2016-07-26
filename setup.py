@@ -181,7 +181,8 @@ if __name__ == "__main__":
         ])
     t3 = time()
 
-    setup_autologin()
+
+    #setup_autologin() #setup login throught raspi-config ith the ne raspbian jessie version 8
     setup_autostart()
 
     #if 'datalog_app' in conf.get('apps', {}):

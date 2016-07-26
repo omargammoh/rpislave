@@ -104,38 +104,40 @@ def _read_hcsr04(pin_trig, pin_echo):
     this is a sensor to measure distances
     """
 
-    GPIO.setmode(GPIO.BCM)
+    with Timeout(seconds=2.0):#not sure about the length of this time
 
-    #pin_trig = 23
-    #pin_echo = 24
+        GPIO.setmode(GPIO.BCM)
 
-    GPIO.setup(pin_trig,GPIO.OUT)
-    GPIO.setup(pin_echo,GPIO.IN)
+        #pin_trig = 23
+        #pin_echo = 24
 
-    #sending the triger signal
-    GPIO.output(pin_trig, False)
-    sleep(0.5) #wait for sensor to settle
-    GPIO.output(pin_trig, True)
-    sleep(0.00001)
-    GPIO.output(pin_trig, False)
+        GPIO.setup(pin_trig,GPIO.OUT)
+        GPIO.setup(pin_echo,GPIO.IN)
 
-    #reading the echo signal
-    while GPIO.input(pin_echo) == 0:
-        pass
-    pulse_start = time()
-    while GPIO.input(pin_echo) == 1:
-        pass
-    pulse_end = time()
-    pulse_duration = pulse_end - pulse_start
+        #sending the triger signal
+        GPIO.output(pin_trig, False)
+        sleep(0.5) #wait for sensor to settle
+        GPIO.output(pin_trig, True)
+        sleep(0.00001)
+        GPIO.output(pin_trig, False)
 
-    #measuring distance
-    distance = pulse_duration * 17150
-    distance = round(distance, 2)
-    distance = distance - 0.5
-    if distance > 2 - 0.5 and distance < 400 -0.5:
-        return distance
-    else:
-        raise BaseException('distance is out of acceptable range %s' %distance)
+        #reading the echo signal
+        while GPIO.input(pin_echo) == 0:
+            pass
+        pulse_start = time()
+        while GPIO.input(pin_echo) == 1:
+            pass
+        pulse_end = time()
+        pulse_duration = pulse_end - pulse_start
+
+        #measuring distance
+        distance = pulse_duration * 17150
+        distance = round(distance, 2)
+        distance = distance - 0.5
+        if distance > 2 - 0.5 and distance < 400 -0.5:
+            return distance
+        else:
+            raise BaseException('distance is out of acceptable range %s' %distance)
 
 
 def _pretty_time_delta(seconds):

@@ -74,6 +74,19 @@ def check_tunnels():
             tunnel_para = new_tunnel_para(slave_port=port)
             create_tunnel(slave_port=port, tunnel_para=tunnel_para)
 
+#
+def get_hwclock():
+    """
+    gets the time from the real times clock
+    """
+    try:
+        s = website.processing.execute(cmd="sudo hwclock -r") #s = "Wed 20 Jul 2016 18:26:58 UTC  -0.900994 seconds"
+        s2 = " ".join(s.split(" ")[1:5])
+        dt = datetime.datetime.strptime(s2, '%d %b %Y %H:%M:%S')
+        return dt
+    except:
+        return None
+
 def get_status():
     def gitcmd(cmd):
         r = website.processing.execute(cmd).strip()
@@ -192,6 +205,7 @@ def mark_loop():
         f.close()
     except:
         print ">> status: !!! failed to mark loop"
+
 #main
 def main(status_period=30):
     loop_counter = 0

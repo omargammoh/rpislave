@@ -18,30 +18,15 @@ def _execute(lis):
     return out
 
 def setup_autologin():
-    # replaces a line in a file
-
-    filepath = r"/etc/inittab"
-    linetocomment = "1:2345:respawn:/sbin/getty --noclear 38400 tty1"
-    linetoappend = "1:2345:respawn:/sbin/getty --autologin pi --noclear 38400 tty1"
-
-
-    f = file(filepath, "r")
-    text = f.read()
-    f.close()
-
-    if linetocomment in text:
-        newtext = text.replace(linetocomment, linetoappend)
-    elif linetoappend in text:
-        print "setup_autologin: file seems to be already done"
-        return None
+    fp = '/etc/systemd/system/getty@tty1.service.d/autologin.conf'
+    if os.path.isfile(fp):
+        print "setup_autologin: already done"
     else:
-        raise BaseException('could not find linetocomment or linetoappend in file')
-
-    f = file(filepath, "w+")
-    f.write(newtext)
-    f.close()
-
-    print "setup_autologin: completed"
+        _execute("mkdir -pv /etc/systemd/system/getty@tty1.service.d")
+        f = file(fp,'w')
+        f.write("[Service]\nExecStart=-/sbin/agetty --autologin pi --noclear I 38400 linux")
+        f.close()
+        print "setup_autologin: done successfuly"
 
 def setup_autostart():
     #apends a line to a file
@@ -182,7 +167,7 @@ if __name__ == "__main__":
     t3 = time()
 
 
-    #setup_autologin() #setup login throught raspi-config ith the ne raspbian jessie version 8
+    setup_autologin()
     setup_autostart()
 
     #if 'datalog_app' in conf.get('apps', {}):

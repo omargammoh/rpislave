@@ -51,52 +51,6 @@ def create_datafolder():
     if not os.path.isdir(pth):
         os.mkdir(pth)
 
-def setup_realtimeclock():
-    return None
-    if conf is None:
-        return None
-    typ = conf['rtc'].get('type','rasclock')
-
-    if typ == "rasclock":
-        #http://www.modmypi.com/blog/installing-the-rasclock-raspberry-pi-real-time-clock
-        #_execute("sudo apt-get -y upgrade")
-        _execute("wget http://afterthoughtsoftware.com/files/linux-image-3.6.11-atsw-rtc_1.0_armhf.deb")
-        _execute("sudo dpkg -i linux-image-3.6.11-atsw-rtc_1.0_armhf.deb")
-        _execute("sudo cp /boot/vmlinuz-3.6.11-atsw-rtc+ /boot/kernel.img")
-
-        #changing /etc/modules
-        filepath = "/etc/modules"
-        toappend = "\ni2c-bcm2708\nrtc-pcf2127a"
-
-        f = file(filepath, "r")
-        s = f.read()
-        f.close()
-        if toappend in s:
-            print "RTC: %s already done: already done" %filepath
-        else:
-            f = file(filepath, "w+")
-            s = f.writelines(s + toappend)
-            f.close()
-            print "RTC: changed %s" %filepath
-
-
-        #changing /etc/rc.local
-        filepath = "/etc/rc.local"
-        toappend = "\necho pcf2127a 0x51 > /sys/class/i2c-adapter/i2c-1/new_device\n( sleep 2; hwclock -s ) &"
-
-        f = file(filepath, "r")
-        s = f.read()
-        f.close()
-        if toappend in s:
-            print "RTC: %s already done: already done" %filepath
-        else:
-            f = file(filepath, "w+")
-            s = f.writelines(s.replace('exit 0', '') + toappend + "\nexit 0")
-            f.close()
-            print "RTC: changed %s" %filepath
-    else:
-        print "!!! dont know how to deal with this rtc"
-
 def change_sshport():
     """
     changes the line Port 22 to Port 9005
@@ -182,7 +136,6 @@ if __name__ == "__main__":
         ])
 
     create_datafolder()
-    setup_realtimeclock()
     change_sshport()
     support_onewire()
 

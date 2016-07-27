@@ -18,15 +18,7 @@ def _execute(lis):
     return out
 
 def setup_autologin():
-    fp = '/etc/systemd/system/getty@tty1.service.d/autologin.conf'
-    if os.path.isfile(fp):
-        print "setup_autologin: already done"
-    else:
-        _execute("mkdir -pv /etc/systemd/system/getty@tty1.service.d")
-        f = file(fp,'w')
-        f.write("[Service]\nExecStart=-/sbin/agetty --autologin pi --noclear I 38400 linux")
-        f.close()
-        print "setup_autologin: done successfuly"
+    print "setup_autologin: this is not required anymore in debian jessie"
 
 def setup_autostart():
     #apends a line to a file

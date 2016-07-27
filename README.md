@@ -1,7 +1,7 @@
 # RPI SLAVE
 
 ## How to install on a raspberry pi##
-* Install the raspbian image on the raspberry pi (rpi)
+* Install the raspbian (2016-05-27-raspbian-jessie) image on the raspberry pi (rpi)
 * Connect the rpi to the internet, ssh into it and execute `rpislave_url=https://github.com/omargammoh/rpislave.git&&rpislave_branch=master&&cd&&sudo git clone -b $rpislave_branch $rpislave_url ~/rpislave&&sudo python ~/rpislave/setup.py`
 * Execute `sudo raspi-config`
   * Expand filesystem
@@ -33,7 +33,7 @@
 ## Optional ##
 * Direct connection to pi
   * add `ip=169.254.0.2` to `sudo nano /boot/cmdline.txt` (see https://pihw.wordpress.com/guides/direct-network-connection/in-a-nut-shell-direct-network-connection/). reboot, connect ethernet cable to rpi and computer then ssh into `ip=169.254.0.2`. if computer is not connected, the rpi will take longer time to boot, and yu cannot connect to the internet via ethernet
-* Installing real time clock:
+* Installing real time clock (rasclock):
   * follow https://afterthoughtsoftware.com/products/rasclock
 * Switch to another git branch, eg: master
   * `cd /home/pi/rpislave&&sudo git checkout master`

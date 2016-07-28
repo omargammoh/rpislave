@@ -12,7 +12,7 @@ def execute(cmd):
 
 def get_usage_ratio():
     s=execute('df -h')
-    line = [sl for sl in map(lambda x:x.split(), s.split('\n')) if len(sl) > 5 and sl[0]=='rootfs'][0]
+    line = [sl for sl in map(lambda x:x.split(), s.split('\n')) if len(sl) > 5 and sl[0]=='/dev/root'][0]
     str_perc = line[-2].strip('%')
     flt_perc = float(str_perc)/100.
     return flt_perc

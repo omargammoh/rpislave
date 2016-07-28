@@ -4,10 +4,11 @@
 * Install the raspbian (2016-05-27-raspbian-jessie) image on the raspberry pi (rpi)
 * Connect the rpi to the internet, ssh into it and execute `rpislave_url=https://github.com/omargammoh/rpislave.git&&rpislave_branch=master&&cd&&sudo git clone -b $rpislave_branch $rpislave_url ~/rpislave&&sudo python ~/rpislave/setup.py`
 * Execute `sudo raspi-config`
+  * Boot options -> console autologin 
   * Expand filesystem
   * Enable camera
-  * Enable SPI
-  * Enable i2c
+  * Advanced options -> enable SPI
+  * Advanced options -> enable i2c
 * Reboot
   * `sudo reboot`
 * Note: at this point you may take an image of the sd card and use it for other installations, you just need to re-expand the file system 

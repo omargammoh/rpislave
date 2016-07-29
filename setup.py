@@ -84,12 +84,12 @@ def support_onewire():
     s = f.read()
     f.close()
     if toappend in s:
-        print "support_onewire: %s already done" %filepath
+        print "support_onewire: already done"
     else:
         f = file(filepath, "w+")
         s = f.writelines(s + toappend)
         f.close()
-        print "RTC: changed %s" %filepath
+        print "support_onewire: added support for onewire"
 
 if __name__ == "__main__":
     t1 = time()

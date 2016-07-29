@@ -20,16 +20,22 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # SECURITY WARNING: keep the secret key used in production secret!
 try:
     SECRET_KEY_PATH = os.path.join(BASE_DIR, "SECRET_KEY")
-    #if file exists
+    SECRET_KEY = "" #initial value
+
+    #check if file exists and is not empty
     if os.path.isfile(SECRET_KEY_PATH):
         #read secret
         f = file(SECRET_KEY_PATH,'r')
         SECRET_KEY = f.read().strip()
         f.close()
+
+    #if SECRET is not empty, then all is fine
+    if len(SECRET_KEY.strip()) > 0:
         print "Loaded SECRET succesfuly"
-    #else
+
     else:
         #generate secret
+        print "No secret key, generating..."
         from django.utils.crypto import get_random_string
         SECRET_KEY = get_random_string(50, 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
         #save it to file

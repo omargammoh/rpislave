@@ -80,7 +80,11 @@ def _read_ds18b20(id):
             raise BaseException('YES is not in text')
         f.close()
         raw = re.compile(r'(.+)t=(?P<raw>[-+]?\d+)(.+)', flags=re.DOTALL).match(text).groupdict()['raw']
-        return float(raw)/1000. #this number is in celsuis, could be positive or negative
+        v = float(raw)/1000.
+        if v < -55. or v > 125.:
+            raise BaseException('ds18b20 temperature value out of range')
+        return v #this number is in celsuis, could be positive or negative
+
 
 def _read_am2302(pin, para):
     #http://www.home-automation-community.com/temperature-and-humidity-from-am2302-dht22-sensor-displayed-as-chart/
@@ -89,14 +93,23 @@ def _read_am2302(pin, para):
         if para == 'temperature':
             v = float(temperature)
             if v > 150.:
+                print '_read_am2302: temperature is too high %s' %v
                 raise BaseException('temperature is too high %s' %v)
+            if v < -55.:
+                print '_read_am2302: temperature is too low %s' %v
+                raise BaseException('temperature is too low %s' %v)
             return v
         elif para == 'humidity':
             v = float(humidity)
             if v > 100.:
+                print 'humidity is too high %s' %v
                 raise BaseException('humidity is too high %s' %v)
+            if v < 0.:
+                print 'humidity is too low %s' %v
+                raise BaseException('humidity is too low %s' %v)
             return v
         else:
+            print '! _read_am2302: para should be either temperatue or humidity'
             raise BaseException('para should be either temperatue or humidity')
 
 def _read_hcsr04(pin_trig, pin_echo):
@@ -139,7 +152,7 @@ def _read_hcsr04(pin_trig, pin_echo):
         else:
             raise BaseException('distance is out of acceptable range %s' %distance)
 
-
+#
 def _pretty_time_delta(seconds):
     seconds = int(seconds)
     days, seconds = divmod(seconds, 86400)

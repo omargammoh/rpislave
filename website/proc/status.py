@@ -87,6 +87,24 @@ def get_hwclock():
     except:
         return None
 
+def get_time_error():
+    """
+    gets time error in seconds
+    """
+    with Timeout(seconds=16):
+        import dateutil.parser
+        import pytz
+        t1 = time.time()
+        resp = urllib2.urlopen('http://www.timeapi.org/utc/now', timeout=15).read().strip()
+        t2 = time.time()
+        time_needed = (t2 - t1)
+
+        correction = time_needed/2.
+
+        dt_internet = dateutil.parser.parse(resp).astimezone(pytz.utc)
+        seconds = (datetime.datetime.utcnow().replace(tzinfo=pytz.utc) - dt_internet).total_seconds() - correction
+        return seconds
+
 def get_status():
     def gitcmd(cmd):
         r = website.processing.execute(cmd).strip()
@@ -100,18 +118,7 @@ def get_status():
 
     #TIME ERROR
     try:
-        import dateutil.parser
-        import pytz
-        t1 = time.time()
-        resp = urllib2.urlopen('http://www.timeapi.org/utc/now', timeout=15).read().strip()
-        t2 = time.time()
-        time_needed = (t2 - t1)
-
-        correction = time_needed/2.
-
-        dt_internet = dateutil.parser.parse(resp).astimezone(pytz.utc)
-        seconds = (datetime.datetime.utcnow().replace(tzinfo=pytz.utc) - dt_internet).total_seconds() - correction
-        d['time_error'] = seconds
+        d['time_error'] = get_time_error()
     except:
         d['time_error'] = "-"
         pass
@@ -206,11 +213,73 @@ def mark_loop():
     except:
         print ">> status: !!! failed to mark loop"
 
+def set_system_time():
+    """
+    reads rtc time, if its more recent than system time, then it sets system time to the rtc
+    to be run once at startup
+    """
+    try:
+        hwc = get_hwclock()
+        sysc = datetime.datetime.utcnow()
+        if hwc is None:
+            print ">> status: no rtc"
+        #hwc is installed
+        else:
+            if hwc > sysc:
+                res = website.processing.execute(cmd="sudo hwclock –hctosys")
+                diff = hwc - sysc
+                print ">> status: system time set to the rtc time, diff = %s, was %s, now %s" %(diff, sysc, datetime.datetime.utcnow())
+            else:
+                print ">> status: rtc time is older than system time, will not set system time"
+    except:
+        print ">> status: !!! error in initialising hwclock %s" %traceback.format_exc()
+
+def set_rtc_time():
+    """
+    sets the rtc time to the system time, after making sure that time error in system time is small
+    to be run on every status loop until it returns True, do again every 1000 loops or so
+    """
+    try:
+        hwc = get_hwclock()
+        if hwc is None:
+            print ">> status: no rtc to set its time"
+            return True
+        #hwc is installed
+        else:
+            time_error = get_time_error()
+            if abs(time_error) < 10:
+                res = website.processing.execute(cmd="sudo hwclock –systohc")
+                print ">> status: system time is correct, rtc has been set to it"
+                return True
+            else:
+                return False
+                print ">> status: system time is not correct, rtc has been not been set"
+    except:
+        print ">> status: !!! error in setting hwclock %s" %traceback.format_exc()
+        return True
+
 #main
 def main(status_period=30):
     loop_counter = 0
+    rtc_is_set = False
     while True:
         print ">> status: starting loop"
+
+        try:
+            #set system datetime to rtc if appropriate
+            if loop_counter == 0:
+                set_system_time()
+
+            #set rtc if we know the time
+            if not rtc_is_set:
+                rtc_is_set = set_rtc_time()
+
+            #
+            if loop_counter % 10000 == 0:
+                rtc_is_set = False
+        except:
+            print ">> status: !!!something wrong with the time functions"
+
         #checking internet connectivity and trying to reconnect if not connected
         if True:
             internet_ison = check_internet()

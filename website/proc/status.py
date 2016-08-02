@@ -246,7 +246,12 @@ def set_rtc_time():
             return True
         #hwc is installed
         else:
-            time_error = get_time_error()
+            try:
+                time_error = get_time_error()
+            except:
+                time_error = None
+                print ">> status: dont know if system time is correct or not"
+                return False
             if abs(time_error) < 10:
                 res = website.processing.execute(cmd="sudo hwclock --systohc")
                 print ">> status: system time is correct, rtc has been set to it"
@@ -269,14 +274,14 @@ def main(status_period=30):
             #set system datetime to rtc if appropriate
             if loop_counter == 0:
                 set_system_time()
+            #
+            if loop_counter % 10000 == 0:
+                rtc_is_set = False
 
             #set rtc if we know the time
             if not rtc_is_set:
                 rtc_is_set = set_rtc_time()
 
-            #
-            if loop_counter % 10000 == 0:
-                rtc_is_set = False
         except:
             print ">> status: !!!something wrong with the time functions"
 

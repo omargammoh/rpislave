@@ -79,7 +79,7 @@ def support_onewire():
     http://www.raspberrypi-spy.co.uk/2013/03/raspberry-pi-1-wire-digital-thermometer-sensor/
     """
     filepath = "/boot/config.txt"
-    toappend = "\ndtoverlay=w1-gpio,gpiopin=4"
+    toappend = "\ndtoverlay=w1-gpio,gpiopin=17"
     f = file(filepath, "r")
     s = f.read()
     f.close()

@@ -43,6 +43,8 @@
   * add `ip=169.254.0.2` to `sudo nano /boot/cmdline.txt` (see https://pihw.wordpress.com/guides/direct-network-connection/in-a-nut-shell-direct-network-connection/). reboot, connect ethernet cable to rpi and computer then ssh into `ip=169.254.0.2`. if computer is not connected, the rpi will take longer time to boot, and yu cannot connect to the internet via ethernet
 * Switch to another git branch, eg: master
   * `cd /home/pi/rpislave&&sudo git checkout master`
+* Use another pin than GPIO4 for one-wire
+  * in `sudo nano /boot/config.txt`, choose the gpio number in the line `dtoverlay=w1-gpio,gpiopin=17`
  
 ## Installation check-list ##
 * Configuration is installed

@@ -12,6 +12,13 @@
 * Reboot
   * `sudo reboot`
 * Note: at this point you may take an image of the sd card and use it for other installations, you just need to re-expand the file system 
+* Optional: adding a realtime clock
+  * DS3231 for pi (http://www.raspberrypi-spy.co.uk/2015/05/adding-a-ds3231-real-time-clock-to-the-raspberry-pi/)
+    *  in `sudo nano /etc/modules`, ensures the lines `i2c-dev` and `rtc-ds1307` are there
+    *  in `sudo nano /etc/rc.local`, ensure the line `echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device` is there before the line `exit 0`
+  * Rasclock
+    * follow https://afterthoughtsoftware.com/products/rasclock
+ 
 * Surf to the page `<raspberrypi_ip>:9001` hosted by the rpi
 * Add the configuration json file in the admin page `<ip-address>:9001/admin/website/conf/`
 * Reboot, The server will start automatically after the reboot
@@ -32,12 +39,12 @@
   * <b>datalog_app</b>: Record data from RS485 devices and signals connected to MCP3008 chip 
 
 ## Optional ##
-* Direct connection to pi
+* Direct ethernet connection from PC to raspberry pi
   * add `ip=169.254.0.2` to `sudo nano /boot/cmdline.txt` (see https://pihw.wordpress.com/guides/direct-network-connection/in-a-nut-shell-direct-network-connection/). reboot, connect ethernet cable to rpi and computer then ssh into `ip=169.254.0.2`. if computer is not connected, the rpi will take longer time to boot, and yu cannot connect to the internet via ethernet
-* Installing real time clock (rasclock):
-  * follow https://afterthoughtsoftware.com/products/rasclock
 * Switch to another git branch, eg: master
   * `cd /home/pi/rpislave&&sudo git checkout master`
+* Use another pin than GPIO4 for one-wire
+  * in `sudo nano /boot/config.txt`, choose the gpio number in the line `dtoverlay=w1-gpio,gpiopin=17`
  
 ## Installation check-list ##
 * Configuration is installed

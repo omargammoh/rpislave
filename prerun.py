@@ -75,7 +75,20 @@ def setup_networkinterfaces():
         print "setup_networkinterfaces: Nothing done"
         return None
 
-    network = conf.get("network_interfaces", ["### loopback ###","auto lo","iface lo inet loopback","### ethernet ###","iface eth0 inet dhcp"])
+    network = conf.get("network_interfaces", [
+                                "### loopback ###",
+                                "auto lo",
+                                "iface lo inet loopback",
+                                "### ethernet ###",
+                                "iface eth0 inet dhcp",
+                                "### wireless lan ###",
+                                "auto wlan0",
+                                "allow-hotplug wlan0",
+                                "iface wlan0 inet dhcp",
+                                "    wpa-ssid \"pi\"",
+                                "    wpa-psk \"raspberry\""
+                            ])
+
     contents = "\n".join(network)
 
     f = file("/etc/network/interfaces", "w+")

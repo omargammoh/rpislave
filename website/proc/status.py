@@ -357,6 +357,8 @@ def main(status_period=30):
                 #write log to db
                 dic_diff["msg"] = "status update"
                 dic_diff["dt"] = datetime.datetime.utcnow()
+                dic_diff["loop_counter"] = loop_counter
+
                 logline = Log(data=json_util.dumps(dic_diff), meta="")
                 logline.save()
                 print ">> status: wrote changes %s" % dic_diff

@@ -70,7 +70,7 @@ RPI_APPS = (
 )
 
 # List here all processes that are in website.proc that needed to be started at startup
-RPI_PROC = ('btsync',
+RPI_PROC = ('timecheck',
             'clear',
             'datasend',
             'status',

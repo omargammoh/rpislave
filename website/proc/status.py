@@ -75,17 +75,6 @@ def check_tunnels():
             create_tunnel(slave_port=port, tunnel_para=tunnel_para)
 
 #
-def get_hwclock():
-    """
-    gets the time from the real times clock
-    """
-    try:
-        s = website.processing.execute(cmd="sudo hwclock -r") #s = "Wed 20 Jul 2016 18:26:58 UTC  -0.900994 seconds"
-        s2 = " ".join(s.split(" ")[1:5])
-        dt = datetime.datetime.strptime(s2, '%d %b %Y %H:%M:%S')
-        return dt
-    except:
-        return None
 
 def get_time_error():
     """
@@ -201,7 +190,7 @@ def restart_networking():
 
 def round_time_error(s):
     try:
-        return round(float(s)/10)*10
+        return round(float(s)/20)*20
     except:
         return None
 
@@ -213,77 +202,12 @@ def mark_loop():
     except:
         print ">> status: !!! failed to mark loop"
 
-def set_system_time():
-    """
-    reads rtc time, if its more recent than system time, then it sets system time to the rtc
-    to be run once at startup
-    """
-    try:
-        hwc = get_hwclock()
-        sysc = datetime.datetime.utcnow()
-        if hwc is None:
-            print ">> status: no rtc"
-        #hwc is installed
-        else:
-            if hwc > sysc:
-                res = website.processing.execute(cmd = "sudo hwclock --hctosys")
-                diff = hwc - sysc
-                print ">> status: system time set to the rtc time, diff = %s, was %s, now %s" %(diff, sysc, datetime.datetime.utcnow())
-            else:
-                print ">> status: rtc time is older than system time, will not set system time"
-    except:
-        print ">> status: !!! error in initialising hwclock %s" %traceback.format_exc()
-
-def set_rtc_time():
-    """
-    sets the rtc time to the system time, after making sure that time error in system time is small
-    to be run on every status loop until it returns True, do again every 1000 loops or so
-    """
-    try:
-        hwc = get_hwclock()
-        if hwc is None:
-            print ">> status: no rtc to set its time"
-            return True
-        #hwc is installed
-        else:
-            try:
-                time_error = get_time_error()
-            except:
-                time_error = None
-                print ">> status: dont know if system time is correct or not"
-                return False
-            if abs(time_error) < 10:
-                res = website.processing.execute(cmd="sudo hwclock --systohc")
-                print ">> status: system time is correct, rtc has been set to it"
-                return True
-            else:
-                return False
-                print ">> status: system time is not correct, rtc has been not been set"
-    except:
-        print ">> status: !!! error in setting hwclock %s" %traceback.format_exc()
-        return True
-
 #main
 def main(status_period=30):
     loop_counter = 0
-    rtc_is_set = False
     while True:
         print ">> status: starting loop"
 
-        try:
-            #set system datetime to rtc if appropriate
-            if loop_counter == 0:
-                set_system_time()
-            #
-            if loop_counter % 10000 == 0:
-                rtc_is_set = False
-
-            #set rtc if we know the time
-            if not rtc_is_set:
-                rtc_is_set = set_rtc_time()
-
-        except:
-            print ">> status: !!!something wrong with the time functions"
 
         #checking internet connectivity and trying to reconnect if not connected
         if True:

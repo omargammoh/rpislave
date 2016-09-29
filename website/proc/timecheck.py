@@ -5,6 +5,8 @@ import traceback
 from bson import json_util
 import website.proc.status
 import website.processing
+from website.processing import Timeout
+import urllib2
 
 def get_hwclock():
     """
@@ -30,6 +32,7 @@ def set_system_time():
             print ">> timecheck: no rtc"
         #hwc is installed
         else:
+            diff = (sysc - hwc).total_seconds()
             if hwc > sysc:
                 res = website.processing.execute(cmd = "sudo hwclock --hctosys")
                 diff = hwc - sysc
@@ -69,38 +72,93 @@ def set_rtc_time():
         #hwc is installed
         else:
             try:
-                time_error = website.proc.status.get_time_error()
+                time_error = get_time_error()
             except:
                 time_error = None
-                print ">> timecheck: dont know if system time is correct or not"
+                print ">> timecheck: dont know if system time is correct or not for setting rtc"
                 return False
 
-            if abs(time_error) < 10.:
+            if abs(time_error) < 15.:
                 res = website.processing.execute(cmd="sudo hwclock --systohc")
                 print ">> timecheck: system time is correct, rtc has been set to it"
                 logline = Log(data=json_util.dumps({"msg":"timecheck setrtctime",
                                     "dt":datetime.datetime.utcnow(),
-                                    "hwc": hwc,
+                                    "old_hwc": hwc,
+                                    "new_hwc": get_hwclock(),
                                     "time_error": time_error
                                     }), meta="")
                 logline.save()
 
                 return True
             else:
-                return False
                 print ">> timecheck: system time is not correct, rtc has been not been set"
+                return False
     except:
         print ">> timecheck: !!! error in setting hwclock %s" %traceback.format_exc()
         return True
 
+def get_time_error():
+    """
+    gets time error in seconds
+    """
+
+    try:
+        with Timeout(seconds=16):
+            import dateutil.parser
+            import pytz
+            t1 = time.time()
+            resp = urllib2.urlopen('http://www.timeapi.org/utc/now', timeout=15).read().strip()
+            t2 = time.time()
+            time_needed = (t2 - t1)
+
+            correction = time_needed/2.
+
+            dt_internet = dateutil.parser.parse(resp).astimezone(pytz.utc)
+            seconds = (datetime.datetime.utcnow().replace(tzinfo=pytz.utc) - dt_internet).total_seconds() - correction
+            return seconds
+    except:
+        return None
+
+def round_time_error(s):
+    try:
+        return round(float(s)/20)*20
+    except:
+        return None
 
 #main
 def main(timecheck_period=30):
     loop_counter = 0
     prev_dt_loop = None
+    last_recorded_time_error = None
     rtc_is_set = False
 
     while True:
+        # check time error
+        try:
+
+            time_error = get_time_error()
+            try:
+                time_error_has_changed = abs(time_error - last_recorded_time_error) > 10.
+            except:
+                time_error_has_changed = False
+
+            # if this is the first time we estimate a time error                 or time_error_has_changed
+            if ((time_error is not None) and (last_recorded_time_error is None)) or time_error_has_changed :
+
+                last_recorded_time_error = time_error
+                dic = {}
+                dic["msg"] = "timecheck timeerror"
+                dic["dt"] = datetime.datetime.utcnow()
+                dic["time_error"] = time_error
+                dic["loop_counter"] = loop_counter
+                logline = Log(data=json_util.dumps(dic), meta="")
+                logline.save()
+
+        except:
+            print "something wrong while estimating time error"
+
+
+
         #check if system time has changed
         try:
             dt_loop = datetime.datetime.utcnow()

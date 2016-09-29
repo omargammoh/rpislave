@@ -74,26 +74,7 @@ def check_tunnels():
             tunnel_para = new_tunnel_para(slave_port=port)
             create_tunnel(slave_port=port, tunnel_para=tunnel_para)
 
-#
-
-def get_time_error():
-    """
-    gets time error in seconds
-    """
-    with Timeout(seconds=16):
-        import dateutil.parser
-        import pytz
-        t1 = time.time()
-        resp = urllib2.urlopen('http://www.timeapi.org/utc/now', timeout=15).read().strip()
-        t2 = time.time()
-        time_needed = (t2 - t1)
-
-        correction = time_needed/2.
-
-        dt_internet = dateutil.parser.parse(resp).astimezone(pytz.utc)
-        seconds = (datetime.datetime.utcnow().replace(tzinfo=pytz.utc) - dt_internet).total_seconds() - correction
-        return seconds
-
+#status
 def get_status():
     def gitcmd(cmd):
         r = website.processing.execute(cmd).strip()
@@ -105,16 +86,10 @@ def get_status():
             return r
     d = {}
 
-    #TIME ERROR
     try:
-        d['time_error'] = get_time_error()
-    except:
-        d['time_error'] = "-"
-        pass
-
-    try:
-        resp = urllib2.urlopen('http://api.ipify.org?format=json').read()
-        d['ip_wan'] = json.loads(resp)['ip']
+        with Timeout(seconds=30):
+            resp = urllib2.urlopen('http://api.ipify.org?format=json').read()
+            d['ip_wan'] = json.loads(resp)['ip']
     except:
         d['ip_wan'] = "-"
         pass
@@ -188,12 +163,6 @@ def restart_networking():
     except:
         pass
 
-def round_time_error(s):
-    try:
-        return round(float(s)/20)*20
-    except:
-        return None
-
 def mark_loop():
     try:
         f = file('/home/pi/data/laststatusloop','w')
@@ -257,8 +226,7 @@ def main(status_period=30):
                             prev_status.get("ip_wan", "") == new_status.get("ip_wan", "")and \
                             prev_status.get("serial", "") == new_status.get("serial", "") and \
                             prev_status.get("git_rpislave", "") == new_status.get("git_rpislave", "") and \
-                            prev_status.get("gitbranch_rpislave", "") == new_status.get("gitbranch_rpislave", "") and \
-                            (new_status.get("time_error", "-") == "-" or round_time_error(prev_status.get("time_error", "")) == round_time_error(new_status.get("time_error", ""))):
+                            prev_status.get("gitbranch_rpislave", "") == new_status.get("gitbranch_rpislave", ""):
 
                 print ">> status: all params remain the same"
                 pass
@@ -268,12 +236,6 @@ def main(status_period=30):
                 if prev_status is None:
                     prev_status = {}
                 dic_diff = dict(set(new_status.items()) - set(prev_status.items()))
-
-                #if not much change in time-error
-                if round_time_error(prev_status.get("time_error", "")) == round_time_error(new_status.get("time_error", "")):
-                    if 'time_error' in dic_diff:
-                        # discard it
-                        dic_diff.pop('time_error')
 
                 #write it on disk
                 website.processing.write_json_file(js=new_status, fp=fp)

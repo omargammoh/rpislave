@@ -164,7 +164,7 @@ def main(timecheck_period=30):
 
         #set system time if timeerror is big
         try:
-            if (time_error is not None) and abs(time_error) > 30.:
+            if (time_error is not None) and abs(time_error) > 15.:
                 old_dt = datetime.datetime.utcnow()
                 set_system_time(datetime.datetime.utcnow() - datetime.timedelta(seconds = time_error))
                 new_dt = datetime.datetime.utcnow()

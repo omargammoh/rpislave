@@ -8,16 +8,6 @@ import website.processing
 from website.processing import Timeout
 import urllib2
 
-def force_ntp_sync():
-    try:
-        print ">> timecheck forcentpsync: forcing now"
-        res = website.processing.execute(cmd="sudo /etc/init.d/ntp stop")
-        res = website.processing.execute(cmd="sudo ntpd -q -g")
-        res = website.processing.execute(cmd="sudo /etc/init.d/ntp start")
-    except:
-        print
-        print ">> timecheck forcentpsync: !!!forcing fail"
-
 def get_hwclock():
     """
     gets the time from the real times clock
@@ -30,7 +20,14 @@ def get_hwclock():
     except:
         return None
 
-def set_system_time():
+def set_system_time(dt):
+    try:
+        res = website.processing.execute(cmd="date --set %s" %(dt.strftime('%Y-%m-%d')))
+        res = website.processing.execute(cmd="date --set %s" %(dt.strftime('%H:%M:%S')))
+    except:
+        print "timecheck: error setting system time"
+
+def set_system_time_to_hwclock():
     """
     reads rtc time, if its more recent than system time, then it sets system time to the rtc
     to be run once at startup
@@ -46,7 +43,7 @@ def set_system_time():
             if hwc > sysc:
                 res = website.processing.execute(cmd = "sudo hwclock --hctosys")
 
-                logline = Log(data=json_util.dumps({"msg":"timecheck setsystemtime",
+                logline = Log(data=json_util.dumps({"msg":"timecheck set-systemtime-to-hwclock",
                                                     "dt":datetime.datetime.utcnow(),
                                                     "old_hwc": hwc,
                                                     "sysc": sysc,
@@ -141,10 +138,11 @@ def main(timecheck_period=30):
     rtc_is_set = False
 
     while True:
-        #setting initial system time to hwclock if date is not old
+        #setting initial system time to hwclock if hwclock date is not older, stop the ntp because we will sync clock by ourselves
         try:
             if loop_counter == 0:
-                set_system_time()
+                set_system_time_to_hwclock()
+                res = website.processing.execute(cmd="sudo service ntp stop")
         except:
             print ">> timecheck: !!!something wrong with setting system time"
 
@@ -154,18 +152,23 @@ def main(timecheck_period=30):
         except:
             time_error = None
 
-        #force ntp sync if time error is big
+        #set system time if timeerror is big
         try:
-            if (time_error is not None) and abs(time_error) > 20.:
-                force_ntp_sync()
+            if (time_error is not None) and abs(time_error) > 30.:
+                old_dt = datetime.datetime.utcnow()
+                set_system_time(datetime.datetime.utcnow() - datetime.timedelta(seconds = time_error))
+                new_dt = datetime.datetime.utcnow()
                 dic = {}
-                dic["msg"] = "timecheck forcentpsync"
+                dic["msg"] = "timecheck set-system-time-to-internet-time"
                 dic["dt"] = datetime.datetime.utcnow()
+                dic["old_dt"] = old_dt
+                dic["new_dt"] = new_dt
+                dic["old_time_error"] = time_error
                 dic["loop_counter"] = loop_counter
                 logline = Log(data=json_util.dumps(dic), meta="")
                 logline.save()
         except:
-            print ">> timecheck force_ntp_sync: !!! something wrong"
+            print ">> timecheck set-system-time-to-internet-time: !!! something wrong"
 
         # check time error change and log it
         try:
@@ -178,7 +181,7 @@ def main(timecheck_period=30):
             if ((time_error is not None) and (last_recorded_time_error is None)) or time_error_has_changed :
                 last_recorded_time_error = time_error
                 dic = {}
-                dic["msg"] = "timecheck timeerror"
+                dic["msg"] = "timecheck time-error-change"
                 dic["dt"] = datetime.datetime.utcnow()
                 dic["time_error"] = time_error
                 dic["loop_counter"] = loop_counter
@@ -203,7 +206,7 @@ def main(timecheck_period=30):
                 else:
                     print ">> timecheck: !!!time seems to have changed by %s seconds" %loop_time_change
                     dic = {}
-                    dic["msg"] = "timecheck timechange"
+                    dic["msg"] = "timecheck time-change"
                     dic["dt"] = datetime.datetime.utcnow()
                     dic["dt_loop"] = dt_loop
                     dic["prev_dt_loop"] = prev_dt_loop

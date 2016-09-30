@@ -138,6 +138,8 @@ def main(timecheck_period=30):
     rtc_is_set = False
 
     while True:
+        dt_loop = datetime.datetime.utcnow()
+
         #setting initial system time to hwclock if hwclock date is not older, stop the ntp because we will sync clock by ourselves
         try:
             if loop_counter == 0:
@@ -196,7 +198,6 @@ def main(timecheck_period=30):
 
         #check if system time has changed
         try:
-            dt_loop = datetime.datetime.utcnow()
             if prev_dt_loop is None:
                 loop_time_change = None
             else:

@@ -38,8 +38,9 @@ def set_system_time():
 
                 logline = Log(data=json_util.dumps({"msg":"timecheck setsystemtime",
                                                     "dt":datetime.datetime.utcnow(),
-                                                    "hwc": hwc,
-                                                    "sysc": sysc
+                                                    "old_hwc": hwc,
+                                                    "sysc": sysc,
+                                                    "diff": diff
                                                     }), meta="")
                 logline.save()
                 print ">> timecheck: system time set to the rtc time, diff = %s, was %s, now %s" %(diff, sysc, datetime.datetime.utcnow())
@@ -48,7 +49,8 @@ def set_system_time():
                 logline = Log(data=json_util.dumps({"msg":"timecheck warning: rtc time is older than system time",
                                                     "dt":datetime.datetime.utcnow(),
                                                     "hwc": hwc,
-                                                    "sysc": sysc
+                                                    "sysc": sysc,
+                                                    "diff": diff
                                                     }), meta="")
                 logline.save()
                 print ">> timecheck: !!!rtc time is older than system time by %s" %diff
@@ -80,11 +82,14 @@ def set_rtc_time():
             if abs(time_error) < 15.:
                 res = website.processing.execute(cmd="sudo hwclock --systohc")
                 print ">> timecheck: system time is correct, rtc has been set to it"
+                new_hwc = get_hwclock()
+                diff = (new_hwc - hwc).total_seconds()
                 logline = Log(data=json_util.dumps({"msg":"timecheck setrtctime",
                                     "dt":datetime.datetime.utcnow(),
                                     "old_hwc": hwc,
-                                    "new_hwc": get_hwclock(),
-                                    "time_error": time_error
+                                    "new_hwc": new_hwc,
+                                    "time_error": time_error,
+                                    "diff": diff
                                     }), meta="")
                 logline.save()
 

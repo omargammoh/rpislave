@@ -8,6 +8,16 @@ import website.processing
 from website.processing import Timeout
 import urllib2
 
+def force_ntp_sync():
+    try:
+        print ">> timecheck forcentpsync: forcing now"
+        res = website.processing.execute(cmd="sudo /etc/init.d/ntp stop")
+        res = website.processing.execute(cmd="sudo ntpd -q -g")
+        res = website.processing.execute(cmd="sudo /etc/init.d/ntp start")
+    except:
+        print
+        print ">> timecheck forcentpsync: !!!forcing fail"
+
 def get_hwclock():
     """
     gets the time from the real times clock
@@ -123,12 +133,6 @@ def get_time_error():
     except:
         return None
 
-def round_time_error(s):
-    try:
-        return round(float(s)/20)*20
-    except:
-        return None
-
 #main
 def main(timecheck_period=30):
     loop_counter = 0
@@ -137,18 +141,34 @@ def main(timecheck_period=30):
     rtc_is_set = False
 
     while True:
-
-        #setting system time
+        #setting initial system time to hwclock if date is not old
         try:
             if loop_counter == 0:
                 set_system_time()
         except:
             print ">> timecheck: !!!something wrong with setting system time"
 
-
-        # check time error
+        #get time error, to be used later
         try:
             time_error = get_time_error()
+        except:
+            time_error = None
+
+        #force ntp sync if time error is big
+        try:
+            if (time_error is not None) and abs(time_error) > 20.:
+                force_ntp_sync()
+                dic = {}
+                dic["msg"] = "timecheck forcentpsync"
+                dic["dt"] = datetime.datetime.utcnow()
+                dic["loop_counter"] = loop_counter
+                logline = Log(data=json_util.dumps(dic), meta="")
+                logline.save()
+        except:
+            print ">> timecheck force_ntp_sync: !!! something wrong"
+
+        # check time error change and log it
+        try:
             try:
                 time_error_has_changed = abs(time_error - last_recorded_time_error) > 10.
             except:

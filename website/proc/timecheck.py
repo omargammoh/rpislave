@@ -8,6 +8,14 @@ import website.processing
 from website.processing import Timeout
 import urllib2
 
+#check fake clock: cat /etc/fake-hwclock.data
+
+def set_fakeclock_to_systemtime():
+    try:
+        website.processing.execute(cmd="""sudo sh -c 'date -u "+%Y-%m-%d %H:%M:%S" > /etc/fake-hwclock.data'""")
+    except:
+        print "timecheck set_fakeclock_to_systemtime: !!!error "
+
 def get_hwclock():
     """
     gets the time from the real times clock
@@ -236,5 +244,6 @@ def main(timecheck_period=30):
 
         prev_dt_loop = dt_loop
         time.sleep(timecheck_period)
+        set_fakeclock_to_systemtime()
         loop_counter += 1
 

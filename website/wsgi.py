@@ -4,6 +4,9 @@ from website.processing import get_conf, MP, filter_kwargs
 import traceback
 import multiprocessing
 import importlib
+from website.models import Log
+import datetime
+from bson import json_util
 
 from django.conf import settings
 
@@ -12,6 +15,17 @@ try:
 except:
     conf = None
     print "> conf could not be loaded, starting without a conf"
+
+
+#mark the start with a log line
+try:
+    dicx = {'start': datetime.datetime.utcnow()}
+    logline = Log(data=json_util.dumps(dicx), meta="")
+    logline.save()
+    print ">> status: wrote start %s" % dicx
+except:
+    print ">> status: !!!could not mark start"
+
 
 if conf is not None:
     #autostart processes

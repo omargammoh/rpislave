@@ -177,7 +177,6 @@ def main(status_period=30):
     while True:
         print ">> status: starting loop"
 
-
         #checking internet connectivity and trying to reconnect if not connected
         if True:
             internet_ison = check_internet()
@@ -199,13 +198,6 @@ def main(status_period=30):
                     print ">> status: could not connected to internet even after network restart"
 
         try:
-
-            if loop_counter == 0:
-                dicx = {'start': datetime.datetime.utcnow()}
-                logline = Log(data=json_util.dumps(dicx), meta="")
-                logline.save()
-                print ">> status: wrote start %s" % dicx
-
 
             #file where status is saved
             fp = '/home/pi/data/status'

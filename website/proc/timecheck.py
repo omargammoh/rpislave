@@ -189,6 +189,7 @@ def main(timecheck_period=30):
 
             # if this is the first time we estimate a time error                 or time_error_has_changed
             if ((time_error is not None) and (last_recorded_time_error is None)) or time_error_has_changed :
+                print ">> timecheck: time error changed from %s to %s" %(last_recorded_time_error, time_error)
                 last_recorded_time_error = time_error
                 dic = {}
                 dic["msg"] = "timecheck time-error-change"
@@ -197,7 +198,6 @@ def main(timecheck_period=30):
                 dic["loop_counter"] = loop_counter
                 logline = Log(data=json_util.dumps(dic), meta="")
                 logline.save()
-                print ">> timecheck: time error changed from %s to %s" %(last_recorded_time_error, time_error)
 
         except:
             print ">> timecheck: !!!something wrong while estimating time error"

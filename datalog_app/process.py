@@ -4,6 +4,7 @@ import numpy as np
 import itertools
 import sys
 from website.processing import Timeout, fix_malformed_db
+from math import log10, floor
 
 import os, django
 from bson import json_util
@@ -34,7 +35,6 @@ try:
     import RPi.GPIO as GPIO
 except:
     print ">>> datalog_app: !!could not load RPi.GPIO module"
-
 
 #functions for reading sensors
 def __read_spi(spi, channel):
@@ -153,6 +153,9 @@ def _read_hcsr04(pin_trig, pin_echo):
             raise BaseException('distance is out of acceptable range %s' %distance)
 
 #
+def _round_sig(x, sig=5, small_value=1.0e-9):
+    return round(x, sig - int(floor(log10(max(abs(x), abs(small_value))))) - 1)
+
 def _pretty_time_delta(seconds):
     seconds = int(seconds)
     days, seconds = divmod(seconds, 86400)
@@ -292,9 +295,10 @@ def _process_data(data, sensors_conf):
             else:
                 print ">>> datalog_app: !!the function %s if unknown, choose between min,max,avg and std" %func
                 continue
-            res['%s-%s' %(key,func)] = round(agg,2)
+            res['%s-%s' %(key,func)] = _round_sig(agg)
 
     return res #{'Tamb-avg' : 5., 'Tamb-min' : 1., 'G-min' : 60.}
+
 
 #main
 def main(sample_period, data_period, sensors, rs485=None):

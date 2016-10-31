@@ -78,6 +78,7 @@ def _send_model_data(model, keep_period, conf_label, app_name, perm, master_url)
     list_ob = model.objects.all()
     len_total = len(list_ob)
     t2 = time()
+    bulk_thres_estimated = False
     for i, ob in enumerate(list_ob):
 
         #if there is a meta data then that's great
@@ -98,11 +99,12 @@ def _send_model_data(model, keep_period, conf_label, app_name, perm, master_url)
                 bulk_sendlist.append(ob)
 
                 #estimate the max number of datapoints that can be sent
-                if i==5: #5 so that doesnt happen on a normal operation when device is connected and sends one or 2 data points
+                if not bulk_thres_estimated:
+                    bulk_thres_estimated = True
                     try:
                         test_str = urllib.urlencode([('x', str(ob.data))])
                         max_length = 32000. #max url length the server can take
-                        bulk_thres = min(500, int(max_length/len(test_str) * 0.5)) #0.5 is safety margin
+                        bulk_thres = min(500, int(max_length/len(test_str) * 0.7)) #0.7 is safety margin
                         print ">> datasend: decided on bulk thresold of %s" %bulk_thres
                     except:
                         print ">> datasend: could not decide on bulk length"
@@ -199,11 +201,11 @@ def _send_model_data(model, keep_period, conf_label, app_name, perm, master_url)
 
                     #server does not confirm everything is ok
                     if not str(json_util.loads(resp)['data']).lower()=='true':
-                        print ">> datasend: !!failed sending group with %s items" %(len(good_data_points))
+                        print ">> datasend: !!failed sending group with %s items (url len %s)" %(len(good_data_points), len(full_url))
                         raise BaseException('server did not return data:true thing')
                     #server confirms everything is ok
                     else:
-                        print ">> datasend: successfully sent %s items" %(len(good_data_points))
+                        print ">> datasend: successfully sent %s items (url len %s)" %(len(good_data_points), len(full_url))
                         for ob in good_model_points:
                             try:
                                 meta = json_util.loads(ob.meta)

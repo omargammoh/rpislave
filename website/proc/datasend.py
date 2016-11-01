@@ -49,7 +49,7 @@ def sanitize_colname(label):
     #The name you choose must begin with a letter or underscore and must not begin with 'system.' or 'objectlabs-system.'
     #. It also must have fewer than 80 characters and cannot have any spaces or special characters (hyphens, underscores and periods are OK) in it.
 
-def _send_model_data(model, keep_period, conf_label, app_name, perm, master_url):
+def _send_model_data(model, keep_period, conf_label, app_name, perm, master_url, delete_cycle):
     """
     model: the actual model object
     """
@@ -65,7 +65,7 @@ def _send_model_data(model, keep_period, conf_label, app_name, perm, master_url)
 
     conf_label_san = sanitize_colname(conf_label)
 
-    cnt = {'send-ok': 0, 'send-fail': 0, "send-markfail": 0, "send-cantloads": 0,
+    cnt = {'send-ok': 0, 'send-fail': 0, "send-markfail": 0, "send-cantloads": 0, "send-skipfordeletecycle":0,
            'dontdelyet-ok': 0,
            'nodel-ok': 0,
            'del-ok': 0, 'del-fail': 0,
@@ -95,8 +95,12 @@ def _send_model_data(model, keep_period, conf_label, app_name, perm, master_url)
         try:
             #if not sent
             if sent == 'false':
-                #add to bulk to be sent later
-                bulk_sendlist.append(ob)
+                if not delete_cycle:
+                    #add to bulk to be sent later
+                    bulk_sendlist.append(ob)
+                else:
+                    #skipping for the delete cycle:
+                    cnt['send-skipfordeletecycle'] += 1
 
                 #estimate the max number of datapoints that can be sent
                 if not bulk_thres_estimated:
@@ -247,18 +251,18 @@ def _send_model_data(model, keep_period, conf_label, app_name, perm, master_url)
         #print some info every while
         if time() - tm > 10.:
             tm = time()
-            print ">> datasend: still working on model %s, %s" %(model_name, {k:v for (k,v) in cnt.iteritems() if v != 0})
+            print ">> datasend: still working on model %s since %s min, %s" %(model_name, round(tm - t1, 1)/60.,{k:v for (k,v) in cnt.iteritems() if v != 0})
 
 
     t3 = time()
     print '>> datasend: model %s done, took %s+%s sec, mode %s, %s' % (model_name, round(t2 - t1, 3), round(t3 - t2, 3), model_mode, {k:v for (k,v) in cnt.iteritems() if v != 0})
 
-def _send_app_data(app_name, keep_period, conf_label, perm, master_url):
+def _send_app_data(app_name, keep_period, conf_label, perm, master_url, delete_cycle):
     app = get_app(app_name)
     for model in get_models(app):
         print ">> datasend: working on model %s" % model.__name__
         try:
-            _send_model_data(model=model, keep_period=keep_period, conf_label=conf_label, app_name=app_name, perm=perm, master_url=master_url)
+            _send_model_data(model=model, keep_period=keep_period, conf_label=conf_label, app_name=app_name, perm=perm, master_url=master_url, delete_cycle=delete_cycle)
         except:
             #if dataabase is malformed, then try to fix it
             #
@@ -308,11 +312,21 @@ def main(send_period=60*2, keep_period=60*60*12, app_list=None):
     sleep(10)
     i = 0
 
+    time_interneton = time()
+    need_delete_cycle_soon = False
+
     if perm is not None:
         while True:
             print ">> datasend: loop, i=%s" % i
 
             internet_ison = check_internet()
+
+            need_delete_cycle_now = not internet_ison \
+                                        and need_delete_cycle_soon \
+                                        and ((time() - time_interneton) > (keep_period)) #go through the database to delete items and not send
+            if need_delete_cycle_now:
+                print ">> datasend: running a delete cycle"
+                need_delete_cycle_soon = False
 
             if internet_ison:
                 #update the latestinfo collection
@@ -345,11 +359,14 @@ def main(send_period=60*2, keep_period=60*60*12, app_list=None):
                 except:
                     print "%s>> !!datasend: error sending latest info " %traceback.format_exc()
 
+            if internet_ison or need_delete_cycle_now:
                 # send the data of the apps
                 for app_name in app_list:
                     try:
+                        if need_delete_cycle_now:
+                            print ">> datasend: delete cycle..."
                         print ">> datasend: working on app %s (perm)" % app_name
-                        _send_app_data(app_name=app_name, keep_period=keep_period, conf_label=conf_label, perm=perm, master_url=master_url)
+                        _send_app_data(app_name=app_name, keep_period=keep_period, conf_label=conf_label, perm=perm, master_url=master_url, delete_cycle=need_delete_cycle_now)
                     except:
                         print traceback.format_exc()
                         print '>> datasend: !! _send_app_data for %s failed' % app_name
@@ -359,6 +376,12 @@ def main(send_period=60*2, keep_period=60*60*12, app_list=None):
             i += 1
             #waiting for next sending time
             print ">> datasend: next iteration is after %s sec" %send_period
+
+            if internet_ison:
+                need_delete_cycle_soon = True
+                time_interneton = time()
+
             sleep(send_period)
+
 
     return None

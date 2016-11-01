@@ -292,8 +292,10 @@ def _process_data(data, sensors_conf):
                 agg = np.median(lis)
             elif func=='std':
                 agg = np.std(lis)
+            elif func=='cnt':
+                agg = float(len(lis))
             else:
-                print ">>> datalog_app: !!the function %s if unknown, choose between min,max,avg and std" %func
+                print ">>> datalog_app: !!the function %s if unknown, choose between min,max,avg,cnt and std" %func
                 continue
             res['%s-%s' %(key,func)] = _round_sig(agg)
 

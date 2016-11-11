@@ -81,6 +81,8 @@ def _read_ds18b20(id):
         f.close()
         raw = re.compile(r'(.+)t=(?P<raw>[-+]?\d+)(.+)', flags=re.DOTALL).match(text).groupdict()['raw']
         v = float(raw)/1000.
+        if v == -62.0 or v == 85.0:
+            raise BaseException('ds18b20 temperature value -62 or 85 which is an error code of the sensor %s' %v)
         if v < -55. or v > 125.:
             raise BaseException('ds18b20 temperature value out of range')
         return v #this number is in celsuis, could be positive or negative

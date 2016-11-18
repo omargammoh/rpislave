@@ -374,14 +374,22 @@ def main(send_period=60*2, keep_period=60*60*12, app_list=None):
                 print ">> datasend: internet is off"
 
             i += 1
-            #waiting for next sending time
-            print ">> datasend: next iteration is after %s sec" %send_period
 
+            #waiting for next sending time
             if internet_ison:
                 need_delete_cycle_soon = True
                 time_interneton = time()
 
-            sleep(send_period)
+
+            if internet_ison:
+                #if internet is on, wait for send_period
+                sleeptime = send_period
+            else:
+                #if internet is of, wait less time so that we connect quickly when internet is present
+                sleeptime = send_period/4
+
+            print ">> datasend: next iteration is after %s sec" %sleeptime
+            sleep(sleeptime)
 
 
     return None

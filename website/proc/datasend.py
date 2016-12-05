@@ -77,7 +77,9 @@ def _send_model_data(model, keep_period, conf_label, app_name, perm, master_url,
     #loop over each datapoint
     try:
         list_ob = model.objects.all()
+        len_total = len(list_ob)
     except: #if there is a problem reading the whole model, loop over and get the good readings only
+        print ">>datasend: !!!error in getting all objects of model %s, trying to get the good part of the data" %model_name
         list_ob=[]
         ids = model.objects.values_list('id', flat=True)
         for i in ids:
@@ -86,9 +88,10 @@ def _send_model_data(model, keep_period, conf_label, app_name, perm, master_url,
             except:
                 print "model %s id %s failed!!!!!!! continuing" %(model_name,i)
                 print traceback.format_exc()
+        len_total = len(list_ob)
 
 
-    len_total = len(list_ob)
+
     t2 = time()
     bulk_thres_estimated = False
     for i, ob in enumerate(list_ob):

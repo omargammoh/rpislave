@@ -309,7 +309,7 @@ def _get_time_error():
             correction = time_needed/2.
 
             dt_internet = dateutil.parser.parse(jresp['fulldate']).astimezone(pytz.utc)
-            seconds = (datetime.datetime.utcnow().replace(tzinfo=pytz.utc) - dt_internet).total_seconds() - correction
+            seconds = (datetime.utcnow().replace(tzinfo=pytz.utc) - dt_internet).total_seconds() - correction
             return seconds
     except:
         print ">> datasend: could not get time_error"

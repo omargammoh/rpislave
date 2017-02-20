@@ -14,6 +14,7 @@ from bson import json_util
 from website.processing import get_conf, fix_malformed_db
 
 from django.db.models import get_app, get_models
+from website.processing import Timeout
 
 def _prepare_django():
     os.environ['DJANGO_SETTINGS_MODULE'] = 'website.settings'
@@ -288,15 +289,41 @@ def _send_app_data(app_name, keep_period, conf_label, perm, master_url, delete_c
                 print "datasend: !!!database is malformed for %s, trying to fix it" % model.__name__
                 fix_malformed_db()
 
+
 def _get_time_error():
+    """
+    gets time error in seconds
+    """
     try:
-        resp = urllib2.urlopen('http://www.timeapi.org/utc/now', timeout=15).read().strip()
-        dt_internet = dateutil.parser.parse(resp).astimezone(pytz.utc)
-        time_error = (datetime.utcnow().replace(tzinfo=pytz.utc) - dt_internet).total_seconds()
+        with Timeout(seconds=16):
+            t1 = time()
+
+            resp = urllib2.urlopen(r'https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec', timeout=15).read().strip()
+            jresp = json_util.loads(resp)
+            if not (jresp['timezone'].lower()=="utc"):
+                print ">> timecheck: !!!Time error might not be UTC"
+                raise BaseException('')
+            t2 = time()
+            time_needed = (t2 - t1)
+
+            correction = time_needed/2.
+
+            dt_internet = dateutil.parser.parse(jresp['fulldate']).astimezone(pytz.utc)
+            seconds = (datetime.datetime.utcnow().replace(tzinfo=pytz.utc) - dt_internet).total_seconds() - correction
+            return seconds
     except:
-        time_error = "-"
-        pass
-    return time_error
+        print ">> datasend: could not get time_error"
+        return "-"
+
+
+
+
+
+
+
+
+
+
 
 def main(send_period=60*2, keep_period=60*60*12, app_list=None):
     '''

@@ -91,6 +91,9 @@ def support_onewire():
         f.close()
         print "support_onewire: added support for onewire"
 
+def check_installation():
+    print "tmux: ", not ("not found" in _execute('tmux'))
+
 if __name__ == "__main__":
     t1 = time()
     _execute([
@@ -98,7 +101,7 @@ if __name__ == "__main__":
     ])
     t2 = time()
     _execute([
-         'sudo apt-get install -y python-dev' #needed by uwsgi and other things
+         'sudo apt-get install -y --force-yes python2.7-dev' #needed by uwsgi and other things
         ,'sudo apt-get install libpcre3 libpcre3-dev'#neeeded by uwsgi, this needs to run beforre installling uwsgi
         ,'sudo apt-get install -y python-pip'
         ,"sudo pip install uwsgi"

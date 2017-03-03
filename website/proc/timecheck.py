@@ -61,7 +61,8 @@ def set_system_time_to_hwclock():
                                                     }), meta="")
                 logline.save()
                 print ">> timecheck: system time set to the rtc time, diff = %s, was %s, now %s" %(diff, sysc, datetime.datetime.utcnow())
-
+            elif hwc > (sysc - datetime.timedelta(seconds=2)):
+                print ">> timecheck: system time set to the rtc time, diff = %s, was %s, now %s" %(diff, sysc, datetime.datetime.utcnow())
             else:
                 logline = Log(data=json_util.dumps({"msg":"timecheck-warning rtc-time-is-older-than-system-time",
                                                     "dt":datetime.datetime.utcnow(),

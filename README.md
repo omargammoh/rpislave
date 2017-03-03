@@ -17,8 +17,9 @@
     *  in `sudo nano /etc/modules`, ensures the lines `i2c-dev` and `rtc-ds1307` are there
     *  in `sudo nano /etc/rc.local`, ensure the line `echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device` is there before the line `exit 0`
   * Rasclock
-    * follow https://afterthoughtsoftware.com/products/rasclock
- 
+    * follow https://www.raspberrypi.org/forums/viewtopic.php?f=63&t=161133  
+      * add `dtoverlay=i2c-rtc,ds3231` to `/boot/config.txt`
+      * comment out the three lines `if [ -e /run/systemd/system ] ; then exit 0 fi` in `sudo nano /lib/udev/hwclock-set`
 * Surf to the page `<raspberrypi_ip>:9001` hosted by the rpi
 * Add the configuration json file in the admin page `<ip-address>:9001/admin/website/conf/`
 * Reboot, The server will start automatically after the reboot

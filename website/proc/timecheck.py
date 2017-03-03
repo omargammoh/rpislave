@@ -125,18 +125,17 @@ def get_time_error():
         with Timeout(seconds=16):
             import dateutil.parser
             import pytz
+            import ssl
             t1 = time.time()
-
-            resp = urllib2.urlopen(r'https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec', timeout=15).read().strip()
+            #resp = urllib2.urlopen(r'https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec', timeout=15).read().strip()
+            resp = urllib2.urlopen(urllib2.Request('https://script.google.com/macros/s/AKfycbyd5AcbAnWi2Yn0xhFRbyzS4qMq1VucMVgVvhul5XqS9HkAyJY/exec'), context=ssl._create_unverified_context()).read()
             jresp = json_util.loads(resp)
             if not (jresp['timezone'].lower()=="utc"):
                 print ">> timecheck: !!!Time error might not be UTC"
                 raise BaseException('')
             t2 = time.time()
             time_needed = (t2 - t1)
-
             correction = time_needed/2.
-
             dt_internet = dateutil.parser.parse(jresp['fulldate']).astimezone(pytz.utc)
             seconds = (datetime.datetime.utcnow().replace(tzinfo=pytz.utc) - dt_internet).total_seconds() - correction
             return seconds

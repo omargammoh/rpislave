@@ -49,22 +49,24 @@ def set_system_time_to_hwclock():
         else:
             diff = (sysc - hwc).total_seconds()
             if hwc > sysc:
+                sys_dt_old = datetime.datetime.utcnow()
                 res = website.processing.execute(cmd = "sudo hwclock --hctosys")
+                sys_dt_new = datetime.datetime.utcnow()
 
                 logline = Log(data=json_util.dumps({"msg":"timecheck set-systemtime-to-hwclock",
+                                                    "sys_dt_old" : sys_dt_old,
+                                                    "sys_dt_new" : sys_dt_new,
                                                     "dt":datetime.datetime.utcnow(),
-                                                    "old_hwc": hwc,
-                                                    "sysc": sysc,
                                                     "diff": diff
                                                     }), meta="")
                 logline.save()
                 print ">> timecheck: system time set to the rtc time, diff = %s, was %s, now %s" %(diff, sysc, datetime.datetime.utcnow())
 
             else:
-                logline = Log(data=json_util.dumps({"msg":"timecheck warning: rtc time is older than system time",
+                logline = Log(data=json_util.dumps({"msg":"timecheck-warning rtc-time-is-older-than-system-time",
                                                     "dt":datetime.datetime.utcnow(),
-                                                    "hwc": hwc,
-                                                    "sysc": sysc,
+                                                    "hwc_dt": hwc,
+                                                    "sys_dt": datetime.datetime.utcnow(),
                                                     "diff": diff
                                                     }), meta="")
                 logline.save()
@@ -99,12 +101,11 @@ def set_rtc_time():
                 print ">> timecheck: system time is correct, rtc has been set to it"
                 new_hwc = get_hwclock()
                 diff = (new_hwc - hwc).total_seconds()
-                logline = Log(data=json_util.dumps({"msg":"timecheck setrtctime",
+                logline = Log(data=json_util.dumps({"msg":"timecheck set-hwc-time-to-internet-and-sys-time",
                                     "dt":datetime.datetime.utcnow(),
                                     "old_hwc": hwc,
                                     "new_hwc": new_hwc,
-                                    "time_error": time_error,
-                                    "diff": diff
+                                    "time_error": time_error
                                     }), meta="")
                 logline.save()
 
@@ -156,8 +157,8 @@ def main(timecheck_period=30):
         #setting initial system time to hwclock if hwclock date is not older, stop the ntp because we will sync clock by ourselves
         try:
             if loop_counter == 0:
-                set_system_time_to_hwclock()
                 res = website.processing.execute(cmd="sudo service ntp stop")
+                set_system_time_to_hwclock()
         except:
             print ">> timecheck: !!!something wrong with setting system time"
 
@@ -171,14 +172,15 @@ def main(timecheck_period=30):
         try:
             if (time_error is not None) and abs(time_error) > 15.:
                 old_dt = datetime.datetime.utcnow()
+                print ">> timecheck: setting system time to internet time"
                 set_system_time(datetime.datetime.utcnow() - datetime.timedelta(seconds = time_error))
                 new_dt = datetime.datetime.utcnow()
                 dic = {}
                 dic["msg"] = "timecheck set-system-time-to-internet-time"
                 dic["dt"] = datetime.datetime.utcnow()
-                dic["old_dt"] = old_dt
-                dic["new_dt"] = new_dt
-                dic["old_time_error"] = time_error
+                dic["sys_dt_old"] = old_dt
+                dic["sys_dt_new"] = new_dt
+                dic["time_error_old"] = time_error
                 dic["loop_counter"] = loop_counter
                 logline = Log(data=json_util.dumps(dic), meta="")
                 logline.save()
@@ -195,14 +197,15 @@ def main(timecheck_period=30):
             # if this is the first time we estimate a time error                 or time_error_has_changed
             if ((time_error is not None) and (last_recorded_time_error is None)) or time_error_has_changed :
                 print ">> timecheck: time error changed from %s to %s" %(last_recorded_time_error, time_error)
-                last_recorded_time_error = time_error
                 dic = {}
                 dic["msg"] = "timecheck time-error-change"
                 dic["dt"] = datetime.datetime.utcnow()
-                dic["time_error"] = time_error
+                dic["time_error_old"] = last_recorded_time_error
+                dic["time_error_new"] = time_error
                 dic["loop_counter"] = loop_counter
                 logline = Log(data=json_util.dumps(dic), meta="")
                 logline.save()
+                last_recorded_time_error = time_error
 
         except:
             print ">> timecheck: !!!something wrong while estimating time error"
@@ -223,7 +226,7 @@ def main(timecheck_period=30):
                     dic["msg"] = "timecheck time-change"
                     dic["dt"] = datetime.datetime.utcnow()
                     dic["dt_loop"] = dt_loop
-                    dic["prev_dt_loop"] = prev_dt_loop
+                    dic["dt_loop_old"] = prev_dt_loop
                     dic["time_change"] = loop_time_change
                     dic["loop_counter"] = loop_counter
 

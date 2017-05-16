@@ -67,6 +67,7 @@ RPI_APPS = (
     'gpio_app',
     'motion_app',
     'camshoot_app',
+    'classidate_app'
 )
 
 # List here all processes that are in website.proc that needed to be started at startup

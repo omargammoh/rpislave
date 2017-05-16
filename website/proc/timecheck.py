@@ -218,7 +218,7 @@ def main(timecheck_period=30):
                 loop_time_change = None
             else:
                 loop_time_change = (dt_loop - prev_dt_loop).total_seconds() - timecheck_period
-                if abs(loop_time_change) < 30.: #taking into account the timout of the get_time_error function which runs later in this loop
+                if abs(loop_time_change) < 60.: #taking into account the timout of the get_time_error function which runs later in this loop
                     print ">> timecheck: all is fine"
                 else:
                     print ">> timecheck: !!!time seems to have changed by %s seconds" %loop_time_change

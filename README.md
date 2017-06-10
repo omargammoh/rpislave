@@ -47,7 +47,7 @@
 * Use another pin than GPIO4 for one-wire
   * in `sudo nano /boot/config.txt`, choose the gpio number in the line `dtoverlay=w1-gpio,gpiopin=17`
 * vnc server
-  * install `sudo apt-get install tightvncserver`
+  * install `sudo apt-get install realvnc-vnc-server realvnc-vnc-viewer`
   * run this before connection `sudo systemctl start vncserver-x11-serviced.service`
 
 ## Installation check-list ##

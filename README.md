@@ -46,9 +46,13 @@
   * `cd /home/pi/rpislave&&sudo git checkout master`
 * Use another pin than GPIO4 for one-wire
   * in `sudo nano /boot/config.txt`, choose the gpio number in the line `dtoverlay=w1-gpio,gpiopin=17`
- 
+* vnc server
+  * install `sudo apt-get install tightvncserver`
+  * run this before connection `sudo systemctl start vncserver-x11-serviced.service`
+
 ## Installation check-list ##
 * Configuration is installed
 * File system is expanded, check with `df -h`
 * `ip=169.254.0.2` is removed from `sudo nano /boot/cmdline.txt`
 * Check slave is up to date
+

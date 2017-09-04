@@ -161,6 +161,11 @@ def network_name():
 
 if __name__== '__main__':
     #if not os.path.isfile('/home/pi/rpislave/db.sqlite3'):
+    try:
+        print "starting vnc server"
+        print _execute("sudo systemctl start vncserver-x11-serviced.service")
+    except:
+        print "could not start vnc server"
     _execute("sudo python /home/pi/rpislave/manage.py migrate")
     conf, conf_str = _getconf()
     setup_db()

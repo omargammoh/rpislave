@@ -37,9 +37,12 @@ if conf is not None:
             proc_kwargs = conf.get("proc", {}).get(proc_name, {})
             #execute the main function
             if hasattr(m, "main"):
-                p = multiprocessing.Process(name=proc_name, target=m.main, kwargs=filter_kwargs(func=m.main, kwargs_input=proc_kwargs))
-                p.start()
-                print '> start process: %s' % proc_name
+                if proc_kwargs.get('active', True):
+                    p = multiprocessing.Process(name=proc_name, target=m.main, kwargs=filter_kwargs(func=m.main, kwargs_input=proc_kwargs))
+                    p.start()
+                    print '> start process: %s' % proc_name
+                else:
+                    print "process %s is not active" %proc_name
             else:
                 print '> !! process %s does not have a main function' % proc_name
         except:
@@ -63,6 +66,7 @@ if conf is not None:
                         p_rec = MP(name=ps_name, target=target, request=None, cmd="start")
                         p_rec.process_command()
             except:
+                print traceback.format_exc()
                 print "> !!unable to initialize the %s process " % ps_name
 
         ac = [m.name for m in multiprocessing.active_children()]

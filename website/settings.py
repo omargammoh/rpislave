@@ -160,7 +160,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 #todo: this excempt url is just for debug, remove it later
 LOGIN_EXEMPT_URLS = ('rqst',
                      'datalog_app', #this is for nrc imad asked to be able to access the datalog slave without login
-                     'datalog_app/highchart_update' #when rpislave reboots user is not longer aauthenticated, but we want the auto update feature of datalog to continue to work,
+                     'datalog_app/highchart_update', #when rpislave reboots user is not longer aauthenticated, but we want the auto update feature of datalog to continue to work,
+                     'classidate_app/get_mode',
+                     'classidate_app/proc'
     )
 
 DEFAULT_MASTER_URL = "http://rpi-master.com/api/slave/?"
